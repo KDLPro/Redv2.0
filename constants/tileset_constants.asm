@@ -38,9 +38,14 @@
 	const TILESET_AERODACTYL_WORD_ROOM ; 24
 	const TILESET_MUSEUM			   ; 25
 	const TILESET_KANTO_DOJO		   ; 26
-	const TILESET_KANTO_POLICE		   ; 26
-	const TILESET_KANTO_POWER		   ; 26
-	const TILESET_KANTO_SANDY		   ; 26
+	const TILESET_KANTO_POLICE		   ; 27
+	const TILESET_KANTO_POWER		   ; 28
+	const TILESET_KANTO_SANDY		   ; 29
+	const TILESET_SSANNE			   ; 2a
+	const TILESET_SSANNE_DECK		   ; 2b
+	const TILESET_SSANNE_CAPTAIN	   ; 2c
+	const TILESET_SS_ANNE_ROOMS_1	   ; 2d
+	const TILESET_SS_ANNE_ROOMS_2	   ; 2c
 	
 
 ; bg palette values (see gfx/tilesets/*_palette_map.asm)

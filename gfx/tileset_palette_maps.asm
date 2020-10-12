@@ -108,6 +108,21 @@ INCLUDE "gfx/tilesets/battle_tower_inside_palette_map.asm"
 TilesetBattleTowerOutsidePalMap:
 INCLUDE "gfx/tilesets/battle_tower_outside_palette_map.asm"
 
+TilesetMuseumPalMap:
+INCLUDE "gfx/tilesets/museum_palette_map.asm"
+
+TilesetKantoDojoPalMap:
+INCLUDE "gfx/tilesets/kanto_dojo_palette_map.asm"
+
+TilesetKantoPolicePalMap:
+INCLUDE "gfx/tilesets/kanto_police_palette_map.asm"
+
+TilesetKantoPowerPalMap:
+INCLUDE "gfx/tilesets/kanto_power_palette_map.asm"
+
+TilesetKantoSandyPowerPalMap:
+INCLUDE "gfx/tilesets/kanto_sandy_palette_map.asm"
+
 MapGroupPalettes: ; unreferenced
 ; entries correspond to GROUP_* constants
 rept NUM_MAP_GROUPS

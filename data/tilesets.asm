@@ -50,3 +50,12 @@ Tilesets::
 	tileset TilesetOmanyteWordRoom
 	tileset TilesetAerodactylWordRoom
 	tileset TilesetMuseum
+	tileset TilesetKantoDojo
+	tileset TilesetKantoPolice
+	tileset TilesetKantoPower
+	tileset TilesetKantoSandy
+	tileset TilesetSSAnne
+	tileset TilesetSSAnneDeck
+	tileset TilesetSSAnneCaptain
+	tileset TilesetSSAnneRooms1
+	tileset TilesetSSAnneRooms2

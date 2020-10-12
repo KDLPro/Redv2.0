@@ -385,3 +385,51 @@ INCBIN "data/tilesets/kanto_sandy_metatiles.bin"
 
 TilesetKantoSandyColl::
 INCLUDE "data/tilesets/kanto_sandy_collision.asm"
+
+
+SECTION "Tileset Data 10", ROMX
+
+TilesetSSAnneGFX::
+INCBIN "gfx/tilesets/ss_anne.2bpp.lz"
+
+TilesetSSAnneMeta::
+INCBIN "data/tilesets/ss_anne_metatiles.bin"
+
+TilesetSSAnneColl::
+INCBIN "data/tilesets/ss_anne_collision.asm"
+
+TilesetSSAnneDeckGFX::
+INCBIN "gfx/tilesets/ssanne_deck.2bpp.lz"
+
+TilesetSSAnneDeckMeta::
+INCBIN "data/tilesets/ssanne_deck_metatiles.bin"
+
+TilesetSSAnneDeckColl::
+INCBIN "data/tilesets/ssanne_deck_collision.asm"
+
+TilesetSSAnneCaptainGFX::
+INCBIN "gfx/tilesets/ssanne_captain.2bpp.lz"
+
+TilesetSSAnneCaptainMeta::
+INCBIN "data/tilesets/ssanne_captain_metatiles.bin"
+
+TilesetSSAnneCaptainColl::
+INCBIN "data/tilesets/ssanne_captain_collision.asm"
+
+TilesetSSAnneRooms1GFX::
+INCBIN "gfx/tilesets/ss_anne_rooms_1.2bpp.lz"
+
+TilesetSSAnneRooms1Meta::
+INCBIN "data/tilesets/ss_anne_rooms_1_metatiles.bin"
+
+TilesetSSAnneRooms1Coll::
+INCBIN "data/tilesets/ss_anne_rooms_1_collision.asm"
+
+TilesetSSAnneRooms2GFX::
+INCBIN "gfx/tilesets/ss_anne_rooms_2.2bpp.lz"
+
+TilesetSSAnneRooms2Meta::
+INCBIN "data/tilesets/ss_anne_rooms_2_metatiles.bin"
+
+TilesetSSAnneRooms2Coll::
+INCBIN "data/tilesets/ss_anne_rooms_2_collision.asm"
