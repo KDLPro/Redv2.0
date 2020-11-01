@@ -2,7 +2,7 @@ _AnimateTileset::
 ; Iterate over a given pointer array of
 ; animation functions (one per frame).
 
-; Typically in WRAM bank 1, VRAM bank 0.
+; Typically in wra1, vra0
 
 	ld a, [wTilesetAnim]
 	ld e, a
@@ -33,13 +33,17 @@ _AnimateTileset::
 
 	jp hl
 
+TilesetRouteAAnim:
 Tileset0Anim:
 TilesetJohtoModernAnim:
 TilesetKantoAnim:
+TilesetSSAnneCaptainAnim:
+TilesetSSAnneDeckAnim:
 TilesetKantoDojoAnim:
+TilestCyclingRoadAnim:
 TilesetKantoPoliceAnim:
-TilesetKantoPowerAnim:
 TilesetKantoSandyAnim:
+TilesetKantoPowerAnim:
 	dw vTiles2 tile $14, AnimateWaterTile
 	dw NULL,  WaitTileAnimation
 	dw NULL,  WaitTileAnimation
@@ -94,8 +98,7 @@ TilesetJohtoAnim:
 	dw NULL,  StandingTileFrame8
 	dw NULL,  DoneTileAnimation
 
-UnusedTilesetAnim1: ; unreferenced
-; Scrolls tile $03 like water, but also has the standard $03 flower tile.
+UnusedTilesetAnim_fc0d7:
 	dw vTiles2 tile $03, WriteTileToBuffer
 	dw wTileAnimBuffer, ScrollTileRightLeft
 	dw vTiles2 tile $03, WriteTileFromBuffer
@@ -108,8 +111,7 @@ UnusedTilesetAnim1: ; unreferenced
 	dw NULL,  WaitTileAnimation
 	dw NULL,  DoneTileAnimation
 
-UnusedTilesetAnim2: ; unreferenced
-; Scrolls tile $14 like cave water.
+UnusedTilesetAnim_fc103:
 	dw vTiles2 tile $14, WriteTileToBuffer
 	dw wTileAnimBuffer, ScrollTileRightLeft
 	dw vTiles2 tile $14, WriteTileFromBuffer
@@ -146,8 +148,7 @@ TilesetEliteFourRoomAnim:
 	dw NULL,  StandingTileFrame8
 	dw NULL,  DoneTileAnimation
 
-UnusedTilesetAnim3: ; unreferenced
-; Scrolls tile $53 like a waterfall; scrolls tile $03 like cave water.
+UnusedTilesetAnim_fc17f:
 	dw vTiles2 tile $53, WriteTileToBuffer
 	dw wTileAnimBuffer, ScrollTileDown
 	dw wTileAnimBuffer, ScrollTileDown
@@ -161,8 +162,7 @@ UnusedTilesetAnim3: ; unreferenced
 	dw vTiles2 tile $53, WriteTileFromBuffer
 	dw NULL,  DoneTileAnimation
 
-UnusedTilesetAnim4: ; unreferenced
-; Scrolls tile $54 like a waterfall; scrolls tile $03 like cave water.
+UnusedTilesetAnim_fc1af:
 	dw vTiles2 tile $54, WriteTileToBuffer
 	dw wTileAnimBuffer, ScrollTileDown
 	dw wTileAnimBuffer, ScrollTileDown
@@ -222,16 +222,16 @@ TilesetIcePathAnim:
 	dw NULL,  DoneTileAnimation
 
 TilesetTowerAnim:
-	dw TowerPillarTilePointer9, AnimateTowerPillarTile
+	dw TowerPillarTilePointer9,  AnimateTowerPillarTile
 	dw TowerPillarTilePointer10, AnimateTowerPillarTile
-	dw TowerPillarTilePointer7, AnimateTowerPillarTile
-	dw TowerPillarTilePointer8, AnimateTowerPillarTile
-	dw TowerPillarTilePointer5, AnimateTowerPillarTile
-	dw TowerPillarTilePointer6, AnimateTowerPillarTile
-	dw TowerPillarTilePointer3, AnimateTowerPillarTile
-	dw TowerPillarTilePointer4, AnimateTowerPillarTile
-	dw TowerPillarTilePointer1, AnimateTowerPillarTile
-	dw TowerPillarTilePointer2, AnimateTowerPillarTile
+	dw TowerPillarTilePointer7,  AnimateTowerPillarTile
+	dw TowerPillarTilePointer8,  AnimateTowerPillarTile
+	dw TowerPillarTilePointer5,  AnimateTowerPillarTile
+	dw TowerPillarTilePointer6,  AnimateTowerPillarTile
+	dw TowerPillarTilePointer3,  AnimateTowerPillarTile
+	dw TowerPillarTilePointer4,  AnimateTowerPillarTile
+	dw TowerPillarTilePointer1,  AnimateTowerPillarTile
+	dw TowerPillarTilePointer2,  AnimateTowerPillarTile
 	dw NULL,  StandingTileFrame
 	dw NULL,  WaitTileAnimation
 	dw NULL,  WaitTileAnimation
@@ -239,8 +239,7 @@ TilesetTowerAnim:
 	dw NULL,  WaitTileAnimation
 	dw NULL,  DoneTileAnimation
 
-UnusedTilesetAnim5: ; unreferenced
-; Scrolls tile $4f like cave water.
+UnusedTilesetAnim_fc2bf:
 	dw vTiles2 tile $4f, WriteTileToBuffer
 	dw wTileAnimBuffer, ScrollTileRightLeft
 	dw vTiles2 tile $4f, WriteTileFromBuffer
@@ -266,6 +265,9 @@ TilesetTraditionalHouseAnim:
 TilesetTrainStationAnim:
 TilesetChampionsRoomAnim:
 TilesetLighthouseAnim:
+TilesetSSAnneAnim:
+TilesetSSAnneRooms1Anim:
+TilesetSSAnneRooms2Anim:
 TilesetPlayersRoomAnim:
 TilesetPokeComCenterAnim:
 TilesetBattleTowerInsideAnim:
@@ -668,6 +670,7 @@ FlowerTileFrames:
 	INCBIN "gfx/tilesets/flower/cgb_2.2bpp"
 
 LavaBubbleAnim1:
+; Splash in the bottom-right corner of the fountain.
 	ld hl, sp+0
 	ld b, h
 	ld c, l
@@ -687,6 +690,7 @@ LavaBubbleAnim1:
 	jp WriteTile
 
 LavaBubbleAnim2:
+; Splash in the top-left corner of the fountain.
 	ld hl, sp+0
 	ld b, h
 	ld c, l
@@ -935,7 +939,7 @@ FlickeringCaveEntrancePalette:
 	ret nz
 ; We only want to be here if we're in a dark cave.
 	ld a, [wTimeOfDayPalset]
-	cp DARKNESS_PALSET
+	cp %11111111 ; 3,3,3,3
 	ret nz
 
 	ldh a, [rSVBK]

@@ -416,6 +416,9 @@ INCBIN "data/tilesets/ssanne_captain_metatiles.bin"
 TilesetSSAnneCaptainColl::
 INCBIN "data/tilesets/ssanne_captain_collision.asm"
 
+
+SECTION "Tileset Data 11", ROMX
+
 TilesetSSAnneRooms1GFX::
 INCBIN "gfx/tilesets/ss_anne_rooms_1.2bpp.lz"
 

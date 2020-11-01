@@ -120,8 +120,23 @@ INCLUDE "gfx/tilesets/kanto_police_palette_map.asm"
 TilesetKantoPowerPalMap:
 INCLUDE "gfx/tilesets/kanto_power_palette_map.asm"
 
-TilesetKantoSandyPowerPalMap:
+TilesetKantoSandyPalMap:
 INCLUDE "gfx/tilesets/kanto_sandy_palette_map.asm"
+
+TilesetSSAnnePalMap:
+INCLUDE "gfx/tilesets/ss_anne_palette_map.asm"
+
+TilesetSSAnneRooms1PalMap:
+INCLUDE "gfx/tilesets/ss_anne_rooms_1_palette_map.asm"
+
+TilesetSSAnneRooms2PalMap:
+INCLUDE "gfx/tilesets/ss_anne_rooms_2_palette_map.asm"
+
+TilesetSSAnneCaptainPalMap:
+INCLUDE "gfx/tilesets/ssanne_captain_palette_map.asm"
+
+TilesetSSAnneDeckPalMap:
+INCLUDE "gfx/tilesets/ssanne_deck_palette_map.asm"
 
 MapGroupPalettes: ; unreferenced
 ; entries correspond to GROUP_* constants

@@ -55,7 +55,7 @@ Tilesets::
 	tileset TilesetKantoPower
 	tileset TilesetKantoSandy
 	tileset TilesetSSAnne
-	tileset TilesetSSAnneDeck
-	tileset TilesetSSAnneCaptain
 	tileset TilesetSSAnneRooms1
 	tileset TilesetSSAnneRooms2
+	tileset TilesetSSAnneCaptain
+	tileset TilesetSSAnneDeck
