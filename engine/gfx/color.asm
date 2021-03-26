@@ -13,35 +13,39 @@ CheckShininess:
 	ld h, b
 
 ; Attack
-	ld a, [hl]
-	and 1 << SHINY_ATK_BIT
-	jr z, .not_shiny
+    ld a, [hl]
+    and $f0
+    cp 1 << 4
+    jr z, .defense
+    cp 14 << 4
+    jr c, .NotShiny
 
 ; Defense
-	ld a, [hli]
-	and $f
-	cp  SHINY_DEF_VAL
-	jr nz, .not_shiny
+.defense
+    ld a, [hli]
+    and $f
+    cp 14
+    jr c, .NotShiny
 
 ; Speed
-	ld a, [hl]
-	and $f0
-	cp  SHINY_SPD_VAL << 4
-	jr nz, .not_shiny
+    ld a, [hl]
+    and $f0
+    cp 14 << 4
+    jr c, .NotShiny
 
 ; Special
-	ld a, [hl]
-	and $f
-	cp  SHINY_SPC_VAL
-	jr nz, .not_shiny
+    ld a, [hl]
+    and $f
+    cp 14
+    jr c, .NotShiny
 
-; shiny
-	scf
-	ret
+.Shiny:
+    scf
+    ret
 
-.not_shiny
-	and a
-	ret
+.NotShiny:
+    and a
+    ret
 
 Unused_CheckShininess:
 ; Return carry if the DVs at hl are all 10 or higher.
