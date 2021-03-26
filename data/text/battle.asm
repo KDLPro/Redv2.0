@@ -87,7 +87,7 @@ SandstormHitsText:
 PerishCountText:
 	text "<USER>'s"
 	line "PERISH count is @"
-	text_decimal wDeciramBuffer, 1, 1
+	text_decimal wTextDecimalByte, 1, 1
 	text "!"
 	prompt
 
@@ -199,7 +199,7 @@ SentAllToMomText:
 	text "Sent all to MOM!"
 	prompt
 
-BattleText_0x80a4f:
+UnusedRivalLossText: ; unreferenced
 	text "<RIVAL>: Huh? I"
 	line "should've chosen"
 	cont "your #MON!"
@@ -215,7 +215,7 @@ BattleText_UseNextMon:
 	text "Use next #MON?"
 	done
 
-BattleText_0x80a93:
+UnusedRivalWinText: ; unreferenced
 	text "<RIVAL>: Yes!"
 	line "I guess I chose a"
 	cont "good #MON!"
@@ -349,7 +349,7 @@ BattleText_StringBuffer1GrewToLevel:
 	sound_dex_fanfare_50_79
 	text_end
 
-	text_end ; unused
+	text_end ; unreferenced
 
 BattleText_WildMonIsEating:
 	text "Wild @"
@@ -670,7 +670,7 @@ SpiteEffectText:
 	text_ram wStringBuffer1
 	text " was"
 	cont "reduced by @"
-	text_decimal wDeciramBuffer, 1, 1
+	text_decimal wTextDecimalByte, 1, 1
 	text "!"
 	prompt
 
@@ -872,13 +872,15 @@ TransformedText:
 	prompt
 
 LightScreenEffectText:
-	text "<USER>'s"
-	line "SPCL.DEF rose!"
+	text "Light Screen"
+	line "boost the team's"
+	cont "Sp. Def!"
 	prompt
 
 ReflectEffectText:
-	text "<USER>'s"
-	line "DEFENSE rose!"
+	text "Light Screen"
+	line "boost the team's"
+	cont "Def!"
 	prompt
 
 NothingHappenedText:
@@ -1030,7 +1032,7 @@ SafeguardProtectText:
 
 MagnitudeText:
 	text "Magnitude @"
-	text_decimal wDeciramBuffer, 1, 1
+	text_decimal wTextDecimalByte, 1, 1
 	text "!"
 	prompt
 
@@ -1085,7 +1087,7 @@ BeatUpAttackText:
 	line "attack!"
 	done
 
-RefusedGiftText:
+PresentFailedText:
 	text "<TARGET>"
 	line "refused the gift!"
 	prompt
@@ -1102,7 +1104,7 @@ BattleText_LinkErrorBattleCanceled:
 	line "been canceled…"
 	prompt
 
-BattleText_0x8188e:
+BattleText_NoTimeLeftToday: ; unreferenced
 	text "There is no time"
 	line "left today!"
 	done

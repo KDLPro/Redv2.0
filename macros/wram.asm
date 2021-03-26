@@ -108,7 +108,8 @@ box: MACRO
 \1MonOT::           ds NAME_LENGTH * MONS_PER_BOX
 \1MonNicknames::    ds MON_NAME_LENGTH * MONS_PER_BOX
 \1MonNicknamesEnd::
-\1End::             ds 2 ; padding
+\1End::
+	ds 2 ; padding
 ENDM
 
 map_connection_struct: MACRO
@@ -230,8 +231,8 @@ hall_of_fame: MACRO
 ENDM
 
 link_battle_record: MACRO
-\1Name::   ds NAME_LENGTH - 1
 \1ID::     dw
+\1Name::   ds NAME_LENGTH - 1
 \1Wins::   dw
 \1Losses:: dw
 \1Draws::  dw
@@ -385,8 +386,8 @@ battle_anim_struct: MACRO
 ENDM
 
 battle_bg_effect: MACRO
-\1Function:: db
-\1Field01::  ds 1
-\1Field02::  ds 1
-\1Field03::  ds 1
+\1Function::       db
+\1JumptableIndex:: db
+\1BattleTurn::     db
+\1Param::          db
 ENDM

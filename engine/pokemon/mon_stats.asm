@@ -82,6 +82,121 @@ DrawHP:
 	pop de
 	ret
 
+PrintTempMonStatsDVs:
+; Print wTempMon's stats at hl, with spacing bc.
+	push bc
+	push hl
+	ld de, .StatNames
+	call PlaceString
+	pop hl
+	pop bc
+	add hl, bc
+	ld bc, SCREEN_WIDTH - 5
+	add hl, bc
+	 ; Attack DVs and stat
+	ld de, wTempMonAttack + 1
+	ld a, [de]
+	push af
+	ld a, [wTempMonDVs]
+    and $f0
+    swap a
+	ld [wTempMonAttack + 1], a
+	ld de, wTempMonAttack
+	lb bc, 2, 3
+	call .PrintDVs
+	pop af
+	ld [wTempMonAttack + 1], a
+	lb bc, 2, 3
+	ld de, wTempMonAttack
+	call .PrintStat
+	 ; Defense DVs and stat
+	ld de, wTempMonAttack + 1
+	ld a, [de]
+	push af
+	ld a, [wTempMonDVs]
+    and $f
+	ld [wTempMonAttack + 1], a
+	ld de, wTempMonAttack
+	lb bc, 2, 3
+	call .PrintDVs
+	pop af
+	ld [wTempMonAttack + 1], a
+	lb bc, 2, 3
+	ld de, wTempMonDefense
+	call .PrintStat
+	 ; Special DVs and Sp. Atk stat
+	ld de, wTempMonAttack + 1
+	ld a, [de]
+	push af
+	ld a, [wTempMonDVs + 1]
+    and $f
+	ld [wTempMonAttack + 1], a
+	ld de, wTempMonAttack
+	lb bc, 2, 3
+	call .PrintDVs
+	pop af
+	ld [wTempMonAttack + 1], a
+	lb bc, 2, 3
+	ld de, wTempMonSpclAtk
+	call .PrintStat
+	 ; Special DVs and Sp. Def stat
+	ld de, wTempMonAttack + 1
+	ld a, [de]
+	push af
+	ld a, [wTempMonDVs + 1]
+    and $f
+	ld [wTempMonAttack + 1], a
+	ld de, wTempMonAttack
+	lb bc, 2, 3
+	call .PrintDVs
+	pop af
+	ld [wTempMonAttack + 1], a
+	lb bc, 2, 3
+	ld de, wTempMonSpclDef
+	call .PrintStat
+	 ; Speed DVs and stat
+	ld de, wTempMonAttack + 1
+	ld a, [de]
+	push af
+	ld a, [wTempMonDVs + 1]
+    and $f0
+    swap a
+	ld [wTempMonAttack + 1], a
+	ld de, wTempMonAttack
+	lb bc, 2, 3
+	call .PrintDVs
+	pop af
+	ld [wTempMonAttack + 1], a
+	lb bc, 2, 3
+	ld de, wTempMonSpeed
+	jp PrintNum
+
+.PrintStat:
+	push hl
+	call PrintNum
+	pop hl
+	ld de, SCREEN_WIDTH
+	add hl, de
+	ld de, SCREEN_WIDTH - 5
+	add hl, de
+	ret
+	
+.PrintDVs:
+	push hl
+	call PrintNum
+	pop hl
+	ld de, 5
+	add hl, de
+	ret
+
+.StatNames:
+	db   "DVs  Atk"
+	next "DVs  Def"
+	next "DVs  SpA"
+	next "DVs  SpD"
+	next "DVs  Spe"
+	next "@"
+	
 PrintTempMonStats:
 ; Print wTempMon's stats at hl, with spacing bc.
 	push bc
@@ -114,11 +229,11 @@ PrintTempMonStats:
 	ret
 
 .StatNames:
-	db   "ATTACK"
-	next "DEFENSE"
-	next "SPCL.ATK"
-	next "SPCL.DEF"
-	next "SPEED"
+	db   "Atk"
+	next "Def"
+	next "Sp. Atk"
+	next "Sp. Def"
+	next "Spe"
 	next "@"
 
 GetGender:
@@ -242,9 +357,9 @@ ListMovePP:
 	sub c
 	ld b, a
 	push hl
-	ld a, [wBuffer1]
+	ld a, [wListMovesLineSpacing]
 	ld e, a
-	ld d, $0
+	ld d, 0
 	ld a, $3e ; P
 	call .load_loop
 	ld a, b
@@ -299,7 +414,7 @@ ListMovePP:
 	lb bc, 1, 2
 	call PrintNum
 	pop hl
-	ld a, [wBuffer1]
+	ld a, [wListMovesLineSpacing]
 	ld e, a
 	ld d, 0
 	add hl, de
@@ -323,7 +438,11 @@ ListMovePP:
 	jr nz, .load_loop
 	ret
 
-Function50cd0: ; unreferenced
+BrokenPlacePPUnits: ; unreferenced
+; Probably would have these parameters:
+; hl = starting coordinate
+; de = SCREEN_WIDTH or SCREEN_WIDTH * 2
+; c = the number of moves (1-4)
 .loop
 	ld [hl], $32 ; typo for P?
 	inc hl
@@ -350,7 +469,7 @@ Unused_PlaceEnemyHPLevel:
 	push hl
 	ld bc, -12
 	add hl, bc
-	ld b, $0
+	ld b, 0
 	call DrawEnemyHP
 	pop hl
 	ld bc, 5
@@ -363,6 +482,7 @@ Unused_PlaceEnemyHPLevel:
 	ret
 
 PlaceStatusString:
+; Return nz if the status is not OK
 	push de
 	inc de
 	inc de
@@ -377,7 +497,7 @@ PlaceStatusString:
 	ld de, FntString
 	call CopyStatusString
 	pop de
-	ld a, $1
+	ld a, TRUE
 	and a
 	ret
 
@@ -416,7 +536,7 @@ PlaceNonFaintStatus:
 
 .place
 	call CopyStatusString
-	ld a, $1
+	ld a, TRUE
 	and a
 
 .no_status
@@ -430,9 +550,9 @@ FrzString: db "FRZ@"
 ParString: db "PAR@"
 
 ListMoves:
-; List moves at hl, spaced every [wBuffer1] tiles.
+; List moves at hl, spaced every [wListMovesLineSpacing] tiles.
 	ld de, wListMoves_MoveIndicesBuffer
-	ld b, $0
+	ld b, 0
 .moves_loop
 	ld a, [de]
 	inc de
@@ -443,7 +563,7 @@ ListMoves:
 	push hl
 	ld [wCurSpecies], a
 	ld a, MOVE_NAME
-	ld [wNamedObjectTypeBuffer], a
+	ld [wNamedObjectType], a
 	call GetName
 	ld de, wStringBuffer1
 	pop hl
@@ -455,7 +575,7 @@ ListMoves:
 	inc b
 	pop hl
 	push bc
-	ld a, [wBuffer1]
+	ld a, [wListMovesLineSpacing]
 	ld c, a
 	ld b, 0
 	add hl, bc
@@ -471,7 +591,7 @@ ListMoves:
 .nonmove_loop
 	push af
 	ld [hl], "-"
-	ld a, [wBuffer1]
+	ld a, [wListMovesLineSpacing]
 	ld c, a
 	ld b, 0
 	add hl, bc

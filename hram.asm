@@ -31,7 +31,7 @@ hVBlank:: db
 hMapEntryMethod:: db
 
 hMenuReturn:: db
-hUnusedFFA1:: db
+hUnusedByte:: db
 
 hJoypadReleased:: db
 hJoypadPressed::  db
@@ -51,8 +51,8 @@ hGraphicStartTile:: db
 hMoveMon:: db
 
 UNION
-hMapObjectIndexBuffer:: db
-hObjectStructIndexBuffer:: db
+hMapObjectIndex:: db
+hObjectStructIndex:: db
 NEXTU
 hConnectionStripLength:: db
 hConnectedMapWidth:: db
@@ -88,8 +88,14 @@ NEXTU
 hPrintNumBuffer:: ds 10
 
 NEXTU
-; miscellaneous
-	ds 9
+; Mystery Gift
+hMGExchangedByte:: db
+hMGExchangedWord:: dw
+hMGNumBits:: db
+hMGChecksum:: dw
+	ds 1
+hMGUnusedMsgLength:: db
+hMGRole:: db
 hMGStatusFlags:: db
 ENDU
 

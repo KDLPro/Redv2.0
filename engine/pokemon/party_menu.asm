@@ -36,7 +36,7 @@ InitPartyMenuLayout:
 
 LoadPartyMenuGFX:
 	call LoadFontsBattleExtra
-	callfar InitPartyMenuPalettes ; engine/color.asm
+	callfar InitPartyMenuPalettes
 	callfar ClearSpriteAnims2
 	ret
 
@@ -135,7 +135,7 @@ PlacePartyHPBar:
 	ld hl, wHPPals
 	ld a, [wSGBPals]
 	ld c, a
-	ld b, $0
+	ld b, 0
 	add hl, bc
 	call SetHPPal
 	ld b, SCGB_PARTY_MENU_HP_BARS
@@ -590,7 +590,7 @@ InitPartyMenuGFX:
 	ret z
 	ld c, a
 	xor a
-	ldh [hObjectStructIndexBuffer], a
+	ldh [hObjectStructIndex], a
 .loop
 	push bc
 	push hl
@@ -598,9 +598,9 @@ InitPartyMenuGFX:
 	ld a, BANK(LoadMenuMonIcon)
 	ld e, MONICON_PARTYMENU
 	rst FarCall
-	ldh a, [hObjectStructIndexBuffer]
+	ldh a, [hObjectStructIndex]
 	inc a
-	ldh [hObjectStructIndexBuffer], a
+	ldh [hObjectStructIndex], a
 	pop hl
 	pop bc
 	dec c
@@ -682,7 +682,7 @@ PartyMenuSelect:
 	dec a
 	ld [wCurPartyMon], a
 	ld c, a
-	ld b, $0
+	ld b, 0
 	ld hl, wPartySpecies
 	add hl, bc
 	ld a, [hl]
@@ -715,7 +715,7 @@ PrintPartyMenuText:
 	and $f ; drop high nibble
 	ld hl, PartyMenuStrings
 	ld e, a
-	ld d, $0
+	ld d, 0
 	add hl, de
 	add hl, de
 	ld a, [hli]
@@ -758,12 +758,10 @@ TeachWhichPKMNString:
 MoveToWhereString:
 	db "Move to where?@"
 
-ChooseAFemalePKMNString:
-; unused
+ChooseAFemalePKMNString: ; unreferenced
 	db "Choose a ♀<PK><MN>.@"
 
-ChooseAMalePKMNString:
-; unused
+ChooseAMalePKMNString: ; unreferenced
 	db "Choose a ♂<PK><MN>.@"
 
 ToWhichPKMNString:

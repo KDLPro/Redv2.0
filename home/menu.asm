@@ -200,7 +200,7 @@ PlaceVerticalMenuItems::
 	ld a, [de]
 	ld c, a
 	inc de
-	ld b, $0
+	ld b, 0
 	add hl, bc
 	jp PlaceString
 
@@ -257,6 +257,7 @@ MenuBoxCoord2Tile::
 	ld c, a
 	ld a, [wMenuBorderTopCoord]
 	ld b, a
+	; fallthrough
 
 Coord2Tile::
 ; Return the address of wTilemap(c, b) in hl.
@@ -320,8 +321,8 @@ CopyMenuHeader::
 	ld [wMenuDataBank], a
 	ret
 
-StoreTo_wMenuCursorBuffer::
-	ld [wMenuCursorBuffer], a
+StoreMenuCursorPosition::
+	ld [wMenuCursorPosition], a
 	ret
 
 MenuTextbox::
@@ -330,7 +331,7 @@ MenuTextbox::
 	pop hl
 	jp PrintText
 
-; unused
+Menu_DummyFunction:: ; unreferenced
 	ret
 
 LoadMenuTextbox::
@@ -430,12 +431,12 @@ _YesNoBox::
 	ld hl, YesNoMenuHeader
 	call CopyMenuHeader
 	pop bc
-; This seems to be an overflow prevention, but
-; it was coded wrong.
+; This seems to be an overflow prevention,
+; but it was coded wrong.
 	ld a, b
-	cp SCREEN_WIDTH - 6
+	cp SCREEN_WIDTH - 1 - 5
 	jr nz, .okay ; should this be "jr nc"?
-	ld a, SCREEN_WIDTH - 6
+	ld a, SCREEN_WIDTH - 1 - 5
 	ld b, a
 
 .okay
@@ -678,12 +679,12 @@ ContinueGettingMenuJoypad:
 	call GetMenuIndexSet
 	ld a, [wMenuCursorY]
 	ld l, a
-	ld h, $0
+	ld h, 0
 	add hl, de
 	ld a, [hl]
 	ld [wMenuSelection], a
 	ld a, [wMenuCursorY]
-	ld [wMenuCursorBuffer], a
+	ld [wMenuCursorPosition], a
 	and a
 	ret
 
@@ -741,7 +742,7 @@ MenuJumptable::
 
 GetMenuDataPointerTableEntry::
 	ld e, a
-	ld d, $0
+	ld d, 0
 	ld hl, wMenuDataPointerTableAddr
 	ld a, [hli]
 	ld h, [hl]
@@ -828,19 +829,19 @@ _2DMenu::
 	ldh a, [hROMBank]
 	ld [wMenuData_2DMenuItemStringsBank], a
 	farcall _2DMenu_
-	ld a, [wMenuCursorBuffer]
+	ld a, [wMenuCursorPosition]
 	ret
 
 InterpretBattleMenu::
 	ldh a, [hROMBank]
 	ld [wMenuData_2DMenuItemStringsBank], a
 	farcall _InterpretBattleMenu
-	ld a, [wMenuCursorBuffer]
+	ld a, [wMenuCursorPosition]
 	ret
 
 InterpretMobileMenu:: ; unreferenced
 	ldh a, [hROMBank]
 	ld [wMenuData_2DMenuItemStringsBank], a
 	farcall _InterpretMobileMenu
-	ld a, [wMenuCursorBuffer]
+	ld a, [wMenuCursorPosition]
 	ret

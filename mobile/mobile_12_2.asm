@@ -235,12 +235,12 @@ Function4a94e:
 .asm_4a9b0
 	ld de, SFX_WRONG
 	call PlaySFX
-	ld hl, MobilePickThreeMonForBattle
+	ld hl, MobilePickThreeMonForBattleText
 	call PrintText
 	jr .asm_4a974
 
-MobilePickThreeMonForBattle:
-	text_far _MobilePickThreeMonForBattle
+MobilePickThreeMonForBattleText:
+	text_far _MobilePickThreeMonForBattleText
 	text_end
 
 Function4a9c3:
@@ -332,7 +332,7 @@ Function4aa34:
 	pop af
 	ret
 
-Function4aa6e:
+Function4aa6e: ; unreferenced
 	pop af
 	ld de, SFX_WRONG
 	call PlaySFX
@@ -422,15 +422,15 @@ Function4aad3:
 
 	ld c, a
 	xor a
-	ldh [hObjectStructIndexBuffer], a
+	ldh [hObjectStructIndex], a
 .loop
 	push bc
 	push hl
 	ld e, MONICON_PARTYMENU
 	farcall LoadMenuMonIcon
-	ldh a, [hObjectStructIndexBuffer]
+	ldh a, [hObjectStructIndex]
 	inc a
-	ldh [hObjectStructIndexBuffer], a
+	ldh [hObjectStructIndex], a
 	pop hl
 	pop bc
 	dec c
@@ -495,7 +495,7 @@ Function4ab1a:
 	dec a
 	ld [wCurPartyMon], a
 	ld c, a
-	ld b, $0
+	ld b, 0
 	ld hl, wPartySpecies
 	add hl, bc
 	ld a, [hl]
@@ -719,7 +719,7 @@ Function4acaa:
 	ld a, $b
 	ld [wMenuBorderLeftCoord], a
 	ld a, $1
-	ld [wMenuCursorBuffer], a
+	ld [wMenuCursorPosition], a
 	call InitVerticalMenuCursor
 	ld hl, w2DMenuFlags1
 	set 6, [hl]
@@ -803,7 +803,7 @@ Function4ad60:
 	farcall ManagePokemonMoves
 	ret
 
-Function4ad67:
+Function4ad67: ; unreferenced
 	ret
 
 Function4ad68:

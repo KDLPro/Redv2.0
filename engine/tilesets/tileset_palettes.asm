@@ -12,18 +12,6 @@ LoadSpecialMapPalette:
 	jr z, .radio_tower
 	cp TILESET_MANSION
 	jr z, .mansion_mobile
-	cp TILESET_MUSEUM
-	jr z, .museum
-	cp TILESET_SSANNE
-	jr z, .ss_anne
-	cp TILESET_SS_ANNE_ROOMS_1
-	jr z, .ss_anne_rooms_1
-	cp TILESET_SS_ANNE_ROOMS_2
-	jr z, .ss_anne_rooms_2
-	cp TILESET_SS_ANNE_CAPTAIN
-	jr z, .ss_anne_captain
-	cp TILESET_SS_ANNE_DECK
-	jr z, .ss_anne_deck
 	jr .do_nothing
 
 .pokecom_2f
@@ -57,36 +45,6 @@ LoadSpecialMapPalette:
 
 .mansion_mobile
 	call LoadMansionPalette
-	scf
-	ret
-	
-.museum
-	call LoadMuseumPalette
-	scf
-	ret
-	
-.ss_anne
-	call LoadSSAnnePalette
-	scf
-	ret
-	
-.ss_anne_rooms_1
-	call LoadSSAnneRooms1Palette
-	scf
-	ret
-	
-.ss_anne_rooms_2
-	call LoadSSAnneRooms2Palette
-	scf
-	ret
-	
-.ss_anne_captain
-	call LoadSSAnneCaptainPalette
-	scf
-	ret
-	
-.ss_anne_deck
-	call LoadSSAnneDeckPalette
 	scf
 	ret
 
@@ -148,72 +106,6 @@ LoadRadioTowerPalette:
 
 RadioTowerPalette:
 INCLUDE "gfx/tilesets/radio_tower.pal"
-
-LoadMuseumPalette:
-	ld a, BANK(wBGPals1)
-	ld de, wBGPals1
-	ld hl, MuseumPalette
-	ld bc, 8 palettes
-	call FarCopyWRAM
-	ret
-
-MuseumPalette:
-INCLUDE "gfx/tilesets/museum.pal"
-
-LoadSSAnnePalette:
-	ld a, BANK(wBGPals1)
-	ld de, wBGPals1
-	ld hl, SSAnnePalette
-	ld bc, 8 palettes
-	call FarCopyWRAM
-	ret
-
-SSAnnePalette:
-INCLUDE "gfx/tilesets/ss_anne.pal"
-
-LoadSSAnneRooms1Palette:
-	ld a, BANK(wBGPals1)
-	ld de, wBGPals1
-	ld hl, SSAnneRooms1Palette
-	ld bc, 8 palettes
-	call FarCopyWRAM
-	ret
-
-SSAnneRooms1Palette:
-INCLUDE "gfx/tilesets/ss_anne_rooms_1.pal"
-
-LoadSSAnneRooms2Palette:
-	ld a, BANK(wBGPals1)
-	ld de, wBGPals1
-	ld hl, SSAnneRooms2Palette
-	ld bc, 8 palettes
-	call FarCopyWRAM
-	ret
-
-SSAnneRooms2Palette:
-INCLUDE "gfx/tilesets/ss_anne_rooms_2.pal"
-
-LoadSSAnneCaptainPalette:
-	ld a, BANK(wBGPals1)
-	ld de, wBGPals1
-	ld hl, SSAnneCaptainPalette
-	ld bc, 8 palettes
-	call FarCopyWRAM
-	ret
-
-SSAnneCaptainPalette:
-INCLUDE "gfx/tilesets/ssanne_captain.pal"
-
-LoadSSAnneDeckPalette:
-	ld a, BANK(wBGPals1)
-	ld de, wBGPals1
-	ld hl, SSAnneDeckPalette
-	ld bc, 8 palettes
-	call FarCopyWRAM
-	ret
-
-SSAnneDeckPalette:
-INCLUDE "gfx/tilesets/ssanne_deck.pal"
 
 MansionPalette1:
 INCLUDE "gfx/tilesets/mansion_1.pal"

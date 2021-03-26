@@ -36,17 +36,6 @@
 	const TILESET_KABUTO_WORD_ROOM     ; 22
 	const TILESET_OMANYTE_WORD_ROOM    ; 23
 	const TILESET_AERODACTYL_WORD_ROOM ; 24
-	const TILESET_MUSEUM			   ; 25
-	const TILESET_KANTO_DOJO		   ; 25
-	const TILESET_KANTO_POLICE		   ; 26
-	const TILESET_KANTO_POWER		   ; 27
-	const TILESET_KANTO_SANDY		   ; 28
-	const TILESET_SSANNE	  		   ; 29
-	const TILESET_SS_ANNE_ROOMS_1	   ; 2a
-	const TILESET_SS_ANNE_ROOMS_2	   ; 2b
-	const TILESET_SS_ANNE_CAPTAIN	   ; 2c
-	const TILESET_SS_ANNE_DECK   	   ; 2d
-	
 
 ; bg palette values (see gfx/tilesets/*_palette_map.asm)
 ; TilesetBGPalette indexes (see gfx/tilesets/bg_tiles.pal)

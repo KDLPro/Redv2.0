@@ -56,244 +56,246 @@ ROMX $0a
 ROMX $0b
 	"bankB"
 ROMX $0c
-	"Tileset Data 4"
-ROMX $0d
-	"Effect Commands"
-ROMX $0e
-	"Enemy Trainers"
+	"bankC"
 ROMX $0f
-	"Battle Core"
+	"Tileset Data 4"
 ROMX $10
-	"bank10"
-	"Evolutions and Attacks"
+	"Effect Commands"
 ROMX $11
-	"bank11"
+	"Enemy Trainers"
 ROMX $12
-	"Crystal Features 1"
+	"Battle Core"
 ROMX $13
 	"bank13"
+	"Evolutions and Attacks"
 ROMX $14
 	"bank14"
 ROMX $15
-	"Map Scripts 1"
+	"Crystal Features 1"
 ROMX $16
-	"Map Scripts 2"
+	"bank16"
 ROMX $17
-	"Map Scripts 3"
+	"bank17"
 ROMX $18
-	"Map Scripts 4"
+	"Map Scripts 1"
 ROMX $19
-	"Crystal Phone Text"
+	"Map Scripts 2"
 ROMX $1a
-	"Map Scripts 5"
+	"Map Scripts 3"
 ROMX $1b
-	"Map Scripts 6"
+	"Map Scripts 4"
 ROMX $1c
-	"Map Scripts 7"
+	"Crystal Phone Text"
 ROMX $1d
-	"Map Scripts 8"
+	"Map Scripts 5"
 ROMX $1e
-	"Map Scripts 9"
+	"Map Scripts 6"
 ROMX $1f
-	"Map Scripts 10"
+	"Map Scripts 7"
 ROMX $20
-	"bank20"
+	"Map Scripts 8"
 ROMX $21
-	"bank21"
+	"Map Scripts 9"
 ROMX $22
-	"Crystal Features 2"
+	"Map Scripts 10"
 ROMX $23
 	"bank23"
 ROMX $24
 	"bank24"
 ROMX $25
+	"Crystal Features 2"
+ROMX $26
+	"bank26"
+ROMX $27
+	"bank27"
+ROMX $28
 	"Maps"
 	"Events"
-ROMX $26
-	"Map Scripts 11"
-ROMX $27
-	"Map Scripts 12"
-ROMX $28
-	"Phone Scripts 1"
 ROMX $29
-	"Phone Text"
+	"Map Scripts 11"
 ROMX $2a
-	"Map Blocks 1"
+	"Map Scripts 12"
 ROMX $2b
-	"Map Blocks 2"
+	"Phone Scripts 1"
 ROMX $2c
-	"Map Blocks 3"
+	"Phone Text"
 ROMX $2d
-	"Tileset Data 5"
+	"Map Blocks 1"
 ROMX $2e
-	"bank2E"
+	"Map Blocks 2"
 ROMX $2f
-	"Phone Scripts 2"
+	"Map Blocks 3"
 ROMX $30
-	"Sprites 1"
+	"Tileset Data 5"
 ROMX $31
-	"Sprites 2"
+	"bank31"
 ROMX $32
-	"bank32"
+	"Phone Scripts 2"
 ROMX $33
+	"Sprites 1"
+ROMX $34
+	"Sprites 2"
+ROMX $35
+	"bank35"
+ROMX $36
 	"Move Animations"
 	"Extra Songs 2"
-ROMX $34
+ROMX $37
 	"Pic Animations 1"
-ROMX $35
+ROMX $38
 	"Pic Animations 2"
-ROMX $36
+ROMX $39
 	"Font Inversed"
 	"Pic Animations 3"
-ROMX $37
-	"Tileset Data 6"
-ROMX $38
-	"bank38"
-ROMX $39
-	"bank39"
 ROMX $3a
+	"Tileset Data 6"
+ROMX $3b
+	"bank3B"
+ROMX $3c
+	"bank3C"
+ROMX $3d
 	"Audio"
 	"Songs 1"
-ROMX $3b
+ROMX $3e
 	"Songs 2"
-ROMX $3c
+ROMX $3f
 	"Songs 3"
 	"Sound Effects"
 	"Cries"
-ROMX $3d
-	"Songs 4"
-ROMX $3e
-	"bank3E"
-ROMX $3f
-	"bank3F"
 ROMX $40
-	"mobile40"
+	"Songs 4"
 ROMX $41
 	"bank41"
 ROMX $42
+	"bank42"
+ROMX $43
+	"mobile40"
+ROMX $44
+	"bank44"
+ROMX $45
 	"mobile42"
 	"Intro Logo"
 	"Credits"
-ROMX $43
-	"Title"
-ROMX $44
-	"Mobile Adapter SDK"
-ROMX $45
-	"mobile45"
 ROMX $46
-	"mobile46"
+	"Title"
 ROMX $47
-	"Battle Tower"
+	"Mobile Adapter SDK"
 ROMX $48
+	"mobile45"
+ROMX $49
+	"mobile46"
+ROMX $4a
+	"Battle Tower"
+ROMX $4b
 	org $4000
 	"Pic Pointers"
 	"Pics 1"
-ROMX $49
+ROMX $4c
 	org $4000
 	"Unown Pic Pointers"
 	"Pics 2"
-ROMX $4a
+ROMX $4d
 	"Trainer Pic Pointers"
 	"Pics 3"
-ROMX $4b
-	"Pics 4"
-ROMX $4c
-	"Pics 5"
-ROMX $4d
-	"Pics 6"
 ROMX $4e
-	"Pics 7"
+	"Pics 4"
 ROMX $4f
-	"Pics 8"
+	"Pics 5"
 ROMX $50
-	"Pics 9"
+	"Pics 6"
 ROMX $51
-	"Pics 10"
+	"Pics 7"
 ROMX $52
-	"Pics 11"
+	"Pics 8"
 ROMX $53
-	"Pics 12"
+	"Pics 9"
 ROMX $54
-	"Pics 13"
+	"Pics 10"
 ROMX $55
-	"Pics 14"
+	"Pics 11"
 ROMX $56
-	"Pics 15"
+	"Pics 12"
 ROMX $57
-	"Pics 16"
+	"Pics 13"
 ROMX $58
-	"Pics 17"
+	"Pics 14"
 ROMX $59
-	"Pics 18"
+	"Pics 15"
 ROMX $5a
-	"Pics 19"
+	"Pics 16"
 ROMX $5b
+	"Pics 17"
+ROMX $5c
+	"Pics 18"
+ROMX $5d
+	"Pics 19"
+ROMX $5e
 	"bank5B"
 	"Pics 20"
-ROMX $5c
+ROMX $5f
 	"mobile5C"
 	"Pics 21"
-ROMX $5d
+ROMX $60
 	"Crystal Phone Text 2"
 	"Pics 22"
-ROMX $5e
+ROMX $61
 	"UpdateBattleHUDs"
 	"Songs 5"
 	"Crystal Sound Effects"
 	"mobile5E"
 	"Pics 23"
-ROMX $5f
+ROMX $62
 	"mobile5F"
 	"Pics 24"
-ROMX $60
+ROMX $63
 	"Map Scripts 13"
 	"Pokedex Entries 001-064"
-ROMX $61
-	"Map Scripts 14"
-ROMX $62
-	"Map Scripts 15"
-ROMX $63
-	"Map Scripts 16"
 ROMX $64
-	"Map Scripts 17"
+	"Map Scripts 14"
 ROMX $65
-	"Map Scripts 18"
+	"Map Scripts 15"
 ROMX $66
-	"Map Scripts 19"
+	"Map Scripts 16"
 ROMX $67
-	"Map Scripts 20"
+	"Map Scripts 17"
 ROMX $68
-	"Map Scripts 21"
+	"Map Scripts 18"
 ROMX $69
-	"Map Scripts 22"
+	"Map Scripts 19"
 ROMX $6a
-	"Map Scripts 23"
+	"Map Scripts 20"
 ROMX $6b
-	"Map Scripts 24"
+	"Map Scripts 21"
 ROMX $6c
+	"Map Scripts 22"
+ROMX $6d
+	"Map Scripts 23"
+ROMX $6e
+	"Map Scripts 24"
+ROMX $6f
 	"Phone Text 2"
 	"Map Scripts 25"
-ROMX $6d
-	"Special Phone Text"
-ROMX $6e
-	"Pokedex Entries 065-128"
-ROMX $6f
-	"Text 1"
 ROMX $70
-	"Text 2"
+	"Special Phone Text"
 ROMX $71
-	"Text 3"
+	"Pokedex Entries 065-128"
 ROMX $72
-	"Miscellaneous Text"
+	"Text 1"
 ROMX $73
-	"Pokedex Entries 129-192"
+	"Text 2"
 ROMX $74
-	"Pokedex Entries 193-251"
+	"Text 3"
+ROMX $75
+	"Miscellaneous Text"
+ROMX $76
+	"Pokedex Entries 129-192"
 ROMX $77
-	"bank77"
-	"Tileset Data 7"
-	"bank77_2"
+	"Pokedex Entries 193-251"
 ROMX $78
+	"bank78"
+	"Tileset Data 7"
+	"bank78_2"
+ROMX $7a
 	"Debug Room"
 	"Tileset Data 8"
 ROMX $7b
@@ -326,6 +328,8 @@ WRAMX 2
 	"Pic Animations"
 WRAMX 3
 	"Battle Tower RAM"
+WRAMX 4
+	"Surrounding Data"
 WRAMX 5
 	align 8
 	"GBC Video"

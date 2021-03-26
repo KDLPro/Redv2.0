@@ -477,7 +477,7 @@ Function1143f3:
 	ld a, b
 	add a
 	ld c, a
-	ld b, $0
+	ld b, 0
 	add hl, bc
 	ld a, [hli]
 	ld h, [hl]
@@ -1959,7 +1959,7 @@ Function114c0b:
 	jr z, .asm_114c24
 	jr .asm_114c18
 
-Function114c55:
+Function114c55: ; unreferenced
 	push bc
 	ld bc, $dc00
 	call Function115d80

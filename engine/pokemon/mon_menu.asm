@@ -26,7 +26,7 @@ TossItemFromPC:
 	push de
 	call PartyMonItemName
 	farcall _CheckTossableItem
-	ld a, [wItemAttributeParamBuffer]
+	ld a, [wItemAttributeValue]
 	and a
 	jr nz, .key_item
 	ld hl, .ItemsTossOutHowManyText
@@ -93,7 +93,7 @@ ItemsOakWarningText:
 
 PartyMonItemName:
 	ld a, [wCurItem]
-	ld [wNamedObjectIndexBuffer], a
+	ld [wNamedObjectIndex], a
 	call GetItemName
 	call CopyName1
 	ret
@@ -252,7 +252,7 @@ GiveTakePartyMonItem:
 	jr z, .next
 
 	call CheckTossableItem
-	ld a, [wItemAttributeParamBuffer]
+	ld a, [wItemAttributeValue]
 	and a
 	jr nz, .next
 
@@ -296,17 +296,17 @@ TryGiveItemToPartymon:
 	ret
 
 .already_holding_item
-	ld [wNamedObjectIndexBuffer], a
+	ld [wNamedObjectIndex], a
 	call GetItemName
 	ld hl, PokemonAskSwapItemText
 	call StartMenuYesNo
 	jr c, .abort
 
 	call GiveItemToPokemon
-	ld a, [wNamedObjectIndexBuffer]
+	ld a, [wNamedObjectIndex]
 	push af
 	ld a, [wCurItem]
-	ld [wNamedObjectIndexBuffer], a
+	ld [wNamedObjectIndex], a
 	pop af
 	ld [wCurItem], a
 	call ReceiveItemFromPokemon
@@ -314,13 +314,13 @@ TryGiveItemToPartymon:
 
 	ld hl, PokemonSwapItemText
 	call MenuTextboxBackup
-	ld a, [wNamedObjectIndexBuffer]
+	ld a, [wNamedObjectIndex]
 	ld [wCurItem], a
 	call GivePartyItem
 	ret
 
 .bag_full
-	ld a, [wNamedObjectIndexBuffer]
+	ld a, [wNamedObjectIndex]
 	ld [wCurItem], a
 	call ReceiveItemFromPokemon
 	ld hl, ItemStorageFullText
@@ -355,7 +355,7 @@ TakePartyItem:
 	farcall ItemIsMail
 	call GetPartyItemLocation
 	ld a, [hl]
-	ld [wNamedObjectIndexBuffer], a
+	ld [wNamedObjectIndex], a
 	ld [hl], NO_ITEM
 	call GetItemName
 	ld hl, PokemonTookItemText
@@ -427,13 +427,13 @@ GetPartyItemLocation:
 
 ReceiveItemFromPokemon:
 	ld a, 1
-	ld [wItemQuantityChangeBuffer], a
+	ld [wItemQuantityChange], a
 	ld hl, wNumItems
 	jp ReceiveItem
 
 GiveItemToPokemon:
 	ld a, 1
-	ld [wItemQuantityChangeBuffer], a
+	ld [wItemQuantityChange], a
 	ld hl, wNumItems
 	jp TossItem
 
@@ -899,7 +899,7 @@ MoveScreenLoop:
 
 .skip_joy
 	call PrepareToPlaceMoveData
-	ld a, [wMoveSwapBuffer]
+	ld a, [wSwappingMove]
 	and a
 	jr nz, .moving_move
 	call PlaceMoveData
@@ -920,21 +920,21 @@ MoveScreenLoop:
 .b_button
 	call PlayClickSFX
 	call WaitSFX
-	ld a, [wMoveSwapBuffer]
+	ld a, [wSwappingMove]
 	and a
 	jp z, .exit
 
-	ld a, [wMoveSwapBuffer]
+	ld a, [wSwappingMove]
 	ld [wMenuCursorY], a
 	xor a
-	ld [wMoveSwapBuffer], a
+	ld [wSwappingMove], a
 	hlcoord 1, 2
 	lb bc, 8, SCREEN_WIDTH - 2
 	call ClearBox
 	jp .loop
 
 .d_right
-	ld a, [wMoveSwapBuffer]
+	ld a, [wSwappingMove]
 	and a
 	jp nz, .joy_loop
 
@@ -949,7 +949,7 @@ MoveScreenLoop:
 	jp MoveScreenLoop
 
 .d_left
-	ld a, [wMoveSwapBuffer]
+	ld a, [wSwappingMove]
 	and a
 	jp nz, .joy_loop
 	ld a, [wCurPartyMon]
@@ -1000,11 +1000,11 @@ MoveScreenLoop:
 .a_button
 	call PlayClickSFX
 	call WaitSFX
-	ld a, [wMoveSwapBuffer]
+	ld a, [wSwappingMove]
 	and a
 	jr nz, .place_move
 	ld a, [wMenuCursorY]
-	ld [wMoveSwapBuffer], a
+	ld [wSwappingMove], a
 	call PlaceHollowCursor
 	jp .moving_move
 
@@ -1016,19 +1016,19 @@ MoveScreenLoop:
 	push hl
 	call .copy_move
 	pop hl
-	ld bc, $15
+	ld bc, wPartyMon1PP - wPartyMon1Moves
 	add hl, bc
 	call .copy_move
 	ld a, [wBattleMode]
 	jr z, .swap_moves
 	ld hl, wBattleMonMoves
-	ld bc, $20
+	ld bc, wBattleMonStructEnd - wBattleMon
 	ld a, [wCurPartyMon]
 	call AddNTimes
 	push hl
 	call .copy_move
 	pop hl
-	ld bc, 6
+	ld bc, wBattleMonPP - wBattleMonMoves
 	add hl, bc
 	call .copy_move
 
@@ -1052,15 +1052,15 @@ MoveScreenLoop:
 	ld a, [wMenuCursorY]
 	dec a
 	ld c, a
-	ld b, $0
+	ld b, 0
 	add hl, bc
 	ld d, h
 	ld e, l
 	pop hl
-	ld a, [wMoveSwapBuffer]
+	ld a, [wSwappingMove]
 	dec a
 	ld c, a
-	ld b, $0
+	ld b, 0
 	add hl, bc
 	ld a, [de]
 	ld b, [hl]
@@ -1071,7 +1071,7 @@ MoveScreenLoop:
 
 .exit
 	xor a
-	ld [wMoveSwapBuffer], a
+	ld [wSwappingMove], a
 	ld hl, w2DMenuFlags1
 	res 6, [hl]
 	call ClearSprites
@@ -1097,7 +1097,7 @@ SetUpMoveScreenBG:
 	farcall ClearSpriteAnims2
 	ld a, [wCurPartyMon]
 	ld e, a
-	ld d, $0
+	ld d, 0
 	ld hl, wPartySpecies
 	add hl, de
 	ld a, [hl]
@@ -1137,7 +1137,7 @@ SetUpMoveScreenBG:
 SetUpMoveList:
 	xor a
 	ldh [hBGMapMode], a
-	ld [wMoveSwapBuffer], a
+	ld [wSwappingMove], a
 	ld [wMonType], a
 	predef CopyMonToTempMon
 	ld hl, wTempMonMoves
@@ -1145,7 +1145,7 @@ SetUpMoveList:
 	ld bc, NUM_MOVES
 	call CopyBytes
 	ld a, SCREEN_WIDTH * 2
-	ld [wBuffer1], a
+	ld [wListMovesLineSpacing], a
 	hlcoord 2, 3
 	predef ListMoves
 	hlcoord 10, 4
@@ -1168,7 +1168,7 @@ PrepareToPlaceMoveData:
 	ld a, [wMenuCursorY]
 	dec a
 	ld c, a
-	ld b, $0
+	ld b, 0
 	add hl, bc
 	ld a, [hl]
 	ld [wCurSpecies], a
@@ -1202,8 +1202,8 @@ PlaceMoveData:
 	hlcoord 16, 12
 	cp 2
 	jr c, .no_power
-	ld [wDeciramBuffer], a
-	ld de, wDeciramBuffer
+	ld [wTextDecimalByte], a
+	ld de, wTextDecimalByte
 	lb bc, 1, 3
 	call PrintNum
 	jr .description

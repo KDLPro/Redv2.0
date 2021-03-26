@@ -103,7 +103,7 @@ Function115e2b:
 	ld a, [wc30b]
 	sla a
 	ld c, a
-	ld b, $0
+	ld b, 0
 	add hl, bc
 	ld a, [hli]
 	cp $ff
@@ -475,7 +475,7 @@ Function1161d5:
 	ld [wc319], a
 	ret
 
-MenuHeader_11628c:
+MenuHeader_11628c: ; unreferenced
 	db MENU_BACKUP_TILES ; flags
 	menu_coords 0, 6, SCREEN_WIDTH - 1, SCREEN_HEIGHT - 1
 	dw NULL

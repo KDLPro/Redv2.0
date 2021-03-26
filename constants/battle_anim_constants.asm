@@ -21,6 +21,9 @@
 BATTLEANIMSTRUCT_LENGTH EQU const_value
 NUM_ANIM_OBJECTS EQU 10 ; see wActiveAnimObjects
 
+; wBattleAnimTileDict size (see wram.asm)
+NUM_BATTLEANIMTILEDICT_ENTRIES EQU 5
+
 ; Start tile for battle animation graphics
 BATTLEANIM_BASE_TILE EQU 7 * 7  ; Maximum size of a pokemon picture
 
@@ -761,6 +764,7 @@ BATTLEANIM_BASE_TILE EQU 7 * 7  ; Maximum size of a pokemon picture
 	const ANIM_BG_WOBBLE_PLAYER
 	const ANIM_BG_WOBBLE_SCREEN
 
+; wBattleAnimTileDict keys (see wram.asm)
 ; AnimObjGFX indexes (see data/battle_anims/object_gfx.asm)
 	const_def 1
 	const ANIM_GFX_HIT
@@ -810,7 +814,7 @@ BATTLEANIM_BASE_TILE EQU 7 * 7  ; Maximum size of a pokemon picture
 	const BG_EFFECT_STRUCT_FUNCTION
 	const BG_EFFECT_STRUCT_JT_INDEX
 	const BG_EFFECT_STRUCT_BATTLE_TURN
-	const BG_EFFECT_STRUCT_03
+	const BG_EFFECT_STRUCT_PARAM
 BG_EFFECT_STRUCT_LENGTH EQU const_value
 NUM_BG_EFFECTS EQU 5 ; see wActiveBGEffects
 

@@ -25,76 +25,76 @@ OverworldLoop::
 
 DisableEvents:
 	xor a
-	ld [wScriptFlags3], a
+	ld [wScriptFlags2], a
 	ret
 
 EnableEvents::
 	ld a, $ff
-	ld [wScriptFlags3], a
+	ld [wScriptFlags2], a
 	ret
 
-CheckBit5_ScriptFlags3:
-	ld hl, wScriptFlags3
+CheckBit5_ScriptFlags2:
+	ld hl, wScriptFlags2
 	bit 5, [hl]
 	ret
 
-DisableWarpsConnxns:
-	ld hl, wScriptFlags3
+DisableWarpsConnxns: ; unreferenced
+	ld hl, wScriptFlags2
 	res 2, [hl]
 	ret
 
-DisableCoordEvents:
-	ld hl, wScriptFlags3
+DisableCoordEvents: ; unreferenced
+	ld hl, wScriptFlags2
 	res 1, [hl]
 	ret
 
-DisableStepCount:
-	ld hl, wScriptFlags3
+DisableStepCount: ; unreferenced
+	ld hl, wScriptFlags2
 	res 0, [hl]
 	ret
 
-DisableWildEncounters:
-	ld hl, wScriptFlags3
+DisableWildEncounters: ; unreferenced
+	ld hl, wScriptFlags2
 	res 4, [hl]
 	ret
 
-EnableWarpsConnxns:
-	ld hl, wScriptFlags3
+EnableWarpsConnxns: ; unreferenced
+	ld hl, wScriptFlags2
 	set 2, [hl]
 	ret
 
-EnableCoordEvents:
-	ld hl, wScriptFlags3
+EnableCoordEvents: ; unreferenced
+	ld hl, wScriptFlags2
 	set 1, [hl]
 	ret
 
-EnableStepCount:
-	ld hl, wScriptFlags3
+EnableStepCount: ; unreferenced
+	ld hl, wScriptFlags2
 	set 0, [hl]
 	ret
 
 EnableWildEncounters:
-	ld hl, wScriptFlags3
+	ld hl, wScriptFlags2
 	set 4, [hl]
 	ret
 
 CheckWarpConnxnScriptFlag:
-	ld hl, wScriptFlags3
+	ld hl, wScriptFlags2
 	bit 2, [hl]
 	ret
 
 CheckCoordEventScriptFlag:
-	ld hl, wScriptFlags3
+	ld hl, wScriptFlags2
 	bit 1, [hl]
 	ret
 
 CheckStepCountScriptFlag:
-	ld hl, wScriptFlags3
+	ld hl, wScriptFlags2
 	bit 0, [hl]
 	ret
 
 CheckWildEncountersScriptFlag:
-	ld hl, wScriptFlags3
+	ld hl, wScriptFlags2
 	bit 4, [hl]
 	ret
 
@@ -135,7 +135,7 @@ EnterMap:
 	ld [wMapStatus], a
 	ret
 
-UnusedWait30Frames:
+UnusedWait30Frames: ; unreferenced
 	ld c, 30
 	call DelayFrames
 	ret
@@ -204,7 +204,7 @@ HandleMapTimeAndJoypad:
 	ret
 
 HandleMapObjects:
-	farcall HandleNPCStep ; engine/map_objects.asm
+	farcall HandleNPCStep
 	farcall _HandlePlayerStep
 	call _CheckObjectEnteringVisibleRange
 	ret
@@ -248,7 +248,7 @@ PlayerEvents:
 	and a
 	ret nz
 
-	call Dummy_CheckScriptFlags3Bit5 ; This is a waste of time
+	call Dummy_CheckScriptFlags2Bit5 ; This is a waste of time
 
 	call CheckTrainerBattle_GetPlayerEvent
 	jr c, .ok
@@ -395,8 +395,8 @@ SetMinTwoStepWildEncounterCooldown:
 	ld [wWildEncounterCooldown], a
 	ret
 
-Dummy_CheckScriptFlags3Bit5:
-	call CheckBit5_ScriptFlags3
+Dummy_CheckScriptFlags2Bit5:
+	call CheckBit5_ScriptFlags2
 	ret z
 	call SetXYCompareFlags
 	ret
@@ -422,7 +422,7 @@ rept SCENE_SCRIPT_SIZE
 endr
 
 	call GetMapScriptsBank
-	call GetFarHalfword
+	call GetFarWord
 	call GetMapScriptsBank
 	call CallScript
 
@@ -480,8 +480,8 @@ CheckTimeEvents:
 	scf
 	ret
 
-.unused
-	ld a, 8
+.unused ; unreferenced
+	ld a, $8 ; ???
 	scf
 	ret
 
@@ -540,7 +540,7 @@ TryObjectEvent:
 
 .IsObject:
 	call PlayTalkObject
-	ldh a, [hObjectStructIndexBuffer]
+	ldh a, [hObjectStructIndex]
 	call GetObjectStruct
 	ld hl, OBJECT_MAP_OBJECT_INDEX
 	add hl, bc
@@ -722,7 +722,7 @@ TryBGEvent:
 	inc hl
 	inc hl
 	call GetMapScriptsBank
-	call GetFarHalfword
+	call GetFarWord
 	call GetMapScriptsBank
 	call CallScript
 	scf
@@ -739,7 +739,7 @@ CheckBGEventFlag:
 	ld l, a
 	push hl
 	call GetMapScriptsBank
-	call GetFarHalfword
+	call GetFarWord
 	ld e, l
 	ld d, h
 	ld b, CHECK_FLAG
@@ -812,7 +812,7 @@ PlayerMovement:
 CheckMenuOW:
 	xor a
 	ldh [hMenuReturn], a
-	ldh [hUnusedFFA1], a
+	ldh [hUnusedByte], a
 	ldh a, [hJoyPressed]
 
 	bit SELECT_F, a
@@ -900,7 +900,7 @@ CountStep:
 	; Increase the EXP of (both) DayCare Pokemon by 1.
 	farcall DayCareStep
 
-	; Every four steps, deal damage to all Poisoned Pokemon
+	; Every 4 steps, deal damage to all poisoned Pokemon.
 	ld hl, wPoisonStepCount
 	ld a, [hl]
 	cp 4

@@ -1,5 +1,5 @@
 newgroup: MACRO
-const_value = const_value + 1
+	const_skip
 __map_value__ = 1
 ENDM
 
@@ -289,7 +289,7 @@ ENDM
 	newgroup                                                      ; 13
 
 	map_const ROUTE_1,                                     10, 18 ;  1
-	map_const PALLET_TOWN,                                 10,  9 ;  2
+	map_const PALLET_TOWN,                                 12, 15 ;  2
 	map_const REDS_HOUSE_1F,                                4,  4 ;  3
 	map_const REDS_HOUSE_2F,                                4,  4 ;  4
 	map_const BLUES_HOUSE,                                  4,  4 ;  5

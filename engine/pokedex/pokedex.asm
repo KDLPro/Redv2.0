@@ -91,7 +91,7 @@ InitPokedex:
 	ld [wJumptableIndex], a
 	ld [wPrevDexEntryJumptableIndex], a
 	ld [wPrevDexEntryBackup], a
-	ld [wcf66], a
+	ld [wUnusedPokedexByte], a
 
 	call Pokedex_CheckUnlockedUnownMode
 
@@ -374,7 +374,7 @@ Pokedex_UpdateDexEntryScreen:
 	ld a, [wLastVolume]
 	and a
 	jr z, .max_volume
-	ld a, $77
+	ld a, MAX_VOLUME
 	ld [wLastVolume], a
 
 .max_volume
@@ -513,7 +513,8 @@ Pokedex_InitOptionScreen:
 	call ClearSprites
 	call Pokedex_DrawOptionScreenBG
 	call Pokedex_InitArrowCursor
-	ld a, [wCurDexMode] ; Index of the topmost visible item in a scrolling menu ???
+	; point cursor to the current dex mode (modes == menu item indexes)
+	ld a, [wCurDexMode]
 	ld [wDexArrowCursorPosIndex], a
 	call Pokedex_DisplayModeDescription
 	call WaitBGMap
@@ -1166,12 +1167,12 @@ Pokedex_DrawDexEntryScreenBG:
 	call Pokedex_PlaceFrontpicTopLeftCorner
 	ret
 
-.Unused:
+.Number: ; unreferenced
 	db $5c, $5d, -1 ; No.
 .Height:
 	db "HT  ?", $5e, "??", $5f, -1 ; HT  ?'??"
 .Weight:
-	db "WT   ???lb", -1 ; WT   ???lb
+	db "WT   ???lb", -1
 .MenuItems:
 	db $3b, " PAGE AREA CRY PRNT", -1
 
@@ -1482,7 +1483,7 @@ Pokedex_PrintListing:
 ; Load de with wPokedexOrder + [wDexListingScrollOffset]
 	ld a, [wDexListingScrollOffset]
 	ld e, a
-	ld d, $0
+	ld d, 0
 	ld hl, wPokedexOrder
 	add hl, de
 	ld e, l
@@ -1492,7 +1493,8 @@ Pokedex_PrintListing:
 .loop
 	push af
 	ld a, [de]
-	ld [wTempSpecies], a ; also sets wNamedObjectIndexBuffer
+	ld [wTempSpecies], a ; also sets wNamedObjectIndex
+	assert wTempSpecies == wNamedObjectIndex
 	push de
 	push hl
 	call .PrintEntry
@@ -1581,7 +1583,7 @@ Pokedex_GetSelectedMon:
 	ld hl, wDexListingScrollOffset
 	add [hl]
 	ld e, a
-	ld d, $0
+	ld d, 0
 	ld hl, wPokedexOrder
 	add hl, de
 	ld a, [hl]
@@ -2480,6 +2482,7 @@ Pokedex_LoadUnownFont:
 	ld a, BANK(sScratch)
 	call OpenSRAM
 	ld hl, UnownFont
+	; sScratch + $188 was the address of sDecompressBuffer in pokegold
 	ld de, sScratch + $188
 	ld bc, 39 tiles
 	ld a, BANK(UnownFont)

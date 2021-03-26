@@ -331,7 +331,7 @@ Function118284:
 	call BattleTowerRoomMenu_Cleanup
 	ret
 
-Function1182d5:
+Function1182d5: ; unreferenced
 	call BattleTowerRoomMenu_InitRAM
 	ld a, $18
 	ld [wcd33], a
@@ -1039,7 +1039,7 @@ Function118880:
 	ld a, $2
 	jp Function119e2b
 
-Function118896:
+Function118896: ; unreferenced
 	ld a, [wc821]
 	bit 1, a
 	jr nz, .asm_1188a5
@@ -1302,7 +1302,7 @@ BattleTowerRoomMenu_UpdatePickLevelMenu:
 	ld [wMobileInactivityTimerFrames], a
 	ret
 
-Function118a54:
+Function118a54: ; unreferenced
 	ld a, [wcd55]
 	ld l, a
 	ld a, [wcd56]
@@ -1311,7 +1311,7 @@ Function118a54:
 	ld bc, $0004
 	jp Function118ae4
 
-Function118a65:
+Function118a65: ; unreferenced
 	ld hl, BattleDownloadURL
 	ld de, wcc60
 	ld bc, $80
@@ -3530,7 +3530,7 @@ setcharmap ascii
 XGameCode:
 	db "CGB-BXTJ-00", $0
 
-XGameResult:
+XGameResult: ; unreferenced
 	db "pokemon_crystal", $0
 
 popc
@@ -3861,7 +3861,7 @@ MenuHeader_119cf7:
 	dw NULL
 	db 0 ; default option
 
-MenuData_119cff:
+MenuData_119cff: ; unreferenced
 	db MENU_BACKUP_TILES ; flags
 	menu_coords 15, 7, SCREEN_WIDTH - 1, TEXTBOX_Y - 1
 	dw NULL
@@ -3979,7 +3979,7 @@ BattleTower_UbersCheck:
 .uber_under_70
 	pop af
 	ld a, [de]
-	ld [wNamedObjectIndexBuffer], a
+	ld [wNamedObjectIndex], a
 	call GetPokemonName
 	ld hl, wStringBuffer1
 	ld de, wcd49
@@ -4627,7 +4627,7 @@ String_11a2cf:
 String_11a2d3:
 	db "NO@"
 
-MenuHeader_11a2d6:
+MenuHeader_11a2d6: ; unreferenced
 	db MENU_BACKUP_TILES ; flags
 	menu_coords 14, 6, SCREEN_WIDTH - 1, 10
 	dw NULL
@@ -5151,7 +5151,7 @@ String_11a7d7:
 String_11a7f4:
 	db   "　　　　　　　　　　　　　　　@"
 
-MenuHeader_11a804:
+MenuHeader_11a804: ; unreferenced
 	db MENU_BACKUP_TILES ; flags
 	menu_coords 0, 0, SCREEN_WIDTH - 1, 5
 	dw NULL
@@ -5402,7 +5402,7 @@ Function11a9f0:
 	and a
 	ret
 
-Function11a9f4:
+Function11a9f4: ; unreferenced
 	ld a, [wcd8a]
 	ld l, a
 	ld a, [wcd8b]
@@ -5443,12 +5443,12 @@ Text_QuitReadingNews:
 	text "Quit reading NEWS?"
 	done
 
-Text_CanceledSendingSaveFile:
+Text_CanceledSendingSaveFile: ; unreferenced
 	text "Canceled sending"
 	line "SAVE FILE."
 	done
 
-Text_ReceivedOddEgg:
+Text_ReceivedOddEgg: ; unreferenced
 	text "ODD EGG"
 	line "was received!"
 	done
@@ -5458,7 +5458,7 @@ Text_RegisteringRecord:
 	line "record…"
 	done
 
-Text_BattleRoomVisitLimit:
+Text_BattleRoomVisitLimit: ; unreferenced
 	text "One visit per day"
 	line "per BATTLE ROOM!"
 	done
@@ -5487,7 +5487,7 @@ Text_ExitGymLeaderHonorRoll:
 	line "HONOR ROLL?"
 	done
 
-Text_LinkingWithCenter:
+Text_LinkingWithCenter: ; unreferenced
 	text "Linking with the"
 	line "CENTER…"
 	done
@@ -5502,16 +5502,16 @@ Text_CheckBattleRoomListByMaxLevel:
 	line "list by max level?"
 	done
 
-Text_EnterWhichBattleRoom:
+Text_EnterWhichBattleRoom: ; unreferenced
 	text "Enter which"
 	line "BATTLE ROOM?"
 	done
 
-Text_WhichBattleRoom:
+Text_WhichBattleRoom: ; unreferenced
 	text "Which BATTLE ROOM?"
 	done
 
-Text_ThisBattleRoomPleaseWait:
+Text_ThisBattleRoomPleaseWait: ; unreferenced
 	text_ram wStringBuffer3
 	text "'s ROOM"
 	line "@"
@@ -5580,7 +5580,7 @@ Function11acb7:
 	ld hl, TilemapPack_11ba44
 	ld a, [wcd49]
 	ld c, a
-	ld b, $0
+	ld b, 0
 	sla c
 	rl b
 	sla c
@@ -5606,7 +5606,7 @@ Function11acb7:
 	ld hl, TilemapPack_11bb7d
 	ld a, [wcd4a]
 	ld c, a
-	ld b, $0
+	ld b, 0
 	sla c
 	rl b
 	sla c
@@ -5636,7 +5636,7 @@ Function11ad1b:
 	ld a, [wMenuCursorY]
 	ld [wcd82], a
 	dec a
-	ldh [hObjectStructIndexBuffer], a
+	ldh [hObjectStructIndex], a
 	ld a, $10
 	ld [wCurIconTile], a
 	ld hl, LoadMenuMonIcon
@@ -6134,7 +6134,7 @@ Function11b099:
 	call Function11b236
 	ld a, [wc7d0]
 	ld e, a
-	ld d, $0
+	ld d, 0
 	ld hl, wPokedexOrder
 	add hl, de
 	ld e, l
@@ -6379,28 +6379,28 @@ Function11b175:
 	scf
 	ret
 
-Function11b1f7:
+FillScreenWithTile32: ; unreferenced
 	hlcoord 0, 0
 	ld a, $32
 	ld bc, SCREEN_WIDTH * SCREEN_HEIGHT
 	call ByteFill
 	ret
 
-Function11b203:
-.asm_11b203
+CopyDataUntilFF: ; unreferenced
+.loop
 	ld a, [de]
 	cp $ff
 	ret z
 	inc de
 	ld [hli], a
-	jr .asm_11b203
+	jr .loop
 
 Function11b20b:
 	ld a, [wc7d1]
 	ld hl, wc7d0
 	add [hl]
 	ld e, a
-	ld d, $0
+	ld d, 0
 	ld hl, $c6d0
 	add hl, de
 	ld a, [hl]
@@ -6554,10 +6554,10 @@ Function11b295:
 	call PlaceString
 	ret
 
-String_11b2fe:
+String_11b2fe: ; unreferenced
 	db "あげる#@"
 
-String_11b303:
+String_11b303: ; unreferenced
 	db "ほしい#@"
 
 String_11b308:
@@ -7181,29 +7181,29 @@ Function11b6b4:
 	ld [$c709], a
 
 	ld a, LOW($c708) ; Species
-	ld [wMobileMonSpeciesPointerBuffer], a
+	ld [wMobileMonSpeciesPointer], a
 	ld a, HIGH($c708)
-	ld [wMobileMonSpeciesPointerBuffer + 1], a
+	ld [wMobileMonSpeciesPointer + 1], a
 
 	ld a, LOW($c60d) ; Partymon Struct
-	ld [wMobileMonStructurePointerBuffer], a
+	ld [wMobileMonStructPointer], a
 	ld a, HIGH($c60d)
-	ld [wMobileMonStructurePointerBuffer + 1], a
+	ld [wMobileMonStructPointer + 1], a
 
 	ld a, LOW($c63d) ; OT
-	ld [wMobileMonOTNamePointerBuffer], a
+	ld [wMobileMonOTNamePointer], a
 	ld a, HIGH($c63d)
-	ld [wMobileMonOTNamePointerBuffer + 1], a
+	ld [wMobileMonOTNamePointer + 1], a
 
 	ld a, LOW($c642) ; Nickname
-	ld [wMobileMonNicknamePointerBuffer], a
+	ld [wMobileMonNicknamePointer], a
 	ld a, HIGH($c642)
-	ld [wMobileMonNicknamePointerBuffer + 1], a
+	ld [wMobileMonNicknamePointer + 1], a
 
 	ld a, LOW($c647) ; Mail
-	ld [wMobileMonMailPointerBuffer], a
+	ld [wMobileMonMailPointer], a
 	ld a, HIGH($c647)
-	ld [wMobileMonMailPointerBuffer + 1], a
+	ld [wMobileMonMailPointer + 1], a
 
 	ld a, $46
 	ld [$c628], a
@@ -7483,29 +7483,29 @@ Function11b93b:
 	call CloseSRAM
 
 	ld a, LOW($c608)
-	ld [wMobileMonSpeciesPointerBuffer], a
+	ld [wMobileMonSpeciesPointer], a
 	ld a, HIGH($c608)
-	ld [wMobileMonSpeciesPointerBuffer + 1], a
+	ld [wMobileMonSpeciesPointer + 1], a
 
 	ld a, LOW($c611)
-	ld [wMobileMonStructurePointerBuffer], a
+	ld [wMobileMonStructPointer], a
 	ld a, HIGH($c611)
-	ld [wMobileMonStructurePointerBuffer + 1], a
+	ld [wMobileMonStructPointer + 1], a
 
 	ld a, LOW($c641)
-	ld [wMobileMonOTNamePointerBuffer], a
+	ld [wMobileMonOTNamePointer], a
 	ld a, HIGH($c641)
-	ld [wMobileMonOTNamePointerBuffer + 1], a
+	ld [wMobileMonOTNamePointer + 1], a
 
 	ld a, LOW($c646)
-	ld [wMobileMonNicknamePointerBuffer], a
+	ld [wMobileMonNicknamePointer], a
 	ld a, HIGH($c646)
-	ld [wMobileMonNicknamePointerBuffer + 1], a
+	ld [wMobileMonNicknamePointer + 1], a
 
 	ld a, LOW($c64b)
-	ld [wMobileMonMailPointerBuffer], a
+	ld [wMobileMonMailPointer], a
 	ld a, HIGH($c64b)
-	ld [wMobileMonMailPointerBuffer + 1], a
+	ld [wMobileMonMailPointer + 1], a
 	call AddMobileMonToParty
 	farcall SaveAfterLinkTrade
 	ret
@@ -7516,9 +7516,9 @@ AddMobileMonToParty:
 	ld e, a
 	inc [hl]
 
-	ld a, [wMobileMonSpeciesPointerBuffer]
+	ld a, [wMobileMonSpeciesPointer]
 	ld l, a
-	ld a, [wMobileMonSpeciesPointerBuffer + 1]
+	ld a, [wMobileMonSpeciesPointer + 1]
 	ld h, a
 	inc hl
 	ld bc, wPartySpecies
@@ -7538,7 +7538,7 @@ AddMobileMonToParty:
 	ld hl, wPartyMon1Species
 	ld bc, PARTYMON_STRUCT_LENGTH
 	ld a, e
-	ld [wMobileMonSpeciesBuffer], a
+	ld [wMobileMonSpecies], a
 .loop2
 	add hl, bc
 	dec a
@@ -7546,16 +7546,16 @@ AddMobileMonToParty:
 	jr nz, .loop2
 	ld e, l
 	ld d, h
-	ld a, [wMobileMonStructurePointerBuffer]
+	ld a, [wMobileMonStructPointer]
 	ld l, a
-	ld a, [wMobileMonStructurePointerBuffer + 1]
+	ld a, [wMobileMonStructPointer + 1]
 	ld h, a
 	ld bc, PARTYMON_STRUCT_LENGTH
 	call CopyBytes
 
 	ld hl, wPartyMonOT
 	ld bc, NAME_LENGTH
-	ld a, [wMobileMonSpeciesBuffer]
+	ld a, [wMobileMonSpecies]
 .loop3
 	add hl, bc
 	dec a
@@ -7563,9 +7563,9 @@ AddMobileMonToParty:
 	jr nz, .loop3
 	ld e, l
 	ld d, h
-	ld a, [wMobileMonOTNamePointerBuffer]
+	ld a, [wMobileMonOTNamePointer]
 	ld l, a
-	ld a, [wMobileMonOTNamePointerBuffer + 1]
+	ld a, [wMobileMonOTNamePointer + 1]
 	ld h, a
 	ld bc, MON_NAME_LENGTH - 1
 	call CopyBytes
@@ -7574,7 +7574,7 @@ AddMobileMonToParty:
 
 	ld hl, wPartyMonNicknames
 	ld bc, MON_NAME_LENGTH
-	ld a, [wMobileMonSpeciesBuffer]
+	ld a, [wMobileMonSpecies]
 .loop4
 	add hl, bc
 	dec a
@@ -7582,9 +7582,9 @@ AddMobileMonToParty:
 	jr nz, .loop4
 	ld e, l
 	ld d, h
-	ld a, [wMobileMonNicknamePointerBuffer]
+	ld a, [wMobileMonNicknamePointer]
 	ld l, a
-	ld a, [wMobileMonNicknamePointerBuffer + 1]
+	ld a, [wMobileMonNicknamePointer + 1]
 	ld h, a
 	ld bc, MON_NAME_LENGTH - 1
 	call CopyBytes
@@ -7593,7 +7593,7 @@ AddMobileMonToParty:
 
 	ld hl, sPartyMail
 	ld bc, MAIL_STRUCT_LENGTH
-	ld a, [wMobileMonSpeciesBuffer]
+	ld a, [wMobileMonSpecies]
 .loop5
 	add hl, bc
 	dec a
@@ -7603,9 +7603,9 @@ AddMobileMonToParty:
 	call OpenSRAM
 	ld e, l
 	ld d, h
-	ld a, [wMobileMonMailPointerBuffer]
+	ld a, [wMobileMonMailPointer]
 	ld l, a
-	ld a, [wMobileMonMailPointerBuffer + 1]
+	ld a, [wMobileMonMailPointer + 1]
 	ld h, a
 	ld bc, MAIL_STRUCT_LENGTH
 	call CopyBytes

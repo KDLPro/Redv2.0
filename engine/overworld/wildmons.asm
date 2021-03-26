@@ -28,7 +28,7 @@ LoadWildMonData:
 FindNest:
 ; Parameters:
 ; e: 0 = Johto, 1 = Kanto
-; wNamedObjectIndexBuffer: species
+; wNamedObjectIndex: species
 	hlcoord 0, 0
 	ld bc, SCREEN_WIDTH * SCREEN_HEIGHT
 	xor a
@@ -102,7 +102,7 @@ FindNest:
 	inc hl
 .ScanMapLoop:
 	push af
-	ld a, [wNamedObjectIndexBuffer]
+	ld a, [wNamedObjectIndex]
 	cp [hl]
 	jr z, .found
 	inc hl
@@ -144,7 +144,7 @@ FindNest:
 .RoamMon1:
 	ld a, [wRoamMon1Species]
 	ld b, a
-	ld a, [wNamedObjectIndexBuffer]
+	ld a, [wNamedObjectIndex]
 	cp b
 	ret nz
 	ld a, [wRoamMon1MapGroup]
@@ -160,7 +160,7 @@ FindNest:
 .RoamMon2:
 	ld a, [wRoamMon2Species]
 	ld b, a
-	ld a, [wNamedObjectIndexBuffer]
+	ld a, [wNamedObjectIndex]
 	cp b
 	ret nz
 	ld a, [wRoamMon2MapGroup]
@@ -279,12 +279,18 @@ ChooseWildEncounter:
 	ld b, a
 	ld h, d
 	ld l, e
+	call CheckOnWater
+	ld de, MaxLevelWater
+	jr z, .prob_bracket_loop
+	ld de, MaxLevelGrass
+	
 ; This next loop chooses which mon to load up.
 .prob_bracket_loop
 	ld a, [hli]
 	cp b
 	jr nc, .got_it
 	inc hl
+	inc de
 	jr .prob_bracket_loop
 
 .got_it
@@ -292,28 +298,31 @@ ChooseWildEncounter:
 	ld b, 0
 	pop hl
 	add hl, bc ; this selects our mon
+; Min Level
 	ld a, [hli]
 	ld b, a
-; If the Pokemon is encountered by surfing, we need to give the levels some variety.
-	call CheckOnWater
-	jr nz, .ok
-; Check if we buff the wild mon, and by how much.
+; Max Level
+    ld a, [de]
+; Min Level
+	ld d, b
+	ld b, a
+    cp 0
+    jr nz, .RandomLevel	
+; If min and max are the same.
+    ld a, d
+    jr .ok
+
+.RandomLevel:
+; Get a random level between the min and max.
+	ld c, a
+	inc c
 	call Random
-	cp 35 percent
-	jr c, .ok
-	inc b
-	cp 65 percent
-	jr c, .ok
-	inc b
-	cp 85 percent
-	jr c, .ok
-	inc b
-	cp 95 percent
-	jr c, .ok
-	inc b
+	ldh a, [hRandomAdd]
+	call SimpleDivide
+	add d
+	
 ; Store the level
 .ok
-	ld a, b
 	ld [wCurPartyLevel], a
 	ld b, [hl]
 	; ld a, b
@@ -822,7 +831,7 @@ RandomUnseenWildMon:
 	ld de, wStringBuffer1
 	call CopyName1
 	ld a, c
-	ld [wNamedObjectIndexBuffer], a
+	ld [wNamedObjectIndex], a
 	call GetPokemonName
 	ld hl, .JustSawSomeRareMonText
 	call PrintText
@@ -871,7 +880,7 @@ RandomPhoneWildMon:
 	add hl, bc
 	inc hl
 	ld a, [hl]
-	ld [wNamedObjectIndexBuffer], a
+	ld [wNamedObjectIndex], a
 	call GetPokemonName
 	ld hl, wStringBuffer1
 	ld de, wStringBuffer4
@@ -889,7 +898,7 @@ RandomPhoneMon:
 	add hl, bc
 	add hl, bc
 	ld a, BANK(TrainerGroups)
-	call GetFarHalfword
+	call GetFarWord
 
 .skip_trainer
 	dec e
@@ -954,7 +963,7 @@ RandomPhoneMon:
 	inc hl ; species
 	ld a, BANK(Trainers)
 	call GetFarByte
-	ld [wNamedObjectIndexBuffer], a
+	ld [wNamedObjectIndex], a
 	call GetPokemonName
 	ld hl, wStringBuffer1
 	ld de, wStringBuffer4

@@ -11,11 +11,7 @@ ENDM
 ; Design patterns
 
 jumptable: MACRO
-if !STRCMP("\2", "hl")
-	ld a, [hl]
-else
 	ld a, [\2]
-endc
 	ld e, a
 	ld d, 0
 	ld hl, \1
@@ -38,6 +34,7 @@ maskbits: MACRO
 ; 	maskbits 26
 ; 	cp 26
 ; 	jr nc, .loop
+	assert 0 < (\1) && (\1) <= $100, "bitmask must be 8-bit"
 x = 1
 rept 8
 if x + 1 < (\1)

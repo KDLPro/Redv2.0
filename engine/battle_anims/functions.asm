@@ -124,17 +124,17 @@ BattleAnimFunction_ThrowFromUserToTarget:
 	ld hl, BATTLEANIMSTRUCT_YCOORD
 	add hl, bc
 	dec [hl]
-	; Decrease ??? and hold onto its previous value (argument of the sine function)
+	; Decrease var1 and hold onto its previous value (argument of the sine function)
 	ld hl, BATTLEANIMSTRUCT_VAR1
 	add hl, bc
 	ld a, [hl]
 	dec [hl]
-	; Get ???, which is the amplitude of the sine function
+	; Get param (amplitude of the sine function)
 	ld hl, BATTLEANIMSTRUCT_PARAM
 	add hl, bc
 	ld d, [hl]
 	call BattleAnim_Sine
-	; Store the result in the Y offset
+	; Store the sine result in the Y offset
 	ld hl, BATTLEANIMSTRUCT_YOFFSET
 	add hl, bc
 	ld [hl], a
@@ -778,7 +778,7 @@ BattleAnimFunction_FireBlast:
 	call DeinitBattleAnimation
 	ret
 
-.one 
+.one
 	; Flame that moves upward
 	ld hl, BATTLEANIMSTRUCT_YOFFSET
 	add hl, bc
@@ -2145,13 +2145,13 @@ BattleAnimFunction_Egg:
 	call BattleAnim_IncAnonJumptableIndex ; jumps to three
 	ret
 
-.egg_bomb_done 
+.egg_bomb_done
 	; Increases jumptable index twice to four
 	call BattleAnim_IncAnonJumptableIndex
 	inc [hl]
 	ret
 
-.three 
+.three
 	; Waits in place
 	ld hl, BATTLEANIMSTRUCT_VAR2
 	add hl, bc
@@ -3387,7 +3387,7 @@ BattleAnimFunction_SkyAttack:
 	call DeinitBattleAnimation
 	ret
 
-.SkyAttack_CyclePalette: 
+.SkyAttack_CyclePalette:
 ; Cycles wOBP0 pallete
 	ld hl, BATTLEANIMSTRUCT_VAR2
 	add hl, bc
@@ -3396,7 +3396,7 @@ BattleAnimFunction_SkyAttack:
 	inc [hl]
 	srl a
 	ld e, a
-	ld d, $0
+	ld d, 0
 	ldh a, [hSGB]
 	and a
 	jr nz, .sgb
@@ -4299,14 +4299,14 @@ BattleAnim_Cosine_e:
 	ld e, a
 	ret
 
-BattleAnim_AbsSinePrecise:
+BattleAnim_AbsSinePrecise: ; unreferenced
 	ld a, e
 	call BattleAnim_Sine
 	ld e, l
 	ld d, h
 	ret
 
-BattleAnim_AbsCosinePrecise:
+BattleAnim_AbsCosinePrecise: ; unreferenced
 	ld a, e
 	call BattleAnim_Cosine
 	ld e, l

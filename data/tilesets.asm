@@ -1,8 +1,6 @@
 tileset: MACRO
-	dba \1GFX, \1Meta, \1Coll
+	dba \1GFX, \1Meta, \1Coll, \1Attr
 	dw \1Anim
-	dw NULL
-	dw \1PalMap
 ENDM
 
 ; Associated data:
@@ -49,13 +47,3 @@ Tilesets::
 	tileset TilesetKabutoWordRoom
 	tileset TilesetOmanyteWordRoom
 	tileset TilesetAerodactylWordRoom
-	tileset TilesetMuseum
-	tileset TilesetKantoDojo
-	tileset TilesetKantoPolice
-	tileset TilesetKantoPower
-	tileset TilesetKantoSandy
-	tileset TilesetSSAnne
-	tileset TilesetSSAnneRooms1
-	tileset TilesetSSAnneRooms2
-	tileset TilesetSSAnneCaptain
-	tileset TilesetSSAnneDeck

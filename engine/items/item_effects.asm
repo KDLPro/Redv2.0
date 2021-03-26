@@ -1,6 +1,6 @@
 _DoItemEffect::
 	ld a, [wCurItem]
-	ld [wNamedObjectIndexBuffer], a
+	ld [wNamedObjectIndex], a
 	call GetItemName
 	call CopyName1
 	ld a, 1
@@ -360,7 +360,7 @@ PokeBallEffect:
 
 .skip_hp_calc
 	ld b, a
-	ld [wBuffer1], a
+	ld [wFinalCatchRate], a
 	call Random
 
 	cp b
@@ -390,28 +390,28 @@ PokeBallEffect:
 	ld [wFXAnimID + 1], a
 	xor a
 	ldh [hBattleTurn], a
-	ld [wBuffer2], a
+	ld [wThrownBallWobbleCount], a
 	ld [wNumHits], a
 	predef PlayBattleAnim
 
 	ld a, [wWildMon]
 	and a
 	jr nz, .caught
-	ld a, [wBuffer2]
-	cp $1
+	ld a, [wThrownBallWobbleCount]
+	cp 1
 	ld hl, BallBrokeFreeText
 	jp z, .shake_and_break_free
-	cp $2
+	cp 2
 	ld hl, BallAppearedCaughtText
 	jp z, .shake_and_break_free
-	cp $3
+	cp 3
 	ld hl, BallAlmostHadItText
 	jp z, .shake_and_break_free
-	cp $4
+	cp 4
 	ld hl, BallSoCloseText
 	jp z, .shake_and_break_free
-.caught
 
+.caught
 	ld hl, wEnemyMonStatus
 	ld a, [hli]
 	push af
@@ -566,7 +566,7 @@ PokeBallEffect:
 	call PrintText
 
 	ld a, [wCurPartySpecies]
-	ld [wNamedObjectIndexBuffer], a
+	ld [wNamedObjectIndex], a
 	call GetPokemonName
 
 	call YesNoBox
@@ -626,7 +626,7 @@ PokeBallEffect:
 	call PrintText
 
 	ld a, [wCurPartySpecies]
-	ld [wNamedObjectIndexBuffer], a
+	ld [wNamedObjectIndex], a
 	call GetPokemonName
 
 	call YesNoBox
@@ -702,7 +702,7 @@ PokeBallEffect:
 .toss
 	ld hl, wNumItems
 	inc a
-	ld [wItemQuantityChangeBuffer], a
+	ld [wItemQuantityChange], a
 	jp TossItem
 
 .used_park_ball
@@ -751,7 +751,7 @@ GetPokedexEntryBank:
 	push hl
 	push de
 	ld a, [wEnemyMonSpecies]
-	; dec a
+	dec a
 	rlca
 	rlca
 	maskbits NUM_DEX_ENTRY_BANKS
@@ -771,11 +771,10 @@ GetPokedexEntryBank:
 	db BANK("Pokedex Entries 193-251")
 
 HeavyBallMultiplier:
-; subtract 20 from catch rate if weight < 102.4 kg
-; else add 0 to catch rate if weight < 204.8 kg
-; else add 20 to catch rate if weight < 307.2 kg
-; else add 30 to catch rate if weight < 409.6 kg
-; else add 40 to catch rate (never happens)
+; Less than 51.2kg: -20
+; 51.2kg - 102.4kg: +0
+; 102.4kg - 204.8kg: +20
+; Greater than 204.8kg: +30
 	ld a, [wEnemyMonSpecies]
 	ld hl, PokedexDataPointerTable
 	dec a
@@ -784,7 +783,7 @@ HeavyBallMultiplier:
 	add hl, de
 	add hl, de
 	ld a, BANK(PokedexDataPointerTable)
-	call GetFarHalfword
+	call GetFarWord
 
 .SkipText:
 	call GetPokedexEntryBank
@@ -797,7 +796,7 @@ HeavyBallMultiplier:
 	push bc
 	inc hl
 	inc hl
-	call GetFarHalfword
+	call GetFarWord
 
 	srl h
 	rr l
@@ -834,41 +833,40 @@ endr
 
 .compare
 	ld c, a
-	cp HIGH(1024) ; 102.4 kg
-	jr c, .lightmon
+    cp HIGH(512) ; 51.2 kg
+    jr c, .lightmon
 
-	ld hl, .WeightsTable
+    ld hl, .WeightsTable
 .lookup
-	ld a, c
-	cp [hl]
-	jr c, .heavymon
-	inc hl
-	inc hl
-	jr .lookup
+    ld a, c
+    cp [hl]
+    jr c, .heavymon
+    inc hl
+    inc hl
+    jr .lookup
 
 .heavymon
-	inc hl
-	ld a, b
-	add [hl]
-	ld b, a
-	ret nc
-	ld b, $ff
-	ret
+    inc hl
+    ld a, b
+    add [hl]
+    ld b, a
+    ret nc
+    ld b, $ff
+    ret
 
 .lightmon
-	ld a, b
-	sub 20
-	ld b, a
-	ret nc
-	ld b, $1
-	ret
+    ld a, b
+    sub 20
+    ld b, a
+    ret nc
+    ld b, $1
+    ret
 
 .WeightsTable:
 ; weight factor, boost
-	db HIGH(2048),   0
-	db HIGH(3072),  20
-	db HIGH(4096),  30
-	db HIGH(65280), 40
+    db HIGH(1024),   0
+    db HIGH(2048),  20
+    db HIGH(65280), 30
 
 LureBallMultiplier:
 ; multiply catch rate by 3 if this is a fishing rod battle
@@ -876,17 +874,21 @@ LureBallMultiplier:
 	cp BATTLETYPE_FISH
 	ret nz
 
-	ld a, b
-	add a
-	jr c, .max
+    ld a, b ; 1x
+    add a ;2x
+    jr c, .max
 
-	add b
-	jr nc, .done
+
+    add a; 4x
+    jr c, .max
+
+    add b ; 4x + 1x = 5x
+    jr nc, .done
 .max
-	ld a, $ff
+    ld a, $ff
 .done
-	ld b, a
-	ret
+    ld b, a
+    ret
 
 MoonBallMultiplier:
 ; This function is buggy.
@@ -901,7 +903,7 @@ MoonBallMultiplier:
 	add hl, bc
 	add hl, bc
 	ld a, BANK(EvosAttacksPointers)
-	call GetFarHalfword
+	call GetFarWord
 	pop bc
 
 	push bc
@@ -1062,14 +1064,13 @@ LevelBallMultiplier:
 	ld b, $ff
 	ret
 
-; These two texts were carried over from gen 1.
-; They are not used in gen 2, and are dummied out.
+; BallDodgedText and BallMissedText were used in Gen 1.
 
-BallDodgedText:
+BallDodgedText: ; unreferenced
 	text_far _BallDodgedText
 	text_end
 
-BallMissedText:
+BallMissedText: ; unreferenced
 	text_far _BallMissedText
 	text_end
 
@@ -1818,7 +1819,7 @@ ContinueRevive:
 	ld [hl], d
 	inc hl
 	ld [hl], e
-	jp LoadCurHPIntoBuffer5
+	jp LoadCurHPIntoBuffer3
 
 RestoreHealth:
 	ld a, MON_HP + 1
@@ -1830,7 +1831,7 @@ RestoreHealth:
 	adc d
 	ld [hl], a
 	jr c, .full_hp
-	call LoadCurHPIntoBuffer5
+	call LoadCurHPIntoBuffer3
 	ld a, MON_HP + 1
 	call GetPartyParamLocation
 	ld d, h
@@ -1863,21 +1864,21 @@ RemoveHP:
 	ld [hld], a
 	ld [hl], a
 .okay
-	call LoadCurHPIntoBuffer5
+	call LoadCurHPIntoBuffer3
 	ret
 
 IsMonFainted:
 	push de
-	call LoadMaxHPToBuffer1
-	call LoadCurHPToBuffer3
-	call LoadHPFromBuffer3
+	call LoadMaxHPIntoBuffer1
+	call LoadCurHPIntoBuffer2
+	call LoadHPFromBuffer2
 	ld a, d
 	or e
 	pop de
 	ret
 
 IsMonAtFullHealth:
-	call LoadHPFromBuffer3
+	call LoadHPFromBuffer2
 	ld h, d
 	ld l, e
 	call LoadHPFromBuffer1
@@ -1887,60 +1888,60 @@ IsMonAtFullHealth:
 	sbc d
 	ret
 
-LoadCurHPIntoBuffer5:
+LoadCurHPIntoBuffer3:
 	ld a, MON_HP
 	call GetPartyParamLocation
 	ld a, [hli]
-	ld [wBuffer6], a
+	ld [wHPBuffer3 + 1], a
 	ld a, [hl]
-	ld [wBuffer5], a
+	ld [wHPBuffer3], a
 	ret
 
-LoadHPIntoBuffer5:
+LoadHPIntoBuffer3: ; unreferenced
 	ld a, d
-	ld [wBuffer6], a
+	ld [wHPBuffer3 + 1], a
 	ld a, e
-	ld [wBuffer5], a
+	ld [wHPBuffer3], a
 	ret
 
-LoadHPFromBuffer5:
-	ld a, [wBuffer6]
+LoadHPFromBuffer3: ; unreferenced
+	ld a, [wHPBuffer3 + 1]
 	ld d, a
-	ld a, [wBuffer5]
+	ld a, [wHPBuffer3]
 	ld e, a
 	ret
 
-LoadCurHPToBuffer3:
+LoadCurHPIntoBuffer2:
 	ld a, MON_HP
 	call GetPartyParamLocation
 	ld a, [hli]
-	ld [wBuffer4], a
+	ld [wHPBuffer2 + 1], a
 	ld a, [hl]
-	ld [wBuffer3], a
+	ld [wHPBuffer2], a
 	ret
 
-LoadHPFromBuffer3:
-	ld a, [wBuffer4]
+LoadHPFromBuffer2:
+	ld a, [wHPBuffer2 + 1]
 	ld d, a
-	ld a, [wBuffer3]
+	ld a, [wHPBuffer2]
 	ld e, a
 	ret
 
-LoadMaxHPToBuffer1:
+LoadMaxHPIntoBuffer1:
 	push hl
 	ld a, MON_MAXHP
 	call GetPartyParamLocation
 	ld a, [hli]
-	ld [wBuffer2], a
+	ld [wHPBuffer1 + 1], a
 	ld a, [hl]
-	ld [wBuffer1], a
+	ld [wHPBuffer1], a
 	pop hl
 	ret
 
 LoadHPFromBuffer1:
-	ld a, [wBuffer2]
+	ld a, [wHPBuffer1 + 1]
 	ld d, a
-	ld a, [wBuffer1]
+	ld a, [wHPBuffer1]
 	ld e, a
 	ret
 
@@ -1966,6 +1967,28 @@ GetOneFifthMaxHP:
 GetHealingItemAmount:
 	push hl
 	ld a, [wCurItem]
+	cp GOLD_BERRY
+    jr nz, .not_gold_berry
+
+; If item is GOLD_BERRY, heal 25% HP.
+    ld a, MON_MAXHP
+    call GetPartyParamLocation
+    ld a, [hli]
+    ld d, a
+    ld e, [hl]
+
+; Divide MON_MAXHP by 4
+    srl d
+    rr e
+    srl d
+    rr e
+    ld a, d
+    or e      ; Check if the result was 0.
+    jr nz, .sitrus_berry_done
+    ld e, 1 ; If it was, convert it to 1.
+    jr .sitrus_berry_done
+
+.not_gold_berry
 	ld hl, HealingHPAmounts
 	ld d, a
 .next
@@ -1984,6 +2007,7 @@ GetHealingItemAmount:
 	ld e, [hl]
 	inc hl
 	ld d, [hl]
+.sitrus_berry_done
 	pop hl
 	ret
 
@@ -2167,11 +2191,12 @@ INCLUDE "data/items/x_stats.asm"
 PokeFluteEffect:
 	ld a, [wBattleMode]
 	and a
-	jr nz, .dummy
-.dummy
+	jr nz, .in_battle
+	; overworld flute code was dummied out here
 
+.in_battle
 	xor a
-	ld [wd002], a
+	ld [wPokeFluteCuredSleep], a
 
 	ld b, $ff ^ SLP
 
@@ -2194,7 +2219,7 @@ PokeFluteEffect:
 	and b
 	ld [hl], a
 
-	ld a, [wd002]
+	ld a, [wPokeFluteCuredSleep]
 	and a
 	ld hl, .PlayedFluteText
 	jp z, PrintText
@@ -2203,22 +2228,22 @@ PokeFluteEffect:
 
 	ld a, [wLowHealthAlarm]
 	and 1 << DANGER_ON_F
-	jr nz, .dummy2
-.dummy2
+	jr nz, .dummy
+	; more code was dummied out here
+.dummy
 	ld hl, .FluteWakeUpText
 	jp PrintText
 
 .CureSleep:
 	ld de, PARTYMON_STRUCT_LENGTH
 	ld c, PARTY_LENGTH
-
 .loop
 	ld a, [hl]
 	push af
 	and SLP
 	jr z, .not_asleep
-	ld a, 1
-	ld [wd002], a
+	ld a, TRUE
+	ld [wPokeFluteCuredSleep], a
 .not_asleep
 	pop af
 	and b
@@ -2291,7 +2316,7 @@ ItemfinderEffect:
 
 RestorePPEffect:
 	ld a, [wCurItem]
-	ld [wd002], a
+	ld [wTempRestorePPItem], a
 
 .loop
 	; Party Screen opens to choose on which mon to use the Item
@@ -2300,14 +2325,14 @@ RestorePPEffect:
 	jp c, PPRestoreItem_Cancel
 
 .loop2
-	ld a, [wd002]
+	ld a, [wTempRestorePPItem]
 	cp MAX_ELIXER
 	jp z, Elixer_RestorePPofAllMoves
 	cp ELIXER
 	jp z, Elixer_RestorePPofAllMoves
 
 	ld hl, RaiseThePPOfWhichMoveText
-	ld a, [wd002]
+	ld a, [wTempRestorePPItem]
 	cp PP_UP
 	jr z, .ppup
 	ld hl, RestoreThePPOfWhichMoveText
@@ -2333,12 +2358,12 @@ RestorePPEffect:
 
 	push hl
 	ld a, [hl]
-	ld [wNamedObjectIndexBuffer], a
+	ld [wNamedObjectIndex], a
 	call GetMoveName
 	call CopyName1
 	pop hl
 
-	ld a, [wd002]
+	ld a, [wTempRestorePPItem]
 	cp PP_UP
 	jp nz, Not_PP_Up
 
@@ -2353,7 +2378,6 @@ RestorePPEffect:
 	jr c, .do_ppup
 
 .CantUsePPUpOnSketch:
-.pp_is_maxed_out
 	ld hl, PPIsMaxedOutText
 	call PrintText
 	jr .loop2
@@ -2488,15 +2512,11 @@ RestorePP:
 	cp b
 	jr nc, .dont_restore
 
-	ld a, [wd002]
+	ld a, [wTempRestorePPItem]
 	cp MAX_ELIXER
 	jr z, .restore_all
 	cp MAX_ETHER
 	jr z, .restore_all
-
-	ld c, 5
-	cp MYSTERYBERRY
-	jr z, .restore_some
 
 	ld c, 10
 
@@ -2595,7 +2615,7 @@ UseItemText:
 UseDisposableItem:
 	ld hl, wNumItems
 	ld a, 1
-	ld [wItemQuantityChangeBuffer], a
+	ld [wItemQuantityChange], a
 	jp TossItem
 
 UseBallInTrainerBattle:
@@ -2650,16 +2670,17 @@ WontHaveAnyEffectMessage:
 	ld hl, ItemWontHaveEffectText
 	jr CantUseItemMessage
 
-BelongsToSomeoneElseMessage:
+BelongsToSomeoneElseMessage: ; unreferenced
 	ld hl, ItemBelongsToSomeoneElseText
 	jr CantUseItemMessage
 
-CyclingIsntAllowedMessage:
+CyclingIsntAllowedMessage: ; unreferenced
 	ld hl, NoCyclingText
 	jr CantUseItemMessage
 
-CantGetOnYourBikeMessage:
+CantGetOnYourBikeMessage: ; unreferenced
 	ld hl, ItemCantGetOnText
+	; fallthrough
 
 CantUseItemMessage:
 ; Item couldn't be used.
@@ -2711,11 +2732,11 @@ ItemUsedText:
 	text_far _ItemUsedText
 	text_end
 
-ItemGotOnText:
+ItemGotOnText: ; unreferenced
 	text_far _ItemGotOnText
 	text_end
 
-ItemGotOffText:
+ItemGotOffText: ; unreferenced
 	text_far _ItemGotOffText
 	text_end
 
@@ -2723,12 +2744,12 @@ ApplyPPUp:
 	ld a, MON_MOVES
 	call GetPartyParamLocation
 	push hl
-	ld de, wBuffer1
+	ld de, wPPUpPPBuffer
 	predef FillPP
 	pop hl
 	ld bc, MON_PP - MON_MOVES
 	add hl, bc
-	ld de, wBuffer1
+	ld de, wPPUpPPBuffer
 	ld b, 0
 .loop
 	inc b

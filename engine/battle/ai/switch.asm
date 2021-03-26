@@ -5,7 +5,7 @@ CheckPlayerMoveTypeMatchups:
 	push hl
 	push de
 	push bc
-	ld a, 10
+	ld a, BASE_AI_SWITCH_SCORE
 	ld [wEnemyAISwitchScore], a
 	ld hl, wPlayerUsedMoves
 	ld a, [hl]
@@ -30,14 +30,11 @@ CheckPlayerMoveTypeMatchups:
 	ld hl, wEnemyMonType
 	call CheckTypeMatchup
 	ld a, [wTypeMatchup]
-	cp EFFECTIVE + 1 ; 1.0 + 0.1
-	jr nc, .super_effective
-	and a
-	jr z, .next
-	cp EFFECTIVE ; 1.0
-	jr nc, .neutral
-
-.not_very_effective
+	cp EFFECTIVE
+	jr z, .neutral
+	jr c, .super_effective
+	
+; not very effective
 	ld a, e
 	cp 1 ; 0.1
 	jr nc, .next
@@ -49,7 +46,9 @@ CheckPlayerMoveTypeMatchups:
 	jr .next
 
 .super_effective
-	call .DecreaseScore
+	call .doubledown
+	call .doubledown
+	call .doubledown
 	pop hl
 	jr .done
 
@@ -67,97 +66,40 @@ CheckPlayerMoveTypeMatchups:
 	and a
 	jr nz, .done
 	call .IncreaseScore
-	jr .done
-
-.unknown_moves
-	ld a, [wBattleMonType1]
-	ld b, a
-	ld hl, wEnemyMonType1
-	call CheckTypeMatchup
-	ld a, [wTypeMatchup]
-	cp EFFECTIVE + 1 ; 1.0 + 0.1
-	jr c, .ok
-	call .DecreaseScore
-.ok
-	ld a, [wBattleMonType2]
-	cp b
-	jr z, .ok2
-	call CheckTypeMatchup
-	ld a, [wTypeMatchup]
-	cp EFFECTIVE + 1 ; 1.0 + 0.1
-	jr c, .ok2
-	call .DecreaseScore
-.ok2
 
 .done
-	call .CheckEnemyMoveMatchups
 	pop bc
 	pop de
 	pop hl
 	ret
 
-.CheckEnemyMoveMatchups:
-	ld de, wEnemyMonMoves
-	ld b, NUM_MOVES + 1
-	ld c, 0
-
-	ld a, [wTypeMatchup]
-	push af
-.loop2
-	dec b
-	jr z, .exit2
-
-	ld a, [de]
-	and a
-	jr z, .exit2
-
-	inc de
-	dec a
-	ld hl, Moves + MOVE_POWER
-	call GetMoveAttr
-	and a
-	jr z, .loop2
-
-	inc hl
-	call GetMoveByte
-	ld hl, wBattleMonType1
+.unknown_moves
+	ld a, [wBattleMonType1]
+	ld b, a
+	ld hl, wEnemyMonType
 	call CheckTypeMatchup
-
 	ld a, [wTypeMatchup]
-	; immune
-	and a
-	jr z, .loop2
-
-	; not very effective
-	inc c
 	cp EFFECTIVE
-	jr c, .loop2
-
-	; neutral
-	inc c
-	inc c
-	inc c
-	inc c
-	inc c
+	jr z, .ok
+	jr c, .se
+	call .IncreaseScore
+	jr .ok
+.se
+	call .DecreaseScore
+.ok
+	ld a, [wBattleMonType2]
+	cp b
+	jr z, .done
+	call CheckTypeMatchup
+	ld a, [wTypeMatchup]
 	cp EFFECTIVE
-	jr z, .loop2
-
-	; super effective
-	ld c, 100
-	jr .loop2
-
-.exit2
-	pop af
-	ld [wTypeMatchup], a
-
-	ld a, c
-	and a
-	jr z, .doubledown ; double down
-	cp 5
-	jr c, .DecreaseScore ; down
-	cp 100
-	ret c
-	jr .IncreaseScore ; up
+	jr z, .done
+	jr c, .se2
+	call .IncreaseScore
+	jr .done
+.se2
+	call .DecreaseScore
+	jr .done
 
 .doubledown
 	call .DecreaseScore
@@ -174,34 +116,129 @@ CheckPlayerMoveTypeMatchups:
 	ret
 
 CheckAbleToSwitch:
-	xor a
-	ld [wEnemySwitchMonParam], a
-	call FindAliveEnemyMons
-	ret c
+    xor a
+    ld [wEnemySwitchMonParam], a
+    call FindAliveEnemyMons
+    ret c
 
-	ld a, [wEnemySubStatus1]
-	bit SUBSTATUS_PERISH, a
-	jr z, .no_perish
+    ld hl, TrainerClassAttributes + TRNATTR_AI_ITEM_SWITCH
+    
+    ld a, [wTrainerClass]
+    dec a
+    ld bc, NUM_TRAINER_ATTRIBUTES
+    call AddNTimes
+    
+    ld a, BANK(TrainerClassAttributes)
+    call GetFarByte
+    bit SWITCH_OFTEN_F, a
+    jr nz, .checkstat
+    bit SWITCH_SOMETIMES_F, a
+    jr nz, .checkstat
+    jp	 .checkperish
+.checkstat
+	 ; Checks if Evasion is greater than 0
+	ld a, [wEnemyEvaLevel]
+    cp BASE_STAT_LEVEL + 1
+    ret nc
+	 ; Checks if Accuracy is below -1
+    ld a, [wEnemyAccLevel]
+    cp BASE_STAT_LEVEL - 1
+    jr c, .rollswitch
+    ld hl, wPlayerStatLevels
+    ld c, NUM_LEVEL_STATS - 1
+    ld b, 0
+	ld e, 0
+.checkplayerbuff  ; Check player's stat buffs
+	dec c
+	jr z, .checkpt2
+	ld a, [hli]
+	cp BASE_STAT_LEVEL
+	jr nc, .checkplayerbuff2
+	jr .checkplayerbuff
+.checkplayerbuff2
+	sub a, BASE_STAT_LEVEL
+	add b	 ; b holds the stat buffs
+	ld b, a
+	jr .checkplayerbuff
 
-	ld a, [wEnemyPerishCount]
-	cp 1
-	jr nz, .no_perish
-
-	; Perish count is 1
-
-	call FindAliveEnemyMons
-	call FindEnemyMonsWithAtLeastQuarterMaxHP
-	call FindEnemyMonsThatResistPlayer
-	call FindAliveEnemyMonsWithASuperEffectiveMove
-
+.checkpt2
+	ld hl, wEnemyStatLevels
+	ld c, 7
+.checkenemybuff	 ; Check AI's stat buffs
+	dec c
+	jr z, .cont_check
+	ld a, [hli]
+	cp BASE_STAT_LEVEL
+	jr nc, .checkenemybuff2
+	jr .checkenemybuff
+.checkenemybuff2
+	sub a, BASE_STAT_LEVEL
+	add e	 ; e holds the stat buffs
+	ld e, a
+	jr .checkenemybuff
+.cont_check
+	 ; Checks if AI has no boosts
 	ld a, e
+	cp 0
+	jr c, .cont_check_2
+	jr z, .cont_check_2
+	 ; Check if player has at least 2 stat buffs
+	ld a, b
 	cp 2
-	jr nz, .not_2
+	ret nc
+	 ; Otherwise, roll to check other clauses or not
+    call Random
+    cp 35 percent
+    ret c
+    jr .checkperish
+.cont_check_2 
+	 ; Check if AI has quarter HP or less
+	callfar AICheckEnemyQuarterHP
+	jr c, .check_other_stats
+	jp .smartcheck
+.check_other_stats
+	 ; Checks if non-spd stat (because of Curse) is below -2
+    ld a, [wEnemyAtkLevel]
+    cp BASE_STAT_LEVEL - 2
+    jr c, .rollswitch
+    ld a, [wEnemyDefLevel]
+    cp BASE_STAT_LEVEL - 2
+    jr c, .rollswitch
+    ld a, [wEnemySAtkLevel]
+    cp BASE_STAT_LEVEL - 2
+    jr c, .rollswitch
+    ld a, [wEnemySDefLevel]
+    cp BASE_STAT_LEVEL - 2
+    jr c, .rollswitch
+    jr .checkperish
+	
+.rollswitch
+    call Random
+    cp 65 percent
+    jr c, .switch
+    
+.checkperish
+    ld a, [wEnemySubStatus1]
+    bit SUBSTATUS_PERISH, a
+    jr z, .no_perish
 
-	ld a, [wEnemyAISwitchScore]
-	add $30 ; maximum chance
-	ld [wEnemySwitchMonParam], a
-	ret
+    ld a, [wEnemyPerishCount]
+    cp 1
+    jr nz, .no_perish
+
+.switch ; Try to switch
+    call FindAliveEnemyMons
+    call FindEnemyMonsWithAtLeastQuarterMaxHP
+    call FindEnemyMonsThatResistPlayer
+    call FindAliveEnemyMonsWithASuperEffectiveMove
+    ld a, e
+    cp 2
+    jr nz, .not_2
+
+    ld a, [wEnemyAISwitchScore]
+    add $30 ; maximum chance
+    ld [wEnemySwitchMonParam], a
+    ret
 
 .not_2
 	call FindAliveEnemyMons
@@ -213,7 +250,6 @@ CheckAbleToSwitch:
 	inc b
 	sla c
 	jr nc, .loop1
-
 	ld a, b
 	add $30 ; maximum chance
 	ld [wEnemySwitchMonParam], a
@@ -222,7 +258,7 @@ CheckAbleToSwitch:
 .no_perish
 	call CheckPlayerMoveTypeMatchups
 	ld a, [wEnemyAISwitchScore]
-	cp 11
+	cp 10
 	ret nc
 
 	ld a, [wLastPlayerCounterMove]
@@ -251,7 +287,7 @@ CheckAbleToSwitch:
 	ret nc
 
 	ld a, b
-	add $10
+	add $20
 	ld [wEnemySwitchMonParam], a
 	ret
 
@@ -268,26 +304,38 @@ CheckAbleToSwitch:
 	add c
 	ld [wEnemySwitchMonParam], a
 	ret
-
+	
 .no_last_counter_move
 	call CheckPlayerMoveTypeMatchups
 	ld a, [wEnemyAISwitchScore]
 	cp 10
 	ret nc
 
+	ld hl, TrainerClassAttributes + TRNATTR_AI_ITEM_SWITCH
+	ld a, [wTrainerClass]
+	dec a
+	ld bc, NUM_TRAINER_ATTRIBUTES
+	call AddNTimes
+	ld a, BANK(TrainerClassAttributes)
+	call GetFarByte
+	bit SWITCH_OFTEN_F, a
+	jr nz, .smartcheck
+	ret	
+ ; Switch check only for SWITCH_OFTEN AI
+.smartcheck:
+	call Random
+	cp 70 percent
+	ret c
 	call FindAliveEnemyMons
 	call FindEnemyMonsWithAtLeastQuarterMaxHP
 	call FindEnemyMonsThatResistPlayer
 	call FindAliveEnemyMonsWithASuperEffectiveMove
-
-	ld a, e
-	cp $2
-	ret nz
-
 	ld a, [wEnemyAISwitchScore]
-	add $10
-	ld [wEnemySwitchMonParam], a
-	ret
+	cp 10
+	ret c
+	cp $ff
+	ret z
+	jp .not_2
 
 FindAliveEnemyMons:
 	ld a, [wOTPartyCount]
@@ -356,7 +404,6 @@ FindEnemyMonsImmuneToLastCounterMove:
 
 	push hl
 	push bc
-
 	; If the Pokemon has at least 1 HP...
 	ld bc, MON_HP
 	add hl, bc
@@ -369,7 +416,6 @@ FindEnemyMonsImmuneToLastCounterMove:
 	ld a, [hl]
 	ld [wCurSpecies], a
 	call GetBaseData
-
 	; the player's last move is damaging...
 	ld a, [wLastPlayerCounterMove]
 	dec a
@@ -377,7 +423,6 @@ FindEnemyMonsImmuneToLastCounterMove:
 	call GetMoveAttr
 	and a
 	jr z, .next
-
 	; and the Pokemon is immune to it...
 	inc hl
 	call GetMoveByte
@@ -386,7 +431,6 @@ FindEnemyMonsImmuneToLastCounterMove:
 	ld a, [wTypeMatchup]
 	and a
 	jr nz, .next
-
 	; ... encourage that Pokemon.
 	ld a, [wEnemyAISwitchScore]
 	or c
@@ -436,7 +480,6 @@ FindAliveEnemyMonsWithASuperEffectiveMove:
 	and c
 	ld c, a
 	; fallthrough
-
 FindEnemyMonsWithASuperEffectiveMove:
 	ld a, -1
 	ld [wEnemyAISwitchScore], a

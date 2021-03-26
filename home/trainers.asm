@@ -116,7 +116,7 @@ LoadTrainer_continue::
 	ld hl, MAPOBJECT_SCRIPT_POINTER
 	add hl, bc
 	ld a, [wSeenTrainerBank]
-	call GetFarHalfword
+	call GetFarWord
 	ld de, wTempTrainer
 	ld bc, wTempTrainerEnd - wTempTrainer
 	ld a, [wSeenTrainerBank]
@@ -215,7 +215,7 @@ CheckTrainerFlag:: ; unreferenced
 	ld h, [hl]
 	ld l, a
 	call GetMapScriptsBank
-	call GetFarHalfword
+	call GetFarWord
 	ld d, h
 	ld e, l
 	push de
@@ -230,7 +230,8 @@ CheckTrainerFlag:: ; unreferenced
 PrintWinLossText::
 	ld a, [wBattleType]
 	cp BATTLETYPE_CANLOSE
-	jr .canlose ; ??????????
+	; code was probably dummied out here
+	jr .canlose
 
 ; unused
 	ld hl, wWinTextPointer

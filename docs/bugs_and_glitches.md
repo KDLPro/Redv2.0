@@ -37,6 +37,7 @@ Fixes in the [multi-player battle engine](#multi-player-battle-engine) category 
   - [Dragon Scale, not Dragon Fang, boosts Dragon-type moves](#dragon-scale-not-dragon-fang-boosts-dragon-type-moves)
   - [HP bar animation is slow for high HP](#hp-bar-animation-is-slow-for-high-hp)
   - [HP bar animation off-by-one error for low HP](#hp-bar-animation-off-by-one-error-for-low-hp)
+  - [Moves that do damage and increase your stats do not increase stats after a KO](#moves-that-do-damage-and-increase-your-stats-do-not-increase-stats-after-a-ko)
 - [Single-player battle engine](#single-player-battle-engine)
   - [A Transformed Pokémon can use Sketch and learn otherwise unobtainable moves](#a-transformed-pokémon-can-use-sketch-and-learn-otherwise-unobtainable-moves)
   - [Catching a Transformed Pokémon always catches a Ditto](#catching-a-transformed-pokémon-always-catches-a-ditto)
@@ -49,6 +50,8 @@ Fixes in the [multi-player battle engine](#multi-player-battle-engine) category 
   - [Heavy Ball uses wrong weight value for three Pokémon](#heavy-ball-uses-wrong-weight-value-for-three-pokémon)
   - [Glacier Badge may not boost Special Defense depending on the value of Special Attack](#glacier-badge-may-not-boost-special-defense-depending-on-the-value-of-special-attack)
   - ["Smart" AI encourages Mean Look if its own Pokémon is badly poisoned](#smart-ai-encourages-mean-look-if-its-own-pokémon-is-badly-poisoned)
+  - ["Smart" AI discourages Conversion2 after the first turn](#smart-ai-discourages-conversion2-after-the-first-turn)
+  - [AI does not discourage Future Sight when it's already been used](#ai-does-not-discourage-future-sight-when-its-already-been-used)
   - [AI makes a false assumption about `CheckTypeMatchup`](#ai-makes-a-false-assumption-about-checktypematchup)
   - [AI use of Full Heal or Full Restore does not cure Nightmare status](#ai-use-of-full-heal-or-full-restore-does-not-cure-nightmare-status)
   - [AI use of Full Heal does not cure confusion status](#ai-use-of-full-heal-does-not-cure-confusion-status)
@@ -83,6 +86,7 @@ Fixes in the [multi-player battle engine](#multi-player-battle-engine) category 
   - [Magikarp lengths can be miscalculated](#magikarp-lengths-can-be-miscalculated)
   - [`CheckOwnMon` only checks the first five letters of OT names](#checkownmon-only-checks-the-first-five-letters-of-ot-names)
   - [`CheckOwnMonAnywhere` does not check the Day-Care](#checkownmonanywhere-does-not-check-the-day-care)
+  - [The unused `phonecall` script command may crash](#the-unused-phonecall-script-command-may-crash)
 - [Internal engine routines](#internal-engine-routines)
   - [Saves corrupted by mid-save shutoff are not handled](#saves-corrupted-by-mid-save-shutoff-are-not-handled)
   - [`ScriptCall` can overflow `wScriptStack` and crash](#scriptcall-can-overflow-wscriptstack-and-crash)
@@ -560,7 +564,7 @@ This bug affects Attract, Curse, Foresight, Mean Look, Mimic, Nightmare, Spider 
 
 ```diff
  .got_mon
- 	ld a, [wd002]
+ 	ld a, [wCurBeatUpPartyMon]
  	ld hl, wPartyMonNicknames
  	call GetNick
  	ld a, MON_HP
@@ -568,7 +572,7 @@ This bug affects Attract, Curse, Foresight, Mean Look, Mimic, Nightmare, Spider 
  	ld a, [hli]
  	or [hl]
  	jp z, .beatup_fail ; fainted
- 	ld a, [wd002]
+ 	ld a, [wCurBeatUpPartyMon]
  	ld c, a
  	ld a, [wCurBattleMon]
 -	; BUG: this can desynchronize link battles
@@ -760,6 +764,48 @@ This bug existed for all battles in Gold and Silver, and was only fixed for sing
  	jr c, .done
  	inc b
  	jr .loop
+```
+
+### Moves that do damage and increase your stats do not increase stats after a KO
+
+`BattleCommand_CheckFaint` "ends the move effect if the opponent faints", and these moves attempt to raise the user's stats *after* `checkfaint`. Note that fixing this can lead to stats being increased at the end of battle, but will not have any negative effects.
+
+**Fix:** Edit [data/moves/effects.asm](https://github.com/pret/pokecrystal/blob/master/data/moves/effects.asm):
+
+```diff
+ DefenseUpHit:
+ 	...
+ 	criticaltext
+ 	supereffectivetext
++	defenseup
++	statupmessage
+ 	checkfaint
+ 	buildopponentrage
+-	defenseup
+-	statupmessage
+ 	endmove
+
+ AttackUpHit:
+ 	...
+ 	criticaltext
+ 	supereffectivetext
++	attackup
++	statupmessage
+ 	checkfaint
+ 	buildopponentrage
+-	attackup
+-	statupmessage
+ 	endmove
+
+ AllUpHit:
+ 	...
+ 	criticaltext
+ 	supereffectivetext
++	allstatsup
+ 	checkfaint
+ 	buildopponentrage
+-	allstatsup
+ 	endmove
 ```
 
 
@@ -1054,6 +1100,33 @@ As Pryce's dialog ("That BADGE will raise the SPECIAL stats of POKéMON.") impli
 ```
 
 
+### "Smart" AI discourages Conversion2 after the first turn
+
+**Fix:** Edit `AI_Smart_Conversion2` in [engine/battle/ai/scoring.asm](https://github.com/pret/pokecrystal/blob/master/engine/battle/ai/scoring.asm):
+
+```diff
+ AI_Smart_Conversion2:
+ 	ld a, [wLastPlayerMove]
+ 	and a
+-	jr nz, .discourage ; should be jr z
++	jr z, .discourage
+```
+
+
+### AI does not discourage Future Sight when it's already been used
+
+**Fix:** Edit `AI_Redundant` in [engine/battle/ai/redundant.asm](https://github.com/pret/pokecrystal/blob/master/engine/battle/ai/redundant.asm):
+
+```diff
+ .FutureSight:
+-	ld a, [wEnemyScreens]
+-	bit 5, a
++	ld a, [wEnemyFutureSightCount]
++	and a
+ 	ret
+```
+
+
 ### AI makes a false assumption about `CheckTypeMatchup`
 
 **Fix:** Edit `BattleCheckTypeMatchup` in [engine/battle/effect_commands.asm](https://github.com/pret/pokecrystal/blob/master/engine/battle/effect_commands.asm):
@@ -1313,7 +1386,7 @@ First, edit `UsedSurfScript` in [engine/events/overworld.asm](https://github.com
 
  	callasm .empty_fn ; empty function
 
- 	readmem wBuffer2
+ 	readmem wSurfingPlayerState
  	writevar VAR_MOVEMENT
 
  	special UpdatePlayerSprite
@@ -1750,7 +1823,7 @@ The exact cause of this bug is unknown.
  	ld de, wStringBuffer1
  	ld a, BANK("Evolutions and Attacks")
 -	ld bc, 10
-+	ld bc, wStringBuffer2 - wStringBuffer1
++	ld bc, STRING_BUFFER_LENGTH
  	call FarCopyBytes
 ```
 
@@ -2012,6 +2085,28 @@ This bug can prevent you from talking to Eusine in Celadon City or encountering 
 ```
 
 
+### The unused `phonecall` script command may crash
+
+The `phonecall` script command calls the `PhoneCall` routine, which calls the `BrokenPlaceFarString` routine; this switches banks without being in bank 0, so it would start running arbitrary data as code.
+
+**Fix:** Edit `PhoneCall.CallerTextboxWithName` in [engine/phone/phone.asm](https://github.com/pret/pokecrystal/blob/master/engine/phone/phone.asm):
+
+```diff
+-	ld a, [wPhoneScriptBank]
+-	ld b, a
+ 	ld a, [wPhoneCaller]
+ 	ld e, a
+ 	ld a, [wPhoneCaller + 1]
+ 	ld d, a
+-	call BrokenPlaceFarString
++	ld a, [wPhoneScriptBank]
++	call PlaceFarString
+ 	ret
+```
+
+You can also delete the now-unused `BrokenPlaceFarString` routine.
+
+
 ## Internal engine routines
 
 
@@ -2019,103 +2114,7 @@ This bug can prevent you from talking to Eusine in Celadon City or encountering 
 
 ([Video 1](https://www.youtube.com/watch?v=ukqtK0l6bu0), [Video 2](https://www.youtube.com/watch?v=c2zHd1BPtvc))
 
-**Fix:** Edit `MoveMonWOMail_InsertMon_SaveGame` and `_SaveGameData` in [engine/menus/save.asm](https://github.com/pret/pokecrystal/blob/master/engine/menus/save.asm):
-
-```diff
- MoveMonWOMail_InsertMon_SaveGame:
- 	...
- 	ld a, TRUE
- 	ld [wSaveFileExists], a
- 	farcall StageRTCTimeForSave
- 	farcall BackupMysteryGift
--	call ValidateSave
-+	call InvalidateSave
- 	call SaveOptions
- 	call SavePlayerData
- 	call SavePokemonData
- 	call SaveChecksum
--	call ValidateBackupSave
-+	call ValidateSave
-+	call InvalidateBackupSave
- 	call SaveBackupOptions
- 	call SaveBackupPlayerData
- 	call SaveBackupPokemonData
- 	call SaveBackupChecksum
-+	call ValidateBackupSave
- 	farcall BackupPartyMonMail
- 	farcall BackupMobileEventIndex
- 	farcall SaveRTC
- 	...
-```
-
-```diff
- _SaveGameData:
- 	...
- 	ld a, TRUE
- 	ld [wSaveFileExists], a
- 	farcall StageRTCTimeForSave
- 	farcall BackupMysteryGift
--	call ValidateSave
-+	call InvalidateSave
- 	call SaveOptions
- 	call SavePlayerData
- 	call SavePokemonData
- 	call SaveBox
- 	call SaveChecksum
--	call ValidateBackupSave
-+	call ValidateSave
-+	call InvalidateBackupSave
- 	call SaveBackupOptions
- 	call SaveBackupPlayerData
- 	call SaveBackupPokemonData
- 	call SaveBackupChecksum
-+	call ValidateBackupSave
- 	call UpdateStackTop
- 	farcall BackupPartyMonMail
- 	farcall BackupMobileEventIndex
- 	farcall SaveRTC
- 	...
-```
-
-Then create two new routines, `InvalidateSave` and `InvalidateBackupSave`:
-
-```diff
- ValidateSave:
- 	ld a, BANK(sCheckValue1) ; aka BANK(sCheckValue2)
- 	call OpenSRAM
- 	ld a, SAVE_CHECK_VALUE_1
- 	ld [sCheckValue1], a
- 	ld a, SAVE_CHECK_VALUE_2
- 	ld [sCheckValue2], a
- 	jp CloseSRAM
-
-+InvalidateSave:
-+	ld a, BANK(sCheckValue1) ; aka BANK(sCheckValue2)
-+	call OpenSRAM
-+	xor a
-+	ld [sCheckValue1], a
-+	ld [sCheckValue2], a
-+	jp CloseSRAM
-```
-
-```diff
- ValidateBackupSave:
- 	ld a, BANK(sBackupCheckValue1) ; aka BANK(sBackupCheckValue2)
- 	call OpenSRAM
- 	ld a, SAVE_CHECK_VALUE_1
- 	ld [sBackupCheckValue1], a
- 	ld a, SAVE_CHECK_VALUE_2
- 	ld [sBackupCheckValue2], a
- 	jp CloseSRAM
-
-+InvalidateBackupSave:
-+	ld a, BANK(sBackupCheckValue1) ; aka BANK(sBackupCheckValue2)
-+	call OpenSRAM
-+	xor a
-+	ld [sBackupCheckValue1], a
-+	ld [sBackupCheckValue2], a
-+	jp CloseSRAM
-```
+This does not have a simple and accurate fix. It would involve redesigning parts of the save system for Pokémon boxes.
 
 
 ### `ScriptCall` can overflow `wScriptStack` and crash

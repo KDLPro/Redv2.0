@@ -83,10 +83,14 @@ BattleCommand_Curse:
 	jp PrintButItFailed
 
 .cantraise
-
 ; Can't raise either stat.
 
-	ld b, ABILITY + 1
+	ld b, ATTACK + 1
+	call GetStatName
+	call AnimateFailedMove
+	ld hl, WontRiseAnymoreText
+	call StdBattleTextbox
+	ld b, DEFENSE + 1
 	call GetStatName
 	call AnimateFailedMove
 	ld hl, WontRiseAnymoreText

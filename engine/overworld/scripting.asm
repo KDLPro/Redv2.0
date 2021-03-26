@@ -34,7 +34,7 @@ WaitScript:
 	dec [hl]
 	ret nz
 
-	farcall Function58b9
+	farcall UnfreezeAllObjects
 
 	ld a, SCRIPT_READ
 	ld [wScriptMode], a
@@ -48,7 +48,7 @@ WaitScriptMovement:
 	bit 7, [hl]
 	ret nz
 
-	farcall Function58b9
+	farcall UnfreezeAllObjects
 
 	ld a, SCRIPT_READ
 	ld [wScriptMode], a
@@ -137,7 +137,7 @@ ScriptCommandTable:
 	dw Script_opentext                   ; 47
 	dw Script_refreshscreen              ; 48
 	dw Script_closetext                  ; 49
-	dw Script_writeunusedbytebuffer      ; 4a
+	dw Script_writeunusedbyte      ; 4a
 	dw Script_farwritetext               ; 4b
 	dw Script_writetext                  ; 4c
 	dw Script_repeattext                 ; 4d
@@ -434,7 +434,7 @@ Script__2dmenu:
 	ld a, [wScriptBank]
 	ld hl, _2DMenu
 	rst FarCall
-	ld a, [wMenuCursorBuffer]
+	ld a, [wMenuCursorPosition]
 	jr nc, .ok
 	xor a
 .ok
@@ -458,11 +458,11 @@ Script_verbosegiveitem:
 	ld de, GiveItemScript
 	jp ScriptCall
 
-ret_96f76:
+GiveItemScript_DummyFunction:
 	ret
 
 GiveItemScript:
-	callasm ret_96f76
+	callasm GiveItemScript_DummyFunction
 	writetext .ReceivedItemText
 	iffalse .Full
 	waitsfx
@@ -490,7 +490,7 @@ Script_verbosegiveitemvar:
 	call GetScriptByte
 	call GetVarAction
 	ld a, [de]
-	ld [wItemQuantityChangeBuffer], a
+	ld [wItemQuantityChange], a
 	ld hl, wNumItems
 	call ReceiveItem
 	ld a, TRUE
@@ -524,7 +524,7 @@ Script_pocketisfull:
 
 Script_specialsound:
 	farcall CheckItemPocket
-	ld a, [wItemAttributeParamBuffer]
+	ld a, [wItemAttributeValue]
 	cp TM_HM
 	ld de, SFX_GET_TM
 	jr z, .play
@@ -536,7 +536,7 @@ Script_specialsound:
 
 GetPocketName:
 	farcall CheckItemPocket
-	ld a, [wItemAttributeParamBuffer]
+	ld a, [wItemAttributeValue]
 	dec a
 	ld hl, ItemPocketNames
 	maskbits NUM_POCKETS
@@ -555,7 +555,7 @@ INCLUDE "data/items/pocket_names.asm"
 
 CurItemName:
 	ld a, [wCurItem]
-	ld [wNamedObjectIndexBuffer], a
+	ld [wNamedObjectIndex], a
 	call GetItemName
 	ret
 
@@ -812,11 +812,11 @@ Script_applymovement:
 ApplyMovement:
 	push bc
 	ld a, c
-	farcall SetFlagsForMovement_1
+	farcall FreezeAllOtherObjects
 	pop bc
 
 	push bc
-	call SetFlagsForMovement_2
+	call UnfreezeFollowerObject
 	pop bc
 
 	call GetScriptByte
@@ -833,8 +833,8 @@ ApplyMovement:
 	call StopScript
 	ret
 
-SetFlagsForMovement_2:
-	farcall _SetFlagsForMovement_2
+UnfreezeFollowerObject:
+	farcall _UnfreezeFollowerObject
 	ret
 
 Script_applymovementlasttalked:
@@ -951,7 +951,7 @@ ApplyObjectFacing:
 Script_variablesprite:
 	call GetScriptByte
 	ld e, a
-	ld d, $0
+	ld d, 0
 	ld hl, wVariableSprites
 	add hl, de
 	call GetScriptByte
@@ -962,7 +962,7 @@ Script_appear:
 	call GetScriptByte
 	call GetScriptObject
 	call UnmaskCopyMapObjectStruct
-	ldh a, [hMapObjectIndexBuffer]
+	ldh a, [hMapObjectIndex]
 	ld b, 0 ; clear
 	call ApplyEventActionAppearDisappear
 	ret
@@ -975,7 +975,7 @@ Script_disappear:
 	ldh a, [hLastTalked]
 .ok
 	call DeleteObjectStruct
-	ldh a, [hMapObjectIndexBuffer]
+	ldh a, [hMapObjectIndex]
 	ld b, 1 ; set
 	call ApplyEventActionAppearDisappear
 	farcall _UpdateSprites
@@ -1369,7 +1369,7 @@ StdScript:
 	ld b, a
 	inc hl
 	ld a, BANK(StdScripts)
-	call GetFarHalfword
+	call GetFarWord
 	ret
 
 SkipTwoScriptBytes:
@@ -1577,7 +1577,7 @@ Script_getmonname:
 	jr nz, .gotit
 	ld a, [wScriptVar]
 .gotit
-	ld [wNamedObjectIndexBuffer], a
+	ld [wNamedObjectIndex], a
 	call GetPokemonName
 	ld de, wStringBuffer1
 
@@ -1590,7 +1590,7 @@ GetStringBuffer:
 
 CopyConvertedText:
 	ld hl, wStringBuffer3
-	ld bc, wStringBuffer4 - wStringBuffer3
+	ld bc, STRING_BUFFER_LENGTH
 	call AddNTimes
 	call CopyName2
 	ret
@@ -1601,7 +1601,7 @@ Script_getitemname:
 	jr nz, .ok
 	ld a, [wScriptVar]
 .ok
-	ld [wNamedObjectIndexBuffer], a
+	ld [wNamedObjectIndex], a
 	call GetItemName
 	ld de, wStringBuffer1
 	jr GetStringBuffer
@@ -1633,7 +1633,7 @@ Script_gettrainername:
 
 Script_getname:
 	call GetScriptByte
-	ld [wNamedObjectTypeBuffer], a
+	ld [wNamedObjectType], a
 
 ContinueToGetName:
 	call GetScriptByte
@@ -1644,7 +1644,7 @@ ContinueToGetName:
 
 Script_gettrainerclassname:
 	ld a, TRAINER_NAME
-	ld [wNamedObjectTypeBuffer], a
+	ld [wNamedObjectType], a
 	jr ContinueToGetName
 
 Script_getmoney:
@@ -1703,7 +1703,7 @@ Script_givepokemail:
 	push bc
 	inc hl
 	ld bc, MAIL_MSG_LENGTH
-	ld de, wd002
+	ld de, wMonMailMessageBuffer
 	ld a, [wScriptBank]
 	call FarCopyBytes
 	pop bc
@@ -1728,7 +1728,7 @@ Script_giveitem:
 .ok
 	ld [wCurItem], a
 	call GetScriptByte
-	ld [wItemQuantityChangeBuffer], a
+	ld [wItemQuantityChange], a
 	ld hl, wNumItems
 	call ReceiveItem
 	jr nc, .full
@@ -1746,7 +1746,7 @@ Script_takeitem:
 	call GetScriptByte
 	ld [wCurItem], a
 	call GetScriptByte
-	ld [wItemQuantityChangeBuffer], a
+	ld [wItemQuantityChange], a
 	ld a, -1
 	ld [wCurItemQuantity], a
 	ld hl, wNumItems
@@ -2173,8 +2173,7 @@ Script_warpcheck:
 	farcall EnableEvents
 	ret
 
-Script_enableevents:
-; unused
+Script_enableevents: ; unreferenced
 	farcall EnableEvents
 	ret
 
@@ -2199,12 +2198,13 @@ Script_refreshscreen:
 	call GetScriptByte
 	ret
 
-Script_writeunusedbytebuffer:
+Script_writeunusedbyte:
 	call GetScriptByte
-	ld [wUnusedScriptByteBuffer], a
+	ld [wUnusedScriptByte], a
 	ret
 
-	db closetext_command ; unused
+UnusedClosetextScript: ; unreferenced
+	closetext
 
 Script_closetext:
 	call _OpenAndCloseMenu_HDMATransferTilemapAndAttrmap
@@ -2316,13 +2316,13 @@ Script_endall:
 	ret
 
 Script_halloffame:
-	ld hl, wGameTimerPause
-	res GAMETIMERPAUSE_TIMER_PAUSED_F, [hl]
+	ld hl, wGameTimerPaused
+	res GAME_TIMER_PAUSED_F, [hl]
 	farcall StubbedTrainerRankings_HallOfFame
 	farcall StubbedTrainerRankings_HallOfFame2
 	farcall HallOfFame
-	ld hl, wGameTimerPause
-	set GAMETIMERPAUSE_TIMER_PAUSED_F, [hl]
+	ld hl, wGameTimerPaused
+	set GAME_TIMER_PAUSED_F, [hl]
 	jr ReturnFromCredits
 
 Script_credits:
@@ -2353,7 +2353,7 @@ Script_checksave:
 	ld [wScriptVar], a
 	ret
 
-; unused
+Script_checkver_duplicate: ; unreferenced
 	ld a, [.gs_version]
 	ld [wScriptVar], a
 	ret

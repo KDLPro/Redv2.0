@@ -21,7 +21,7 @@ CrystalIntro:
 	call DelayFrame
 	jp .loop
 
-.ShutOffMusic:
+.ShutOffMusic
 	ld de, MUSIC_NONE
 	call PlayMusic
 
@@ -152,14 +152,14 @@ IntroScene2:
 	cp $80
 	jr nc, .endscene
 	cp $60
-	jr nz, .DontPlaySound
+	jr nz, .nosound
 	push af
 	depixel 11, 11
 	call CrystalIntro_InitUnownAnim
 	ld de, SFX_INTRO_UNOWN_1
 	call PlaySFX
 	pop af
-.DontPlaySound:
+.nosound
 	ld [wIntroSceneTimer], a
 	xor a
 	call CrystalIntro_UnownFade
@@ -693,30 +693,30 @@ IntroScene14:
 	jr z, .done
 	cp $60
 	jr z, .jump
-	jr nc, .asm_e4e1a
+	jr nc, .run_after_jump
 	cp $40
-	jr nc, .asm_e4e33
+	jr nc, .run
 	ret
 
 .jump
 	ld de, SFX_INTRO_SUICUNE_4
 	call PlaySFX
 
-.asm_e4e1a
+.run_after_jump
 	ld a, $1
 	ld [wIntroSceneTimer], a
 	ld a, [wGlobalAnimXOffset]
 	cp $88
-	jr c, .asm_e4e2c
+	jr c, .disappear
 	sub $8
 	ld [wGlobalAnimXOffset], a
 	ret
 
-.asm_e4e2c
+.disappear
 	farcall DeinitializeAllSprites
 	ret
 
-.asm_e4e33
+.run
 	ld a, [wGlobalAnimXOffset]
 	sub $2
 	ld [wGlobalAnimXOffset], a
@@ -926,7 +926,7 @@ IntroScene19:
 	ldh [hWY], a
 	farcall ClearSpriteAnims
 	ld hl, wSpriteAnimDict
-	xor a
+	xor a ; SPRITE_ANIM_DICT_DEFAULT
 	ld [hli], a
 	ld [hl], $7f
 	call Intro_SetCGBPalUpdate
@@ -971,7 +971,8 @@ IntroScene20:
 	xor a
 	call Intro_Scene20_AppearUnown
 	ret
-; unused
+
+.AppearUnownPal2: ; unreferenced
 	ld a, c
 	and $1c
 	srl a
@@ -981,7 +982,7 @@ IntroScene20:
 	call Intro_Scene20_AppearUnown
 	ret
 
-.finished
+.finished:
 	call NextIntroScene
 	ret
 
@@ -1231,7 +1232,7 @@ CrystalIntro_UnownFade:
 	add a
 	add a
 	ld e, a
-	ld d, $0
+	ld d, 0
 	ld hl, wBGPals2
 	add hl, de
 	inc hl
@@ -1247,7 +1248,7 @@ CrystalIntro_UnownFade:
 .okay
 
 	ld c, a
-	ld b, $0
+	ld b, 0
 	ldh a, [rSVBK]
 	push af
 	ld a, BANK(wBGPals2)
@@ -1385,24 +1386,18 @@ Intro_Scene20_AppearUnown:
 	ldh [hCGBPalUpdate], a
 	ret
 
-.pal1
-	RGB 24, 12, 09
-	RGB 31, 31, 31
-	RGB 12, 00, 31
-	RGB 00, 00, 00
+.pal1:
+INCLUDE "gfx/intro/unown_1.pal"
 
-.pal2
-	RGB 24, 12, 09
-	RGB 31, 31, 31
-	RGB 31, 31, 31
-	RGB 31, 31, 31
+.pal2:
+INCLUDE "gfx/intro/unown_2.pal"
 
 Intro_FadeUnownWordPals:
 	add a
 	add a
 	add a
 	ld e, a
-	ld d, $0
+	ld d, 0
 	ld hl, wBGPals2
 	add hl, de
 rept 4
@@ -1411,7 +1406,7 @@ endr
 	ld a, [wIntroSceneTimer]
 	add a
 	ld c, a
-	ld b, $0
+	ld b, 0
 
 	ldh a, [rSVBK]
 	push af
@@ -1535,7 +1530,7 @@ Intro_RustleGrass:
 	and $c
 	srl a
 	ld e, a
-	ld d, $0
+	ld d, 0
 	ld hl, .RustlingGrassPointers
 	add hl, de
 	ld a, [hli]

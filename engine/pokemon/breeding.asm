@@ -53,7 +53,6 @@ CheckBreedmonCompatibility:
 	jr z, .done
 
 .compute
-	call .CheckDVs
 	ld c, 255
 	jp z, .done
 	ld a, [wBreedMon2Species]
@@ -82,24 +81,6 @@ CheckBreedmonCompatibility:
 .done
 	ld a, c
 	ld [wBreedingCompatibility], a
-	ret
-
-.CheckDVs:
-; If Defense DVs match and the lower 3 bits of the Special DVs match,
-; avoid breeding
-	ld a, [wBreedMon1DVs]
-	and %1111
-	ld b, a
-	ld a, [wBreedMon2DVs]
-	and %1111
-	cp b
-	ret nz
-	ld a, [wBreedMon1DVs + 1]
-	and %111
-	ld b, a
-	ld a, [wBreedMon2DVs + 1]
-	and %111
-	cp b
 	ret
 
 .CheckBreedingGroupCompatibility:
@@ -250,7 +231,7 @@ HatchEggs:
 	ld a, [wCurPartySpecies]
 	dec de
 	ld [de], a
-	ld [wNamedObjectIndexBuffer], a
+	ld [wNamedObjectIndex], a
 	ld [wCurSpecies], a
 	call GetPokemonName
 	xor a
@@ -428,7 +409,7 @@ GetEggMove:
 	add hl, bc
 	add hl, bc
 	ld a, BANK(EggMovePointers)
-	call GetFarHalfword
+	call GetFarWord
 .loop
 	ld a, BANK("Egg Moves")
 	call GetFarByte
@@ -462,7 +443,7 @@ GetEggMove:
 	add hl, bc
 	add hl, bc
 	ld a, BANK(EvosAttacksPointers)
-	call GetFarHalfword
+	call GetFarWord
 .loop3
 	ld a, BANK("Evolutions and Attacks")
 	call GetFarByte
@@ -673,7 +654,7 @@ EggHatch_DoAnimFrame:
 	ret
 
 EggHatch_AnimationSequence:
-	ld a, [wNamedObjectIndexBuffer]
+	ld a, [wNamedObjectIndex]
 	ld [wJumptableIndex], a
 	ld a, [wCurSpecies]
 	push af

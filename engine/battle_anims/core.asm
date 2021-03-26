@@ -263,14 +263,12 @@ InitBattleAnimBuffer:
 	jr nz, .no_sub
 	ld a, [wFXAnimID]
 	cp KINESIS
-	jr z, .kinesis
+	jr z, .do_sub
 	cp SOFTBOILED
-	jr z, .softboiled
+	jr z, .do_sub
 	cp MILK_DRINK
 	jr nz, .no_sub
-.kinesis
-.softboiled
-.milk_drink
+.do_sub
 	pop af
 	sub 1 * 8
 	jr .done
@@ -290,7 +288,7 @@ GetBattleAnimTileOffset:
 	push bc
 	ld hl, wBattleAnimTileDict
 	ld b, a
-	ld c, 10 / 2
+	ld c, NUM_BATTLEANIMTILEDICT_ENTRIES
 .loop
 	ld a, [hli]
 	cp b
@@ -315,3 +313,5 @@ _ExecuteBGEffects:
 _QueueBGEffect:
 	callfar QueueBGEffect
 	ret
+
+INCLUDE "data/battle_anims/objects.asm"

@@ -447,9 +447,11 @@ CheckCancelPrint:
 	ret
 
 .pressed_b
-	ld a, [wca80]
+	ld a, [wUnusedGameboyPrinterSafeCancelFlag]
 	cp $0c
 	jr nz, .cancel
+
+; wait for printer activity to finish before canceling?
 .loop
 	ld a, [wPrinterOpcode]
 	and a
@@ -565,7 +567,7 @@ PlacePrinterStatusString:
 	ld d, [hl]
 	hlcoord 1, 7
 	ld a, BANK(GBPrinterStrings)
-	call FarString
+	call PlaceFarString
 	hlcoord 2, 15
 	ld de, String_PressBToCancel
 	call PlaceString
@@ -598,7 +600,7 @@ PlacePrinterStatusStringBorderless: ; unreferenced
 	ld d, [hl]
 	hlcoord 4, 7
 	ld a, BANK(GBPrinterStrings)
-	call FarString
+	call PlaceFarString
 	hlcoord 4, 15
 	ld de, String_PressBToCancel
 	call PlaceString
@@ -726,7 +728,7 @@ Printer_PrintBoxListSegment:
 	ld a, [de]
 	cp $ff
 	jp z, .finish
-	ld [wNamedObjectIndexBuffer], a
+	ld [wNamedObjectIndex], a
 	ld [wCurPartySpecies], a
 
 	push bc
@@ -850,7 +852,7 @@ Printer_GetMonGender:
 Printer_GetBoxMonSpecies:
 	push hl
 	ld e, a
-	ld d, $0
+	ld d, 0
 	ld a, [wAddrOfBoxToPrint]
 	ld l, a
 	ld a, [wAddrOfBoxToPrint + 1]

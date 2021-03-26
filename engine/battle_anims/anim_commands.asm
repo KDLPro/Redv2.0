@@ -26,11 +26,11 @@ _PlayBattleAnim:
 
 	ld c, 1
 	ldh a, [rKEY1]
-	bit 7, a
-	jr nz, .asm_cc0ff
+	bit 7, a ; check CGB double speed mode
+	jr nz, .got_speed
 	ld c, 3
 
-.asm_cc0ff
+.got_speed
 	ld hl, hVBlank
 	ld a, [hl]
 	push af
@@ -245,7 +245,8 @@ BattleAnim_ClearOAM:
 	ld c, NUM_SPRITE_OAM_STRUCTS
 .loop
 	ld a, [hl]
-	and $ff ^ (PALETTE_MASK | VRAM_BANK_1) ; PAL_BATTLE_OB_ENEMY (0)
+	and $ff ^ (PALETTE_MASK | VRAM_BANK_1) ; zeros out the palette bits
+	assert PAL_BATTLE_OB_ENEMY == 0
 	ld [hli], a
 rept SPRITEOAMSTRUCT_LENGTH - 1
 	inc hl
@@ -610,13 +611,13 @@ BattleAnimCmd_Obj:
 
 BattleAnimCmd_BGEffect:
 	call GetBattleAnimByte
-	ld [wBattleAnimTemp0], a
+	ld [wBattleBGEffectTempID], a
 	call GetBattleAnimByte
-	ld [wBattleAnimTemp1], a
+	ld [wBattleBGEffectTempJumptableIndex], a
 	call GetBattleAnimByte
-	ld [wBattleAnimTemp2], a
+	ld [wBattleBGEffectTempTurn], a
 	call GetBattleAnimByte
-	ld [wBattleAnimTemp3], a
+	ld [wBattleBGEffectTempParam], a
 	call _QueueBGEffect
 	ret
 
@@ -666,19 +667,19 @@ BattleAnimCmd_5GFX:
 	ld c, a
 	ld hl, wBattleAnimTileDict
 	xor a
-	ld [wBattleAnimTemp0], a
+	ld [wBattleAnimGFXTempTileID], a
 .loop
-	ld a, [wBattleAnimTemp0]
+	ld a, [wBattleAnimGFXTempTileID]
 	cp (vTiles1 - vTiles0) / LEN_2BPP_TILE - BATTLEANIM_BASE_TILE
 	ret nc
 	call GetBattleAnimByte
 	ld [hli], a
-	ld a, [wBattleAnimTemp0]
+	ld a, [wBattleAnimGFXTempTileID]
 	ld [hli], a
 	push bc
 	push hl
 	ld l, a
-	ld h, $0
+	ld h, 0
 rept 4
 	add hl, hl
 endr
@@ -686,9 +687,9 @@ endr
 	add hl, de
 	ld a, [wBattleAnimByte]
 	call LoadBattleAnimGFX
-	ld a, [wBattleAnimTemp0]
+	ld a, [wBattleAnimGFXTempTileID]
 	add c
-	ld [wBattleAnimTemp0], a
+	ld [wBattleAnimGFXTempTileID], a
 	pop hl
 	pop bc
 	dec c
@@ -794,12 +795,12 @@ BattleAnimCmd_BattlerGFX_1Row:
 	ld hl, vTiles0 tile ($80 - 6 - 7)
 	ld de, vTiles2 tile $06 ; Enemy feet start tile
 	ld a, 7 tiles ; Enemy pic height
-	ld [wBattleAnimTemp0], a
+	ld [wBattleAnimGFXTempPicHeight], a
 	ld a, 7 ; Copy 7x1 tiles
 	call .LoadFeet
 	ld de, vTiles2 tile $31 ; Player head start tile
 	ld a, 6 tiles ; Player pic height
-	ld [wBattleAnimTemp0], a
+	ld [wBattleAnimGFXTempPicHeight], a
 	ld a, 6 ; Copy 6x1 tiles
 	call .LoadFeet
 	ret
@@ -811,7 +812,7 @@ BattleAnimCmd_BattlerGFX_1Row:
 	lb bc, BANK(@), 1
 	call Request2bpp
 	pop de
-	ld a, [wBattleAnimTemp0]
+	ld a, [wBattleAnimGFXTempPicHeight]
 	ld l, a
 	ld h, 0
 	add hl, de
@@ -848,12 +849,12 @@ BattleAnimCmd_BattlerGFX_2Row:
 	ld hl, vTiles0 tile ($80 - 6 * 2 - 7 * 2)
 	ld de, vTiles2 tile $05 ; Enemy feet start tile
 	ld a, 7 tiles ; Enemy pic height
-	ld [wBattleAnimTemp0], a
+	ld [wBattleAnimGFXTempPicHeight], a
 	ld a, 7 ; Copy 7x2 tiles
 	call .LoadHead
 	ld de, vTiles2 tile $31 ; Player head start tile
 	ld a, 6 tiles ; Player pic height
-	ld [wBattleAnimTemp0], a
+	ld [wBattleAnimGFXTempPicHeight], a
 	ld a, 6 ; Copy 6x2 tiles
 	call .LoadHead
 	ret
@@ -865,7 +866,7 @@ BattleAnimCmd_BattlerGFX_2Row:
 	lb bc, BANK(@), 2
 	call Request2bpp
 	pop de
-	ld a, [wBattleAnimTemp0]
+	ld a, [wBattleAnimGFXTempPicHeight]
 	ld l, a
 	ld h, 0
 	add hl, de
@@ -1050,7 +1051,7 @@ GetMinimizePic:
 	and a
 	jr z, .player
 
-	ld de, sScratch + $1a tiles
+	ld de, sScratch + (3 * 7 + 5) tiles
 	call CopyMinimizePic
 	ld hl, vTiles2 tile $00
 	ld de, sScratch
@@ -1058,7 +1059,7 @@ GetMinimizePic:
 	ret
 
 .player
-	ld de, sScratch + $160
+	ld de, sScratch + (3 * 6 + 4) tiles
 	call CopyMinimizePic
 	ld hl, vTiles2 tile $31
 	ld de, sScratch

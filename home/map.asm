@@ -92,9 +92,7 @@ GetMapSceneID::
 	ret
 
 OverworldTextModeSwitch::
-	call LoadMapPart
-	call SwapTextboxPalettes
-	ret
+	; fallthrough
 
 LoadMapPart::
 	ldh a, [hROMBank]
@@ -109,6 +107,10 @@ LoadMapPart::
 	ld bc, SCREEN_WIDTH * SCREEN_HEIGHT
 	call ByteFill
 
+	ld a, [wTilesetAttributesBank]
+	rst Bankswitch
+	call LoadMetatileAttributes
+
 	ld a, BANK(_LoadMapPart)
 	rst Bankswitch
 	call _LoadMapPart
@@ -118,18 +120,33 @@ LoadMapPart::
 	ret
 
 LoadMetatiles::
+	ld hl, wSurroundingTiles
+	ld de, wTilesetBlocksAddress
+	jr _LoadMetatilesOrAttributes
+
+LoadMetatileAttributes::
+	ld hl, wSurroundingAttributes
+	ld de, wTilesetAttributesAddress
+	; fallthrough
+
+_LoadMetatilesOrAttributes:
+	ld a, [de]
+	ld [wTilesetDataAddress], a
+	inc de
+	ld a, [de]
+	ld [wTilesetDataAddress + 1], a
+
 	; de <- wOverworldMapAnchor
 	ld a, [wOverworldMapAnchor]
 	ld e, a
 	ld a, [wOverworldMapAnchor + 1]
 	ld d, a
-	ld hl, wSurroundingTiles
-	ld b, SURROUNDING_HEIGHT / METATILE_WIDTH ; 5
+	ld b, SCREEN_META_HEIGHT
 
 .row
 	push de
 	push hl
-	ld c, SURROUNDING_WIDTH / METATILE_WIDTH ; 6
+	ld c, SCREEN_META_WIDTH
 
 .col
 	push de
@@ -146,21 +163,23 @@ LoadMetatiles::
 	ld e, l
 	ld d, h
 	; Set hl to the address of the current metatile data ([wTilesetBlocksAddress] + (a) tiles).
-	; This is buggy; it wraps around past 128 blocks.
-	; To fix, uncomment the line below.
-	add a ; Comment or delete this line to fix the above bug.
 	ld l, a
 	ld h, 0
-	; add hl, hl
 	add hl, hl
 	add hl, hl
 	add hl, hl
-	ld a, [wTilesetBlocksAddress]
+	add hl, hl
+	ld a, [wTilesetDataAddress]
 	add l
 	ld l, a
-	ld a, [wTilesetBlocksAddress + 1]
+	ld a, [wTilesetDataAddress + 1]
 	adc h
 	ld h, a
+
+	ldh a, [rSVBK]
+	push af
+	ld a, BANK("Surrounding Data")
+	ldh [rSVBK], a
 
 	; copy the 4x4 metatile
 rept METATILE_WIDTH - 1
@@ -181,6 +200,10 @@ rept METATILE_WIDTH
 	ld [de], a
 	inc de
 endr
+
+	pop af
+	ldh [rSVBK], a
+
 	; Next metatile
 	pop hl
 	ld de, METATILE_WIDTH
@@ -195,7 +218,7 @@ endr
 	add hl, de
 	pop de
 	ld a, [wMapWidth]
-	add 6
+	add MAP_CONNECTION_PADDING_WIDTH * 2
 	add e
 	ld e, a
 	jr nc, .ok2
@@ -1124,27 +1147,27 @@ CoordinatesEventText::
 	text_end
 
 CheckObjectMask::
-	ldh a, [hMapObjectIndexBuffer]
+	ldh a, [hMapObjectIndex]
 	ld e, a
-	ld d, $0
+	ld d, 0
 	ld hl, wObjectMasks
 	add hl, de
 	ld a, [hl]
 	ret
 
 MaskObject::
-	ldh a, [hMapObjectIndexBuffer]
+	ldh a, [hMapObjectIndex]
 	ld e, a
-	ld d, $0
+	ld d, 0
 	ld hl, wObjectMasks
 	add hl, de
 	ld [hl], -1 ; masked
 	ret
 
 UnmaskObject::
-	ldh a, [hMapObjectIndexBuffer]
+	ldh a, [hMapObjectIndex]
 	ld e, a
-	ld d, $0
+	ld d, 0
 	ld hl, wObjectMasks
 	add hl, de
 	ld [hl], 0 ; unmasked
@@ -1176,8 +1199,9 @@ ScrollMapUp::
 	hlcoord 0, 0
 	ld de, wBGMapBuffer
 	call BackupBGMapRow
-	ld c, 2 * SCREEN_WIDTH
-	call ScrollBGMapPalettes
+	hlcoord 0, 0, wAttrmap
+	ld de, wBGMapPalBuffer
+	call BackupBGMapRow
 	ld a, [wBGMapAnchor]
 	ld e, a
 	ld a, [wBGMapAnchor + 1]
@@ -1191,8 +1215,9 @@ ScrollMapDown::
 	hlcoord 0, SCREEN_HEIGHT - 2
 	ld de, wBGMapBuffer
 	call BackupBGMapRow
-	ld c, 2 * SCREEN_WIDTH
-	call ScrollBGMapPalettes
+	hlcoord 0, SCREEN_HEIGHT - 2, wAttrmap
+	ld de, wBGMapPalBuffer
+	call BackupBGMapRow
 	ld a, [wBGMapAnchor]
 	ld l, a
 	ld a, [wBGMapAnchor + 1]
@@ -1214,8 +1239,9 @@ ScrollMapLeft::
 	hlcoord 0, 0
 	ld de, wBGMapBuffer
 	call BackupBGMapColumn
-	ld c, 2 * SCREEN_HEIGHT
-	call ScrollBGMapPalettes
+	hlcoord 0, 0, wAttrmap
+	ld de, wBGMapPalBuffer
+	call BackupBGMapColumn
 	ld a, [wBGMapAnchor]
 	ld e, a
 	ld a, [wBGMapAnchor + 1]
@@ -1229,8 +1255,9 @@ ScrollMapRight::
 	hlcoord SCREEN_WIDTH - 2, 0
 	ld de, wBGMapBuffer
 	call BackupBGMapColumn
-	ld c, 2 * SCREEN_HEIGHT
-	call ScrollBGMapPalettes
+	hlcoord SCREEN_WIDTH - 2, 0, wAttrmap
+	ld de, wBGMapPalBuffer
+	call BackupBGMapColumn
 	ld a, [wBGMapAnchor]
 	ld e, a
 	and %11100000
@@ -1278,7 +1305,7 @@ BackupBGMapColumn::
 	ret
 
 UpdateBGMapRow::
-	ld hl, wBGMapBufferPtrs
+	ld hl, wBGMapBufferPointers
 	push de
 	call .iteration
 	pop de
@@ -1309,7 +1336,7 @@ UpdateBGMapRow::
 	ret
 
 UpdateBGMapColumn::
-	ld hl, wBGMapBufferPtrs
+	ld hl, wBGMapBufferPointers
 	ld c, SCREEN_HEIGHT
 .loop
 	ld a, e
@@ -1433,7 +1460,7 @@ SaveScreen::
 	ld de, wScreenSave
 	ld a, [wMapWidth]
 	add 6
-	ldh [hMapObjectIndexBuffer], a
+	ldh [hMapObjectIndex], a
 	ld a, [wPlayerStepDirection]
 	and a
 	jr z, .down
@@ -1447,7 +1474,7 @@ SaveScreen::
 
 .up
 	ld de, wScreenSave + SCREEN_META_WIDTH
-	ldh a, [hMapObjectIndexBuffer]
+	ldh a, [hMapObjectIndex]
 	ld c, a
 	ld b, 0
 	add hl, bc
@@ -1719,7 +1746,7 @@ GetCoordTile::
 	and a
 	jr z, .nope
 	ld l, a
-	ld h, $0
+	ld h, 0
 	add hl, hl
 	add hl, hl
 	ld a, [wTilesetCollisionAddress]
@@ -2163,7 +2190,8 @@ GetMapEnvironment::
 	pop hl
 	ret
 
-	ret ; unused
+Map_DummyFunction:: ; unreferenced
+	ret
 
 GetAnyMapEnvironment::
 	push hl
@@ -2298,10 +2326,8 @@ LoadMapTileset::
 	pop hl
 	ret
 
-InexplicablyEmptyFunction::
-; unused
-; Inexplicably empty.
-; Seen in PredefPointers.
+DummyEndPredef::
+; Unused function at the end of PredefPointers.
 rept 16
 	nop
 endr

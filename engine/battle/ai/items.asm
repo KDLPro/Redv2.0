@@ -20,8 +20,9 @@ AI_SwitchOrTryItem:
 	and a
 	jr nz, DontSwitch
 
+	; always load the first trainer class in wTrainerClass for Battle Tower trainers
 	ld hl, TrainerClassAttributes + TRNATTR_AI_ITEM_SWITCH
-	ld a, [wInBattleTowerBattle] ; always load the first trainer class in wTrainerClass for BattleTower-Trainers
+	ld a, [wInBattleTowerBattle]
 	and a
 	jr nz, .ok
 
@@ -29,6 +30,7 @@ AI_SwitchOrTryItem:
 	dec a
 	ld bc, NUM_TRAINER_ATTRIBUTES
 	call AddNTimes
+
 .ok
 	bit SWITCH_OFTEN_F, [hl]
 	jp nz, SwitchOften
@@ -47,26 +49,26 @@ SwitchOften:
 	ld a, [wEnemySwitchMonParam]
 	and $f0
 	jp z, DontSwitch
-
-	cp $10
-	jr nz, .not_10
-	call Random
-	cp 50 percent + 1
-	jr c, .switch
-	jp DontSwitch
+	
+    cp $10
+    jr nz, .not_10
+    call Random
+    cp 15 percent + 1
+    jr c, .switch
+    jp DontSwitch
 .not_10
 
-	cp $20
-	jr nz, .not_20
-	call Random
-	cp 79 percent - 1
-	jr c, .switch
-	jp DontSwitch
+    cp $20
+    jr nz, .not_20
+    call Random
+    cp 25 percent - 1
+    jr c, .switch
+    jp DontSwitch
 .not_20
 
 	; $30
 	call Random
-	cp 4 percent
+	cp 10 percent
 	jp c, DontSwitch
 
 .switch
@@ -135,7 +137,7 @@ SwitchSometimes:
 
 	; $30
 	call Random
-	cp 20 percent - 1
+	cp 40 percent - 1
 	jp c, DontSwitch
 
 .switch
@@ -145,13 +147,13 @@ SwitchSometimes:
 	ld [wEnemySwitchMonIndex], a
 	jp AI_TrySwitch
 
-CheckSubstatusCantRun:
+CheckSubstatusCantRun: ; unreferenced
 	ld a, [wEnemySubStatus5]
 	bit SUBSTATUS_CANT_RUN, a
 	ret
 
 AI_TryItem:
-	; items are not allowed in the BattleTower
+	; items are not allowed in the Battle Tower
 	ld a, [wInBattleTowerBattle]
 	and a
 	ret nz
@@ -213,7 +215,7 @@ AI_TryItem:
 	inc hl
 	jr c, .loop
 
-.used_item
+; used item
 	xor a
 	ld [de], a
 	inc a
@@ -259,7 +261,7 @@ AI_TryItem:
 	cp e
 	jr nc, .yes
 
-.no
+.no ; unreferenced
 	and a
 	ret
 
@@ -834,7 +836,7 @@ PrintText_UsedItemOn_AND_AIUpdateHUD:
 
 PrintText_UsedItemOn:
 	ld a, [wCurEnemyItem]
-	ld [wNamedObjectIndexBuffer], a
+	ld [wNamedObjectIndex], a
 	call GetItemName
 	ld hl, wStringBuffer1
 	ld de, wMonOrItemNameBuffer

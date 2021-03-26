@@ -37,7 +37,7 @@ PrintPage1:
 	pop af
 	ld a, b
 	hlcoord 1, 11, wPrinterTilemapBuffer
-	call nz, FarString
+	call nz, PlaceFarString
 	hlcoord 19, 0, wPrinterTilemapBuffer
 	ld [hl], $35
 	ld de, SCREEN_WIDTH
@@ -86,7 +86,7 @@ PrintPage2:
 	pop af
 	hlcoord 1, 1, wPrinterTilemapBuffer
 	ld a, b
-	call nz, FarString
+	call nz, PlaceFarString
 	ret
 
 .FillColumn:
@@ -170,7 +170,7 @@ PrintPartyMonPage1:
 	lb bc, 2, 3
 	call PrintNum
 	ld a, [wCurPartySpecies]
-	ld [wNamedObjectIndexBuffer], a
+	ld [wNamedObjectIndex], a
 	ld [wCurSpecies], a
 	ld hl, wPartyMonNicknames
 	call GetCurPartyMonName
@@ -186,7 +186,7 @@ PrintPartyMonPage1:
 	inc hl
 	ld [hl], "."
 	inc hl
-	ld de, wNamedObjectIndexBuffer
+	ld de, wNamedObjectIndex
 	lb bc, PRINTNUM_LEADINGZEROS | 1, 3
 	call PrintNum
 	hlcoord 1, 9
@@ -217,10 +217,9 @@ PrintPartyMonPage1:
 	ld [hl], a
 	ld a, [wCurPartySpecies]
 	cp UNOWN
-	jr z, .asm_1dc469
+	jr z, .got_alignment
 	inc [hl]
-
-.asm_1dc469
+.got_alignment
 	hlcoord 0, 0
 	call _PrepMonFrontpic
 	call WaitBGMap
@@ -297,7 +296,7 @@ PlaceMoveNameString:
 	and a
 	jr z, .no_move
 
-	ld [wNamedObjectIndexBuffer], a
+	ld [wNamedObjectIndex], a
 	call GetMoveName
 	jr .got_string
 

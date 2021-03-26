@@ -653,7 +653,8 @@ MrChrono: ; unreferenced
 	ret
 
 .NowOnDebug:
-	text "<PARA>Now on DEBUG…"
+	text_start
+	para "Now on DEBUG…"
 	prompt
 
 .PrintTime:
@@ -682,8 +683,8 @@ PrintHour:
 	inc hl
 	pop bc
 	call AdjustHourForAMorPM
-	ld [wDeciramBuffer], a
-	ld de, wDeciramBuffer
+	ld [wTextDecimalByte], a
+	ld de, wTextDecimalByte
 	call PrintTwoDigitNumberLeftAlign
 	ret
 

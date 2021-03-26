@@ -1,6 +1,6 @@
 ClearSpriteAnims:
-	ld hl, wSpriteAnimDict
-	ld bc, wSpriteAnimsEnd - wSpriteAnimDict
+	ld hl, wSpriteAnimData
+	ld bc, wSpriteAnimDataEnd - wSpriteAnimData
 .loop
 	ld [hl], 0
 	inc hl
@@ -168,8 +168,8 @@ _InitSpriteAnimStruct::
 	ld a, [de]
 	ld [hli], a ; SPRITEANIMSTRUCT_ANIM_SEQ_ID
 	inc de
-; Look up the third field from the table in the wSpriteAnimDict array (10x2).
-; Take the value and load it in
+; Look up the third field in the wSpriteAnimDict mapping.
+; Take the mapped value and load it in.
 	ld a, [de]
 	call GetSpriteAnimVTile
 	ld [hli], a ; SPRITEANIMSTRUCT_TILE_ID
@@ -373,13 +373,12 @@ InitSpriteAnimBuffer:
 	ret
 
 GetSpriteAnimVTile:
-; a = wSpriteAnimDict[a] if a in wSpriteAnimDict else 0
-; vTiles offset
+; a = wSpriteAnimDict[a] if a in wSpriteAnimDict else vtile offset $00
 	push hl
 	push bc
 	ld hl, wSpriteAnimDict
 	ld b, a
-	ld c, NUM_SPRITE_ANIM_STRUCTS
+	ld c, NUM_SPRITEANIMDICT_ENTRIES
 .loop
 	ld a, [hli]
 	cp b
@@ -416,9 +415,9 @@ GetSpriteAnimFrame:
 	add hl, bc
 	ld a, [hl]
 	and a
-	jr z, .next_frame ; finished the current sequence
+	jr z, .next_frame
 	dec [hl]
-	call .GetPointer ; load pointer from SpriteAnimFrameData
+	call .GetPointer
 	ld a, [hli]
 	push af
 	jr .okay
@@ -427,7 +426,7 @@ GetSpriteAnimFrame:
 	ld hl, SPRITEANIMSTRUCT_FRAME
 	add hl, bc
 	inc [hl]
-	call .GetPointer ; load pointer from SpriteAnimFrameData
+	call .GetPointer
 	ld a, [hli]
 	cp dorestart_command
 	jr z, .restart
@@ -478,9 +477,6 @@ GetSpriteAnimFrame:
 	jr .loop
 
 .GetPointer:
-	; Get the data for the current frame for the current animation sequence
-
-	; SpriteAnimFrameData[SpriteAnim[SPRITEANIMSTRUCT_FRAMESET_ID]][SpriteAnim[SPRITEANIMSTRUCT_FRAME]]
 	ld hl, SPRITEANIMSTRUCT_FRAMESET_ID
 	add hl, bc
 	ld e, [hl]
@@ -500,7 +496,6 @@ GetSpriteAnimFrame:
 	ret
 
 GetFrameOAMPointer:
-; Load OAM data pointer
 	ld e, a
 	ld d, 0
 	ld hl, SpriteAnimOAMData
@@ -509,13 +504,13 @@ GetFrameOAMPointer:
 	add hl, de
 	ret
 
-BrokenGetStdGraphics: ; unreferenced
+UnusedLoadSpriteAnimGFX: ; unreferenced
 	push hl
 	ld l, a
 	ld h, 0
 	add hl, hl
 	add hl, hl
-	ld de, BrokenStdGFXPointers ; broken 2bpp pointers
+	ld de, UnusedSpriteAnimGFX
 	add hl, de
 	ld c, [hl]
 	inc hl
@@ -538,20 +533,7 @@ INCLUDE "data/sprite_anims/framesets.asm"
 
 INCLUDE "data/sprite_anims/oam.asm"
 
-BrokenStdGFXPointers:
-	; tile count, bank, pointer
-	; (all pointers were dummied out to .deleted)
-	dbbw 128, $01, .deleted
-	dbbw 128, $01, .deleted
-	dbbw 128, $01, .deleted
-	dbbw 128, $01, .deleted
-	dbbw 16, $37, .deleted
-	dbbw 16, $11, .deleted
-	dbbw 16, $39, .deleted
-	dbbw 16, $24, .deleted
-	dbbw 16, $21, .deleted
-
-.deleted
+INCLUDE "data/sprite_anims/unused_gfx.asm"
 
 Sprites_Cosine:
 ; a = d * cos(a * pi/32)
@@ -634,8 +616,8 @@ ClearSpriteAnims2:
 	push de
 	push bc
 	push af
-	ld hl, wSpriteAnimDict
-	ld bc, wSpriteAnimsEnd - wSpriteAnimDict
+	ld hl, wSpriteAnimData
+	ld bc, wSpriteAnimDataEnd - wSpriteAnimData
 .loop
 	ld [hl], 0
 	inc hl

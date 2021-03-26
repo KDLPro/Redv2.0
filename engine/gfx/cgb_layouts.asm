@@ -17,19 +17,18 @@ LoadSGBLayoutCGB:
 	ld l, a
 	ld h, 0
 	add hl, hl
-	ld de, .dw
+	ld de, .Jumptable
 	add hl, de
 	ld a, [hli]
 	ld h, [hl]
 	ld l, a
-	ld de, .ReturnFromJumpTable
+	ld de, .done
 	push de
 	jp hl
-
-.ReturnFromJumpTable:
+.done:
 	ret
 
-.dw
+.Jumptable:
 	dw _CGB_BattleGrayscale
 	dw _CGB_BattleColors
 	dw _CGB_PokegearPals
@@ -43,7 +42,7 @@ LoadSGBLayoutCGB:
 	dw _CGB_PartyMenu
 	dw _CGB_Evolution
 	dw _CGB_GSTitleScreen
-	dw _CGB0d
+	dw _CGB_Unused0D
 	dw _CGB_MoveList
 	dw _CGB_BetaPikachuMinigame
 	dw _CGB_PokedexSearchOption
@@ -60,7 +59,7 @@ LoadSGBLayoutCGB:
 	dw _CGB_TradeTube
 	dw _CGB_TrainerOrMonFrontpicPals
 	dw _CGB_MysteryGift
-	dw _CGB1e
+	dw _CGB_Unused1E
 
 _CGB_BattleGrayscale:
 	ld hl, PalPacket_BattleGrayscale + 1
@@ -87,7 +86,7 @@ _CGB_BattleColors:
 	call LoadPalette_White_Col1_Col2_Black ; PAL_BATTLE_BG_ENEMY
 	ld a, [wEnemyHPPal]
 	ld l, a
-	ld h, $0
+	ld h, 0
 	add hl, hl
 	add hl, hl
 	ld bc, HPBarPals
@@ -95,7 +94,7 @@ _CGB_BattleColors:
 	call LoadPalette_White_Col1_Col2_Black ; PAL_BATTLE_BG_ENEMY_HP
 	ld a, [wPlayerHPPal]
 	ld l, a
-	ld h, $0
+	ld h, 0
 	add hl, hl
 	add hl, hl
 	ld bc, HPBarPals
@@ -197,7 +196,7 @@ _CGB_StatsScreenHPPals:
 	ld de, wBGPals1
 	ld a, [wCurHPPal]
 	ld l, a
-	ld h, $0
+	ld h, 0
 	add hl, hl
 	add hl, hl
 	ld bc, HPBarPals
@@ -321,12 +320,12 @@ _CGB_BillsPC:
 	ldh [hCGBPalUpdate], a
 	ret
 
-Function9009:
+_CGB_Unknown: ; unreferenced
 	ld hl, BillsPCOrangePalette
 	call LoadHLPaletteIntoDE
 	jr .GotPalette
 
-.GetMonPalette:
+.GetMonPalette: ; unreferenced
 	ld bc, wTempMonDVs
 	call GetPlayerOrMonPalettePointer
 	call LoadPalette_White_Col1_Col2_Black
@@ -465,21 +464,10 @@ _CGB_GSIntro:
 	ret
 
 .ShellderLaprasBGPalette:
-	RGB 19, 31, 19
-	RGB 18, 23, 31
-	RGB 11, 21, 28
-	RGB 04, 16, 24
+INCLUDE "gfx/intro/gs_shellder_lapras_bg.pal"
 
 .ShellderLaprasOBPals:
-	RGB 29, 29, 29
-	RGB 20, 19, 20
-	RGB 19, 06, 04
-	RGB 03, 04, 06
-
-	RGB 31, 31, 31
-	RGB 31, 31, 31
-	RGB 31, 00, 00
-	RGB 03, 04, 06
+INCLUDE "gfx/intro/gs_shellder_lapras_ob.pal"
 
 .JigglypuffPikachuScene:
 	ld de, wBGPals1
@@ -595,7 +583,7 @@ _CGB_GSTitleScreen:
 	ldh [hCGBPalUpdate], a
 	ret
 
-_CGB0d:
+_CGB_Unused0D:
 	ld hl, PalPacket_Diploma + 1
 	call CopyFourPalettes
 	call WipeAttrmap
@@ -844,7 +832,7 @@ _CGB_Pokepic:
 .found_top
 	ld a, [wMenuBorderLeftCoord]
 	ld e, a
-	ld d, $0
+	ld d, 0
 	add hl, de
 	ld a, [wMenuBorderTopCoord]
 	ld b, a
@@ -911,7 +899,7 @@ _CGB_PlayerOrMonFrontpicPals:
 	call ApplyPals
 	ret
 
-_CGB1e:
+_CGB_Unused1E:
 	ld de, wBGPals1
 	ld a, [wCurPartySpecies]
 	call GetMonPalettePointer
@@ -992,7 +980,4 @@ GS_CGB_MysteryGift: ; unreferenced
 	ret
 
 .MysteryGiftPalette:
-	RGB 31, 31, 31
-	RGB 09, 31, 31
-	RGB 10, 12, 31
-	RGB 00, 03, 19
+INCLUDE "gfx/mystery_gift/gs_mystery_gift.pal"

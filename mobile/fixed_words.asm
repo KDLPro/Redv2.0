@@ -261,7 +261,7 @@ CopyMobileEZChatToC608:
 
 .get_name
 	ld a, e
-	ld [wNamedObjectIndexBuffer], a
+	ld [wNamedObjectIndex], a
 	call GetPokemonName
 	ld hl, wStringBuffer1
 	ld bc, MON_NAME_LENGTH - 1
@@ -339,7 +339,7 @@ Function11c1b9:
 
 Function11c254:
 	push af
-	ld a, $4
+	ld a, BANK(s4_a007)
 	call OpenSRAM
 	ld hl, s4_a007
 	pop af
@@ -349,7 +349,7 @@ Function11c254:
 	sla a
 	add c
 	ld c, a
-	ld b, $0
+	ld b, 0
 	add hl, bc
 	ld de, wcd36
 	ld bc, 12
@@ -1184,7 +1184,7 @@ Function11c7bc:
 	push de
 	ld a, [hli]
 	ld e, a
-	ld d, $0
+	ld d, 0
 	push hl
 	ld a, [bc]
 	ld l, a
@@ -1215,7 +1215,7 @@ Function11c7bc:
 	ld hl, wc648
 	ld a, [wcd22]
 	ld e, a
-	ld d, $0
+	ld d, 0
 	add hl, de
 	add hl, de
 	ld a, [hli]
@@ -1226,7 +1226,7 @@ Function11c7bc:
 	pop hl
 	ld a, [wcd26]
 	ld e, a
-	ld d, $0
+	ld d, 0
 	add hl, de
 	add hl, de
 	ld a, [wcd26]
@@ -1334,7 +1334,7 @@ Function11c86e:
 	jr nz, .asm_11c8c2
 	ret
 
-BCD2String:
+BCD2String: ; unreferenced
 	inc a
 	push af
 	and $f
@@ -1356,7 +1356,7 @@ BCD2String:
 	ld [hli], a
 	ret
 
-MobileString_Page:
+MobileString_Page: ; unreferenced
 	db "ぺージ@"
 
 MobileString_Prev:
@@ -1388,7 +1388,7 @@ Function11c8f6:
 	pop de
 	ld a, [wcd20]
 	ld c, a
-	ld b, $0
+	ld b, 0
 	ld hl, wcd36
 	add hl, bc
 	add hl, bc
@@ -1402,7 +1402,7 @@ Function11c8f6:
 	ld a, [wMobileCommsJumptableIndex]
 	add [hl]
 	ld c, a
-	ld b, $0
+	ld b, 0
 	ld hl, wListPointer
 	add hl, bc
 	ld a, [hl]
@@ -1411,7 +1411,7 @@ Function11c8f6:
 	ld hl, wc648
 	ld a, [wcd22]
 	ld e, a
-	ld d, $0
+	ld d, 0
 	add hl, de
 	add hl, de
 	ld a, [hli]
@@ -1422,7 +1422,7 @@ Function11c8f6:
 	pop hl
 	ld a, [wcd26]
 	ld e, a
-	ld d, $0
+	ld d, 0
 	add hl, de
 	add hl, de
 	ld a, [wMobileCommsJumptableIndex]
@@ -1613,7 +1613,7 @@ Function11ca5e:
 Function11ca6a:
 	ld hl, wcd36
 	ld c, a
-	ld b, $0
+	ld b, 0
 	add hl, bc
 	add hl, bc
 	ld [hl], b
@@ -1762,7 +1762,7 @@ Function11cb66:
 	ld a, [hl]
 	and a
 	jr nz, .asm_11cbd4
-	ld a, $4
+	ld a, BANK(s4_a007)
 	call OpenSRAM
 	ld hl, s4_a007
 	ld a, [wMenuCursorY]
@@ -1773,10 +1773,10 @@ Function11cb66:
 	sla a
 	add c
 	ld c, a
-	ld b, $0
+	ld b, 0
 	add hl, bc
 	ld de, wcd36
-	ld c, $c
+	ld c, 12
 .asm_11cba2
 	ld a, [de]
 	ld [hli], a
@@ -2363,7 +2363,7 @@ Function11d035:
 .done_add_n_times
 	pop af
 	ld c, a
-	ld b, $0
+	ld b, 0
 	add hl, bc
 	push hl
 	ld a, $79
@@ -2414,7 +2414,7 @@ Function11d035:
 	ld a, [de]
 	dec a
 	ld c, a
-	ld b, $0
+	ld b, 0
 	add hl, bc
 	pop bc
 	inc de
@@ -2488,7 +2488,7 @@ AnimateEZChatCursor:
 	ld hl, .FramesetsIDs_Two
 	ld a, [wcd22]
 	ld e, a
-	ld d, $0
+	ld d, 0
 	add hl, de
 	ld a, [hl]
 	call ReinitSpriteAnimFrame
@@ -2509,7 +2509,7 @@ AnimateEZChatCursor:
 .load
 	push de
 	ld e, a
-	ld d, $0
+	ld d, 0
 	add hl, de
 	push hl
 	pop de

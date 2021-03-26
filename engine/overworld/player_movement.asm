@@ -311,7 +311,7 @@ DoPlayerMovement::
 	scf
 	ret
 
-; unused
+.unused ; unreferenced
 	xor a
 	ret
 
@@ -621,7 +621,7 @@ ENDM
 ; Returns 1 if there is no NPC in front
 ; Returns 2 if there is a movable NPC in front
 	ld a, 0
-	ldh [hMapObjectIndexBuffer], a
+	ldh [hMapObjectIndex], a
 ; Load the next X coordinate into d
 	ld a, [wPlayerStandingMapX]
 	ld d, a

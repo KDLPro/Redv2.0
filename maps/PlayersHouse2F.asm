@@ -11,8 +11,7 @@ PlayersHouse2F_MapScripts:
 	callback MAPCALLBACK_NEWMAP, .InitializeRoom
 	callback MAPCALLBACK_TILES, .SetUpTileDecorations
 
-; unused
-.Null:
+.DummyScene: ; unreferenced
 	end
 
 .InitializeRoom:
@@ -30,7 +29,7 @@ PlayersHouse2F_MapScripts:
 	special ToggleMaptileDecorations
 	endcallback
 
-	db 0, 0, 0 ; filler
+	db 0, 0, 0 ; unused
 
 Doll1Script::
 	describedecoration DECODESC_LEFT_DOLL

@@ -1,5 +1,6 @@
 ObjectActionPairPointers:
 ; entries correspond to OBJECT_ACTION_* constants
+; normal action, frozen action
 	dw SetFacingStanding,              SetFacingStanding
 	dw SetFacingStandAction,           SetFacingCurrent
 	dw SetFacingStepAction,            SetFacingCurrent
@@ -163,7 +164,7 @@ CounterclockwiseSpinAction:
 
 	swap e
 	ld d, 0
-	ld hl, .Directions
+	ld hl, .facings
 	add hl, de
 	ld a, [hl]
 	ld hl, OBJECT_FACING
@@ -171,8 +172,11 @@ CounterclockwiseSpinAction:
 	ld [hl], a
 	ret
 
-.Directions:
-	db OW_DOWN, OW_RIGHT, OW_UP, OW_LEFT
+.facings:
+	db OW_DOWN
+	db OW_RIGHT
+	db OW_UP
+	db OW_LEFT
 
 SetFacingFish:
 	call GetSpriteDirection
@@ -269,7 +273,8 @@ SetFacingBoulderDust:
 	and 2
 	ld a, FACING_BOULDER_DUST_1
 	jr z, .ok
-	inc a ; FACING_BOULDER_DUST_2
+	inc a
+	assert FACING_BOULDER_DUST_1 + 1 == FACING_BOULDER_DUST_2
 .ok
 	ld [hl], a
 	ret

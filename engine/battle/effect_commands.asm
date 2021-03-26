@@ -47,7 +47,7 @@ DoMove:
 	add hl, bc
 	add hl, bc
 	ld a, BANK(MoveEffectsPointers)
-	call GetFarHalfword
+	call GetFarWord
 
 	ld de, wBattleScriptBuffer
 
@@ -98,7 +98,7 @@ DoMove:
 	pop bc
 
 	ld a, BANK(BattleCommandPointers)
-	call GetFarHalfword
+	call GetFarWord
 
 	call .DoMoveEffectCommand
 
@@ -134,7 +134,7 @@ BattleCommand_CheckTurn:
 	and a
 	jp nz, CheckEnemyTurn
 
-CheckPlayerTurn:
+; check player turn
 	ld hl, wPlayerSubStatus4
 	bit SUBSTATUS_RECHARGE, [hl]
 	jr z, .no_recharge
@@ -191,6 +191,11 @@ CheckPlayerTurn:
 	jp EndTurn
 
 .not_asleep
+
+	call HandleDefrost
+	xor a
+	ld [wPlayerJustGotFrozen], a
+	ld [wEnemyJustGotFrozen], a
 
 	ld hl, wBattleMonStatus
 	bit FRZ, [hl]
@@ -595,7 +600,7 @@ MoveDisabled:
 
 	ld a, BATTLE_VARS_MOVE
 	call GetBattleVar
-	ld [wNamedObjectIndexBuffer], a
+	ld [wNamedObjectIndex], a
 	call GetMoveName
 
 	ld hl, DisabledMoveText
@@ -1443,6 +1448,7 @@ CheckTypeMatchup:
 	cp d
 	jr nz, .Nope
 	ld a, [hli]
+	; defending types
 	cp b
 	jr z, .Yup
 	cp c
@@ -1456,24 +1462,27 @@ CheckTypeMatchup:
 	jr .TypesLoop
 
 .Yup:
-	xor a
-	ldh [hDividend + 0], a
-	ldh [hMultiplicand + 0], a
-	ldh [hMultiplicand + 1], a
 	ld a, [hli]
-	ldh [hMultiplicand + 2], a
+	cp SUPER_EFFECTIVE
+	jr z, .se
+	cp NOT_VERY_EFFECTIVE
+	jr z, .nve
+	cp NO_EFFECT
+	jr z, .immune
+	jr .TypesLoop
+.se
 	ld a, [wTypeMatchup]
-	ldh [hMultiplier], a
-	call Multiply
-	ld a, 10
-	ldh [hDivisor], a
-	push bc
-	ld b, 4
-	call Divide
-	pop bc
-	ldh a, [hQuotient + 3]
+	sla a
 	ld [wTypeMatchup], a
 	jr .TypesLoop
+.nve
+	ld a, [wTypeMatchup]
+	srl a
+	ld [wTypeMatchup], a
+	jr .TypesLoop
+.immune:
+	xor a
+	ld [wTypeMatchup], a
 
 .End:
 	pop bc
@@ -2186,7 +2195,7 @@ BattleCommand_ApplyDamage:
 .focus_band_text
 	call GetOpponentItem
 	ld a, [hl]
-	ld [wNamedObjectIndexBuffer], a
+	ld [wNamedObjectIndex], a
 	call GetItemName
 	ld hl, HungOnText
 	jp StdBattleTextbox
@@ -2406,19 +2415,19 @@ BattleCommand_CheckFaint:
 .got_max_hp
 	ld [wWhichHPBar], a
 	ld a, [hld]
-	ld [wBuffer1], a
+	ld [wHPBuffer1], a
 	ld a, [hld]
-	ld [wBuffer2], a
+	ld [wHPBuffer1 + 1], a
 	ld a, [hl]
-	ld [wBuffer3], a
+	ld [wHPBuffer2], a
 	xor a
 	ld [hld], a
 	ld a, [hl]
-	ld [wBuffer4], a
+	ld [wHPBuffer2 + 1], a
 	xor a
 	ld [hl], a
-	ld [wBuffer5], a
-	ld [wBuffer6], a
+	ld [wHPBuffer3], a
+	ld [wHPBuffer3 + 1], a
 	ld h, b
 	ld l, c
 	predef AnimateHPBar
@@ -2532,10 +2541,10 @@ DittoMetalPowder:
 	ldh a, [hBattleTurn]
 	and a
 	ld a, [hl]
-	jr nz, .Ditto
+	jr nz, .got_species
 	ld a, [wTempEnemyMonSpecies]
 
-.Ditto:
+.got_species
 	cp DITTO
 	ret nz
 
@@ -2586,7 +2595,7 @@ PlayerAttackDamage:
 	cp SPECIAL
 	jr nc, .special
 
-.physical
+; physical
 	ld hl, wEnemyMonDefense
 	ld a, [hli]
 	ld b, a
@@ -2826,9 +2835,9 @@ EnemyAttackDamage:
 
 	ld a, [hl]
 	cp SPECIAL
-	jr nc, .Special
+	jr nc, .special
 
-.physical
+; physical
 	ld hl, wBattleMonDefense
 	ld a, [hli]
 	ld b, a
@@ -2852,7 +2861,7 @@ EnemyAttackDamage:
 	ld hl, wEnemyAttack
 	jr .thickclub
 
-.Special:
+.special
 	ld hl, wBattleMonSpclDef
 	ld a, [hli]
 	ld b, a
@@ -3066,8 +3075,11 @@ BattleCommand_DamageCalc:
 ; Critical hits
 	call .CriticalMultiplier
 
-; Update wCurDamage. 
-; Capped at MAX_NEUTRAL_DAMAGE - MIN_NEUTRAL_DAMAGE: 999 - 2 = 997.
+; Update wCurDamage. Max 999 (capped at 997, then add 2).
+MAX_DAMAGE EQU 999
+MIN_DAMAGE EQU 2
+DAMAGE_CAP EQU MAX_DAMAGE - MIN_DAMAGE
+
 	ld hl, wCurDamage
 	ld b, [hl]
 	ldh a, [hQuotient + 3]
@@ -3089,14 +3101,14 @@ BattleCommand_DamageCalc:
 	jr nz, .Cap
 
 	ldh a, [hQuotient + 2]
-	cp HIGH(MAX_NEUTRAL_DAMAGE - MIN_NEUTRAL_DAMAGE + 1)
+	cp HIGH(DAMAGE_CAP + 1)
 	jr c, .dont_cap_2
 
-	cp HIGH(MAX_NEUTRAL_DAMAGE - MIN_NEUTRAL_DAMAGE + 1) + 1
+	cp HIGH(DAMAGE_CAP + 1) + 1
 	jr nc, .Cap
 
 	ldh a, [hQuotient + 3]
-	cp LOW(MAX_NEUTRAL_DAMAGE - MIN_NEUTRAL_DAMAGE + 1)
+	cp LOW(DAMAGE_CAP + 1)
 	jr nc, .Cap
 
 .dont_cap_2
@@ -3114,28 +3126,28 @@ BattleCommand_DamageCalc:
 	jr c, .Cap
 
 	ld a, [hl]
-	cp HIGH(MAX_NEUTRAL_DAMAGE - MIN_NEUTRAL_DAMAGE + 1)
+	cp HIGH(DAMAGE_CAP + 1)
 	jr c, .dont_cap_3
 
-	cp HIGH(MAX_NEUTRAL_DAMAGE - MIN_NEUTRAL_DAMAGE + 1) + 1
+	cp HIGH(DAMAGE_CAP + 1) + 1
 	jr nc, .Cap
 
 	inc hl
 	ld a, [hld]
-	cp LOW(MAX_NEUTRAL_DAMAGE - MIN_NEUTRAL_DAMAGE + 1)
+	cp LOW(DAMAGE_CAP + 1)
 	jr c, .dont_cap_3
 
 .Cap:
-	ld a, HIGH(MAX_NEUTRAL_DAMAGE - MIN_NEUTRAL_DAMAGE)
+	ld a, HIGH(DAMAGE_CAP)
 	ld [hli], a
-	ld a, LOW(MAX_NEUTRAL_DAMAGE - MIN_NEUTRAL_DAMAGE)
+	ld a, LOW(DAMAGE_CAP)
 	ld [hld], a
 
 .dont_cap_3
-; Add back MIN_NEUTRAL_DAMAGE (capping at 999).
+; Add back MIN_DAMAGE (capping at 999).
 	inc hl
 	ld a, [hl]
-	add MIN_NEUTRAL_DAMAGE
+	add MIN_DAMAGE
 	ld [hld], a
 	jr nc, .dont_floor
 	inc [hl]
@@ -3418,18 +3430,18 @@ DoEnemyDamage:
 	jp nz, DoSubstituteDamage
 
 .ignore_substitute
-	; Substract wCurDamage from wEnemyMonHP.
-	;  store original HP in little endian wBuffer3/4
+	; Subtract wCurDamage from wEnemyMonHP.
+	;  store original HP in little endian wHPBuffer2
 	ld a, [hld]
 	ld b, a
 	ld a, [wEnemyMonHP + 1]
-	ld [wBuffer3], a
+	ld [wHPBuffer2], a
 	sub b
 	ld [wEnemyMonHP + 1], a
 	ld a, [hl]
 	ld b, a
 	ld a, [wEnemyMonHP]
-	ld [wBuffer4], a
+	ld [wHPBuffer2 + 1], a
 	sbc b
 	ld [wEnemyMonHP], a
 if DEF(_DEBUG)
@@ -3451,9 +3463,9 @@ else
 	jr nc, .no_underflow
 endc
 
-	ld a, [wBuffer4]
+	ld a, [wHPBuffer2 + 1]
 	ld [hli], a
-	ld a, [wBuffer3]
+	ld a, [wHPBuffer2]
 	ld [hl], a
 	xor a
 	ld hl, wEnemyMonHP
@@ -3463,14 +3475,14 @@ endc
 .no_underflow
 	ld hl, wEnemyMonMaxHP
 	ld a, [hli]
-	ld [wBuffer2], a
+	ld [wHPBuffer1 + 1], a
 	ld a, [hl]
-	ld [wBuffer1], a
+	ld [wHPBuffer1], a
 	ld hl, wEnemyMonHP
 	ld a, [hli]
-	ld [wBuffer6], a
+	ld [wHPBuffer3 + 1], a
 	ld a, [hl]
-	ld [wBuffer5], a
+	ld [wHPBuffer3], a
 
 	hlcoord 2, 2
 	xor a
@@ -3495,42 +3507,42 @@ DoPlayerDamage:
 	jp nz, DoSubstituteDamage
 
 .ignore_substitute
-	; Substract wCurDamage from wBattleMonHP.
-	;  store original HP in little endian wBuffer3/4
-	;  store new HP in little endian wBuffer5/6
+	; Subtract wCurDamage from wBattleMonHP.
+	;  store original HP in little endian wHPBuffer2
+	;  store new HP in little endian wHPBuffer3
 	ld a, [hld]
 	ld b, a
 	ld a, [wBattleMonHP + 1]
-	ld [wBuffer3], a
+	ld [wHPBuffer2], a
 	sub b
 	ld [wBattleMonHP + 1], a
-	ld [wBuffer5], a
+	ld [wHPBuffer3], a
 	ld b, [hl]
 	ld a, [wBattleMonHP]
-	ld [wBuffer4], a
+	ld [wHPBuffer2 + 1], a
 	sbc b
 	ld [wBattleMonHP], a
-	ld [wBuffer6], a
+	ld [wHPBuffer3 + 1], a
 	jr nc, .no_underflow
 
-	ld a, [wBuffer4]
+	ld a, [wHPBuffer2 + 1]
 	ld [hli], a
-	ld a, [wBuffer3]
+	ld a, [wHPBuffer2]
 	ld [hl], a
 	xor a
 	ld hl, wBattleMonHP
 	ld [hli], a
 	ld [hl], a
-	ld hl, wBuffer5
+	ld hl, wHPBuffer3
 	ld [hli], a
 	ld [hl], a
 
 .no_underflow
 	ld hl, wBattleMonMaxHP
 	ld a, [hli]
-	ld [wBuffer2], a
+	ld [wHPBuffer1 + 1], a
 	ld a, [hl]
-	ld [wBuffer1], a
+	ld [wHPBuffer1], a
 
 	hlcoord 10, 9
 	ld a, 1
@@ -3605,7 +3617,7 @@ UpdateMoveData:
 	ld a, BATTLE_VARS_MOVE
 	call GetBattleVar
 	ld [wCurSpecies], a
-	ld [wNamedObjectIndexBuffer], a
+	ld [wNamedObjectIndex], a
 
 	dec a
 	call GetMoveData
@@ -3621,7 +3633,7 @@ BattleCommand_SleepTarget:
 	jr nz, .not_protected_by_item
 
 	ld a, [hl]
-	ld [wNamedObjectIndexBuffer], a
+	ld [wNamedObjectIndex], a
 	call GetItemName
 	ld hl, ProtectedByText
 	jr .fail
@@ -3641,8 +3653,6 @@ BattleCommand_SleepTarget:
 	jp nz, PrintDidntAffect2
 
 	ld hl, DidntAffect1Text
-	call .CheckAIRandomFail
-	jr c, .fail
 
 	ld a, [de]
 	and a
@@ -3652,18 +3662,32 @@ BattleCommand_SleepTarget:
 	jr nz, .fail
 
 	call AnimateCurrentMove
-	ld b, $7
+	ld b, SLP
 	ld a, [wInBattleTowerBattle]
 	and a
-	jr z, .random_loop
-	ld b, $3
+	jr z, .random_sleep
+	ld b, %011
 
-.random_loop
+.random_sleep
 	call BattleRandom
-	and b
-	jr z, .random_loop
-	cp 7
-	jr z, .random_loop
+	cp 51 percent
+	jr c, .one_turn
+	cp 86 percent
+	jr c, .two_turns
+	jr .three_turns
+
+.one_turn
+	ld a, 1
+	jr .continue
+	
+.two_turns
+	ld a, 2
+	jr .continue
+	
+.three_turns
+	ld a, 3
+	
+.continue
 	inc a
 	ld [de], a
 	call UpdateOpponentInParty
@@ -3682,34 +3706,6 @@ BattleCommand_SleepTarget:
 	call AnimateFailedMove
 	pop hl
 	jp StdBattleTextbox
-
-.CheckAIRandomFail:
-	; Enemy turn
-	ldh a, [hBattleTurn]
-	and a
-	jr z, .dont_fail
-
-	; Not in link battle
-	ld a, [wLinkMode]
-	and a
-	jr nz, .dont_fail
-
-	ld a, [wInBattleTowerBattle]
-	and a
-	jr nz, .dont_fail
-
-	; Not locked-on by the enemy
-	ld a, [wPlayerSubStatus5]
-	bit SUBSTATUS_LOCK_ON, a
-	jr nz, .dont_fail
-
-	call BattleRandom
-	cp 25 percent + 1 ; 25% chance AI fails
-	ret c
-
-.dont_fail
-	xor a
-	ret
 
 BattleCommand_PoisonTarget:
 ; poisontarget
@@ -3769,7 +3765,7 @@ BattleCommand_Poison:
 	cp HELD_PREVENT_POISON
 	jr nz, .do_poison
 	ld a, [hl]
-	ld [wNamedObjectIndexBuffer], a
+	ld [wNamedObjectIndex], a
 	call GetItemName
 	ld hl, ProtectedByText
 	jr .failed
@@ -3781,27 +3777,6 @@ BattleCommand_Poison:
 	and a
 	jr nz, .failed
 
-	ldh a, [hBattleTurn]
-	and a
-	jr z, .dont_sample_failure
-
-	ld a, [wLinkMode]
-	and a
-	jr nz, .dont_sample_failure
-
-	ld a, [wInBattleTowerBattle]
-	and a
-	jr nz, .dont_sample_failure
-
-	ld a, [wPlayerSubStatus5]
-	bit SUBSTATUS_LOCK_ON, a
-	jr nz, .dont_sample_failure
-
-	call BattleRandom
-	cp 25 percent + 1 ; 25% chance AI fails
-	jr c, .failed
-
-.dont_sample_failure
 	call CheckSubstituteOpp
 	jr nz, .failed
 	ld a, [wAttackMissed]
@@ -3874,6 +3849,61 @@ PoisonOpponent:
 	set PSN, [hl]
 	jp UpdateOpponentInParty
 
+BattleCommand_Growth:
+
+	ld hl, wPlayerStatLevels
+	ldh a, [hBattleTurn]
+	and a
+	jr z, .go
+	ld hl, wEnemyStatLevels
+
+.go   
+; Attack
+	ld a, [hli]
+	cp MAX_STAT_LEVEL
+	jr c, .checkweather
+
+; Special Attack
+    inc hl
+    inc hl
+	ld a, [hl]
+	cp MAX_STAT_LEVEL
+	jr nc, .cantraise
+
+.checkweather
+	call AnimateCurrentMove
+
+	ld a, [wBattleWeather]
+	cp WEATHER_SUN ; If the weather is harsh sunlight...
+	jr z, .RaiseAttacks2 ; Boost both Atk and Sp.Atk by 2
+
+.RaiseAttacks:
+	call BattleCommand_AttackUp
+    call BattleCommand_StatUpMessage
+	call ResetMiss
+	call BattleCommand_SpecialAttackUp
+    jp BattleCommand_StatUpMessage
+
+.RaiseAttacks2:
+	call BattleCommand_AttackUp2
+    call BattleCommand_StatUpMessage
+	call ResetMiss
+	call BattleCommand_SpecialAttackUp2
+    jp BattleCommand_StatUpMessage
+
+.cantraise
+; Can't raise either stat.
+	ld b, ATTACK + 1
+	call GetStatName
+	call AnimateFailedMove
+	ld hl, WontRiseAnymoreText
+	call StdBattleTextbox
+	ld b, SP_ATTACK + 1
+	call GetStatName
+	call AnimateFailedMove
+	ld hl, WontRiseAnymoreText
+	jp StdBattleTextbox
+
 BattleCommand_DrainTarget:
 ; draintarget
 	call SapHealth
@@ -3911,15 +3941,15 @@ SapHealth:
 	ld de, wEnemyMonMaxHP
 .battlemonhp
 
-	; Store current HP in little endian wBuffer3/4
-	ld bc, wBuffer4
+	; Store current HP in little endian wHPBuffer2
+	ld bc, wHPBuffer2 + 1
 	ld a, [hli]
 	ld [bc], a
 	ld a, [hl]
 	dec bc
 	ld [bc], a
 
-	; Store max HP in little endian wBuffer1/2
+	; Store max HP in little endian wHPBuffer1
 	ld a, [de]
 	dec bc
 	ld [bc], a
@@ -3928,20 +3958,20 @@ SapHealth:
 	dec bc
 	ld [bc], a
 
-	; Add hDividend to current HP and copy it to little endian wBuffer5/6
+	; Add hDividend to current HP and copy it to little endian wHPBuffer3
 	ldh a, [hDividend + 1]
 	ld b, [hl]
 	add b
 	ld [hld], a
-	ld [wBuffer5], a
+	ld [wHPBuffer3], a
 	ldh a, [hDividend]
 	ld b, [hl]
 	adc b
 	ld [hli], a
-	ld [wBuffer6], a
+	ld [wHPBuffer3 + 1], a
 	jr c, .max_hp
 
-	; Substract current HP from max HP (to see if we have more than max HP)
+	; Subtract current HP from max HP (to see if we have more than max HP)
 	ld a, [hld]
 	ld b, a
 	ld a, [de]
@@ -3955,14 +3985,14 @@ SapHealth:
 	jr nc, .finish
 
 .max_hp
-	; Load max HP into current HP and copy it to little endian wBuffer5/6
+	; Load max HP into current HP and copy it to little endian wHPBuffer3
 	ld a, [de]
 	ld [hld], a
-	ld [wBuffer5], a
+	ld [wHPBuffer3], a
 	dec de
 	ld a, [de]
 	ld [hli], a
-	ld [wBuffer6], a
+	ld [wHPBuffer3 + 1], a
 	inc de
 
 .finish
@@ -4432,41 +4462,9 @@ BattleCommand_StatDown:
 ; Sharply lower the stat if applicable.
 	ld a, [wLoweredStat]
 	and $f0
-	jr z, .ComputerMiss
 	dec b
-	jr nz, .ComputerMiss
 	inc b
 
-.ComputerMiss:
-; Computer opponents have a 25% chance of failing.
-	ldh a, [hBattleTurn]
-	and a
-	jr z, .DidntMiss
-
-	ld a, [wLinkMode]
-	and a
-	jr nz, .DidntMiss
-
-	ld a, [wInBattleTowerBattle]
-	and a
-	jr nz, .DidntMiss
-
-; Lock-On still always works.
-	ld a, [wPlayerSubStatus5]
-	bit SUBSTATUS_LOCK_ON, a
-	jr nz, .DidntMiss
-
-; Attacking moves that also lower accuracy are unaffected.
-	ld a, BATTLE_VARS_MOVE_EFFECT
-	call GetBattleVar
-	cp EFFECT_ACCURACY_DOWN_HIT
-	jr z, .DidntMiss
-
-	call BattleRandom
-	cp 25 percent + 1 ; 25% chance AI fails
-	jr c, .Failed
-
-.DidntMiss:
 	call CheckSubstituteOpp
 	jr nz, .Failed
 
@@ -4708,7 +4706,7 @@ GetStatName:
 
 .Copy:
 	ld de, wStringBuffer2
-	ld bc, wStringBuffer3 - wStringBuffer2
+	ld bc, STRING_BUFFER_LENGTH
 	jp CopyBytes
 
 INCLUDE "data/battle/stat_names.asm"
@@ -4823,7 +4821,6 @@ BattleCommand_TriStatusChance:
 ; tristatuschance
 
 	call BattleCommand_EffectChance
-
 .loop
 	; 1/3 chance of each status
 	call BattleRandom
@@ -4831,11 +4828,11 @@ BattleCommand_TriStatusChance:
 	and %11
 	jr z, .loop
 	dec a
-	ld hl, .ptrs
+	ld hl, .StatusCommands
 	rst JumpTable
 	ret
 
-.ptrs
+.StatusCommands:
 	dw BattleCommand_ParalyzeTarget ; paralyze
 	dw BattleCommand_FreezeTarget ; freeze
 	dw BattleCommand_BurnTarget ; burn
@@ -5714,8 +5711,8 @@ BattleCommand_Charge:
 	text_far _BattleDugText
 	text_end
 
-BattleCommand3c:
-; unused
+BattleCommand_Unused3C:
+; effect0x3c
 	ret
 
 BattleCommand_TrapTarget:
@@ -5805,26 +5802,26 @@ BattleCommand_Recoil:
 	inc c
 .min_damage
 	ld a, [hli]
-	ld [wBuffer2], a
+	ld [wHPBuffer1 + 1], a
 	ld a, [hl]
-	ld [wBuffer1], a
+	ld [wHPBuffer1], a
 	dec hl
 	dec hl
 	ld a, [hl]
-	ld [wBuffer3], a
+	ld [wHPBuffer2], a
 	sub c
 	ld [hld], a
-	ld [wBuffer5], a
+	ld [wHPBuffer3], a
 	ld a, [hl]
-	ld [wBuffer4], a
+	ld [wHPBuffer2 + 1], a
 	sbc b
 	ld [hl], a
-	ld [wBuffer6], a
+	ld [wHPBuffer3 + 1], a
 	jr nc, .dont_ko
 	xor a
 	ld [hli], a
 	ld [hl], a
-	ld hl, wBuffer5
+	ld hl, wHPBuffer3
 	ld [hli], a
 	ld [hl], a
 .dont_ko
@@ -5870,7 +5867,7 @@ BattleCommand_Confuse:
 	cp HELD_PREVENT_CONFUSE
 	jr nz, .no_item_protection
 	ld a, [hl]
-	ld [wNamedObjectIndexBuffer], a
+	ld [wNamedObjectIndex], a
 	call GetItemName
 	call AnimateFailedMove
 	ld hl, ProtectedByText
@@ -5960,7 +5957,7 @@ BattleCommand_Paralyze:
 	cp HELD_PREVENT_PARALYZE
 	jr nz, .no_item_protection
 	ld a, [hl]
-	ld [wNamedObjectIndexBuffer], a
+	ld [wNamedObjectIndex], a
 	call GetItemName
 	call AnimateFailedMove
 	ld hl, ProtectedByText
@@ -6124,7 +6121,7 @@ INCLUDE "engine/battle/move_effects/conversion.asm"
 BattleCommand_ResetStats:
 ; resetstats
 
-	ld a, 7 ; neutral
+	ld a, BASE_STAT_LEVEL
 	ld hl, wPlayerStatLevels
 	call .Fill
 	ld hl, wEnemyStatLevels
@@ -6147,7 +6144,7 @@ BattleCommand_ResetStats:
 	jp StdBattleTextbox
 
 .Fill:
-	ld b, wPlayerStatLevelsEnd - wPlayerStatLevels
+	ld b, NUM_LEVEL_STATS
 .next
 	ld [hli], a
 	dec b
@@ -6414,6 +6411,8 @@ ResetTurn:
 
 INCLUDE "engine/battle/move_effects/thief.asm"
 
+
+
 BattleCommand_ArenaTrap:
 ; arenatrap
 
@@ -6489,8 +6488,8 @@ INCLUDE "engine/battle/move_effects/sandstorm.asm"
 
 INCLUDE "engine/battle/move_effects/rollout.asm"
 
-BattleCommand5d:
-; unused
+BattleCommand_Unused5D:
+; effect0x5d
 	ret
 
 INCLUDE "engine/battle/move_effects/fury_cutter.asm"
@@ -6729,7 +6728,7 @@ GetItemHeldEffect:
 	ld a, ITEMATTR_STRUCT_LENGTH
 	call AddNTimes
 	ld a, BANK(ItemAttributes)
-	call GetFarHalfword
+	call GetFarWord
 	ld b, l
 	ld c, h
 	pop hl

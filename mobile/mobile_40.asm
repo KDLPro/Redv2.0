@@ -117,7 +117,7 @@ Function1000ba:
 	add hl, de
 	add hl, de
 	ld a, [wcd22]
-	call GetFarHalfword
+	call GetFarWord
 	ld a, [wcd22]
 	rst FarCall
 
@@ -429,7 +429,7 @@ Function100320:
 	farcall Mobile_ReloadMapPart
 	ret
 
-Function100327:
+Function100327: ; unreferenced
 	farcall HDMATransferTilemapToWRAMBank3
 	ret
 
@@ -523,7 +523,7 @@ Function10039c:
 	call FarCopyWRAM
 	ret
 
-Function1003ab:
+Function1003ab: ; unreferenced
 	ld hl, w3_d000
 	ld de, wcc60
 	ld bc, $54
@@ -1698,14 +1698,14 @@ Mobile_LoadBattleMenu:
 	call FarCall_de
 	ld a, BANK(BattleMenuHeader)
 	ld [wMenuData_2DMenuItemStringsBank], a
-	ld a, [wBattleMenuCursorBuffer]
-	ld [wMenuCursorBuffer], a
+	ld a, [wBattleMenuCursorPosition]
+	ld [wMenuCursorPosition], a
 	call Function100e72
 	call Function100b45
 	farcall InitPartyMenuBGPal7
 	call Function100ed4
-	ld a, [wMenuCursorBuffer]
-	ld [wBattleMenuCursorBuffer], a
+	ld a, [wMenuCursorPosition]
+	ld [wBattleMenuCursorPosition], a
 	call ExitMenu
 	ret
 
@@ -1730,7 +1730,7 @@ Function100b45:
 	ld c, a
 	ld a, [w2DMenuNumRows]
 	call SimpleMultiply
-	ld [wMenuCursorBuffer], a
+	ld [wMenuCursorPosition], a
 	and a
 	ret
 
@@ -1749,7 +1749,7 @@ Function100b7a:
 
 Mobile_MoveSelectionScreen:
 	xor a
-	ld [wMoveSwapBuffer], a
+	ld [wSwappingMove], a
 	farcall CheckPlayerHasUsableMoves
 	ret z
 	call Function100dd8
@@ -1870,7 +1870,7 @@ Mobile_MoveSelectionScreen:
 	ld bc, NUM_MOVES
 	call CopyBytes
 	ld a, SCREEN_WIDTH * 2
-	ld [wBuffer1], a
+	ld [wListMovesLineSpacing], a
 	hlcoord 2, 10
 	predef ListMoves
 	ret
@@ -2217,29 +2217,29 @@ Function100ed4:
 Function100edf:
 	ld hl, Unknown_100fc0
 	ld c, 1
-	jr asm_100f02
+	jr Function100f02
 
 Function100ee6:
 	ld hl, Unknown_100fc0
 	ld c, 2
-	jr asm_100f02
+	jr Function100f02
 
 Function100eed:
 	ld hl, Unknown_100feb
 	ld c, 1
-	jr asm_100f02
+	jr Function100f02
 
 Function100ef4:
 	ld hl, Unknown_100ff3
 	ld c, 1
-	jr asm_100f02
+	jr Function100f02
 
-Function100efb:
+Function100efb: ; unreferenced
 	ld hl, Unknown_10102c
 	ld c, 1
-	jr asm_100f02
+	jr Function100f02
 
-asm_100f02:
+Function100f02:
 	ld a, c
 	ld [wStringBuffer2], a
 	; someting that was previously stored in de gets backed up to here
@@ -2660,8 +2660,8 @@ Function1011f1:
 	call CloseSRAM
 	ld hl, wdc41
 	res 4, [hl]
-	ld hl, wGameTimerPause
-	bit GAMETIMERPAUSE_MOBILE_7_F, [hl]
+	ld hl, wGameTimerPaused
+	bit GAME_TIMER_MOBILE_F, [hl]
 	jr z, .skip
 	ld hl, wdc41
 	set 4, [hl]
@@ -2712,7 +2712,7 @@ Jumptable_101247:
 Function101251:
 	call UpdateSprites
 	call RefreshScreen
-	ld hl, UnknownText_0x1021f4
+	ld hl, ClosingLinkText
 	call Function1021e0
 	call Function1020ea
 	ret c
@@ -2720,14 +2720,14 @@ Function101251:
 	ret
 
 Function101265:
-	ld hl, UnknownText_0x1021ef
+	ld hl, LinkTerminatedText
 	call Function1021e0
 	ret
 
 Function10126c:
 	call UpdateSprites
 	farcall Script_reloadmappart
-	ld hl, UnknownText_0x1021f4
+	ld hl, ClosingLinkText
 	call Function1021e0
 	ret
 
@@ -4425,15 +4425,15 @@ Function101e98:
 	call ClearSprites
 	farcall Function8adb3
 	ret c
-	ld hl, wGameTimerPause
-	set GAMETIMERPAUSE_MOBILE_7_F, [hl]
+	ld hl, wGameTimerPaused
+	set GAME_TIMER_MOBILE_F, [hl]
 	ld hl, wdc41
 	set 4, [hl]
 	ret
 
 Function101ead:
-	ld hl, wGameTimerPause
-	bit GAMETIMERPAUSE_MOBILE_7_F, [hl]
+	ld hl, wGameTimerPaused
+	bit GAME_TIMER_MOBILE_F, [hl]
 	jr nz, .asm_101ec8
 	ld hl, wdc41
 	bit 2, [hl]
@@ -4733,14 +4733,14 @@ Function102112:
 Function102142:
 	call Function10218d
 	call Function102180
-	ld hl, UnknownText_0x1021d1
+	ld hl, NewCardArrivedText
 	call MenuTextbox
 	ld de, SFX_LEVEL_UP
 	call PlaySFX
 	call JoyWaitAorB
 	call ExitMenu
 	call Function10219f
-	ld hl, UnknownText_0x1021d6
+	ld hl, PutCardInCardFolderText
 	call MenuTextbox
 	call YesNoBox
 	call ExitMenu
@@ -4749,7 +4749,7 @@ Function102142:
 	jr c, .asm_10217c
 	call Function10218d
 	call Function102180
-	ld hl, UnknownText_0x1021db
+	ld hl, CardWasListedText
 	call PrintText
 
 .asm_10217c
@@ -4794,16 +4794,16 @@ Function1021b8:
 	pop af
 	ret
 
-UnknownText_0x1021d1:
-	text_far UnknownText_0x1bd19a
+NewCardArrivedText:
+	text_far _NewCardArrivedText
 	text_end
 
-UnknownText_0x1021d6:
-	text_far UnknownText_0x1bd1ba
+PutCardInCardFolderText:
+	text_far _PutCardInCardFolderText
 	text_end
 
-UnknownText_0x1021db:
-	text_far UnknownText_0x1bd1dd
+CardWasListedText:
+	text_far _CardWasListedText
 	text_end
 
 Function1021e0:
@@ -4812,16 +4812,16 @@ Function1021e0:
 	call ExitMenu
 	ret
 
-UnknownText_0x1021ea:
-	text_far UnknownText_0x1bd201
+StartingLinkText: ; unreferenced
+	text_far _StartingLinkText
 	text_end
 
-UnknownText_0x1021ef:
-	text_far UnknownText_0x1bd211
+LinkTerminatedText:
+	text_far _LinkTerminatedText
 	text_end
 
-UnknownText_0x1021f4:
-	text_far UnknownText_0x1bd223
+ClosingLinkText:
+	text_far _ClosingLinkText
 	text_end
 
 Function1021f9:
@@ -4964,7 +4964,7 @@ Function1022d0:
 	ld a, 30
 	sub c
 	ld c, a
-	ld b, $03
+	ld b, 03
 	farcall AdvanceMobileInactivityTimerAndCheckExpired
 	jr c, .asm_1022f3
 	xor a
@@ -5169,7 +5169,7 @@ Function10246a:
 	ld [wcd49], a
 	ret
 
-Function102480:
+Function102480: ; unreferenced
 	ld c, $32
 	call DelayFrames
 	ld a, [wcd49]
@@ -5183,7 +5183,7 @@ Function10248d:
 	ld [wcd49], a
 	ret
 
-Function102496:
+Function102496: ; unreferenced
 	ld hl, wcd4e
 	dec [hl]
 	ret nz
@@ -6443,7 +6443,7 @@ Function102dd3:
 	ld hl, vTiles0
 	lb bc, BANK(MobileTradeLightsGFX), 4
 	call Get2bpp
-	farcall __LoadTradeScreenBorder
+	farcall __LoadTradeScreenBorderGFX
 	call EnableLCD
 	ret
 
@@ -6496,7 +6496,7 @@ Function102e3e:
 	db "CANCEL@"
 
 Function102e4f:
-	farcall Function16d42e
+	farcall LoadMobileTradeBorderTilemap
 	farcall _InitMG_Mobile_LinkTradePalMap
 	ld de, wPlayerName
 	hlcoord 4, 0
@@ -6522,7 +6522,7 @@ Function102e4f:
 	ld a, [de]
 	cp $ff
 	ret z
-	ld [wNamedObjectIndexBuffer], a
+	ld [wNamedObjectIndex], a
 	push bc
 	push hl
 	push de
@@ -6550,7 +6550,7 @@ Function102ea8:
 	ld hl, wPartySpecies
 	add hl, bc
 	ld a, [hl]
-	ld [wNamedObjectIndexBuffer], a
+	ld [wNamedObjectIndex], a
 	call GetPokemonName
 	ld hl, wStringBuffer1
 	ld de, wStringBuffer2
@@ -6563,14 +6563,14 @@ Function102ea8:
 	ld hl, wOTPartySpecies
 	add hl, bc
 	ld a, [hl]
-	ld [wNamedObjectIndexBuffer], a
+	ld [wNamedObjectIndex], a
 	call GetPokemonName
-	ld hl, UnknownText_0x102ee2
+	ld hl, TradingMonForOTMonText
 	call PrintTextboxText
 	ret
 
-UnknownText_0x102ee2:
-	text_far UnknownText_0x1bd286
+TradingMonForOTMonText:
+	text_far _TradingMonForOTMonText
 	text_end
 
 Function102ee7:
@@ -6632,7 +6632,7 @@ Function102f85:
 	ld hl, wOTPartySpecies
 	add hl, bc
 	ld a, [hl]
-	ld [wNamedObjectIndexBuffer], a
+	ld [wNamedObjectIndex], a
 	call GetPokemonName
 	call Function102dc3
 	ld de, String_102fb2
@@ -6904,7 +6904,7 @@ Function103302:
 Function103309:
 	xor a
 	ldh [hBGMapMode], a
-	ld hl, wBuffer1
+	ld hl, wd1ea
 	ld bc, 10
 	xor a
 	call ByteFill
@@ -6912,7 +6912,7 @@ Function103309:
 	call OpenSRAM
 	ld a, [wdc41]
 	ld [s4_a60c], a
-	ld [wBuffer1], a
+	ld [wd1ea], a
 	call CloseSRAM
 	call Function1035c6
 	ld a, [hli]
@@ -6954,15 +6954,15 @@ Function103362:
 	call Function10339a
 	call Function10342c
 	farcall HDMATransferTilemapToWRAMBank3
-	ld a, [wBuffer2]
+	ld a, [wd1eb]
 	bit 7, a
 	jr z, .asm_103362
-	ld hl, wBuffer2
+	ld hl, wd1eb
 	bit 6, [hl]
 	jr z, .asm_103398
 	ld a, BANK(s4_a60c)
 	call OpenSRAM
-	ld a, [wBuffer1]
+	ld a, [wd1ea]
 	ld [s4_a60c], a
 	ld [wdc41], a
 	call CloseSRAM
@@ -7028,7 +7028,7 @@ Function1033af:
 
 .b
 	call PlayClickSFX
-	ld hl, wBuffer2
+	ld hl, wd1eb
 	set 7, [hl]
 	ret
 
@@ -7038,9 +7038,9 @@ Function1033af:
 	jr nz, .a_return
 	ld de, SFX_TRANSACTION
 	call PlaySFX
-	ld hl, wBuffer2
+	ld hl, wd1eb
 	set 7, [hl]
-	ld hl, wBuffer2
+	ld hl, wd1eb
 	set 6, [hl]
 	ret
 
@@ -7054,9 +7054,9 @@ Function1033af:
 	call PlaySFX
 	ld bc, 8
 	call Function10350f
-	ld a, [wBuffer1]
+	ld a, [wd1ea]
 	xor e
-	ld [wBuffer1], a
+	ld [wd1ea], a
 	ret
 
 Function10342c:
@@ -7092,7 +7092,7 @@ Function10343c:
 	call Function103487
 	ld bc, 8
 	call Function10350f
-	ld a, [wBuffer1]
+	ld a, [wd1ea]
 	and e
 	ld bc, 2
 	jr z, .asm_10347d
@@ -7288,7 +7288,7 @@ AskMobileOrCable:
 	ld a, [wMobileOrCable_LastSelection]
 	and $0f
 	jr z, .skip_load
-	ld [wMenuCursorBuffer], a
+	ld [wMenuCursorPosition], a
 
 .skip_load
 	call VerticalMenu
@@ -7339,7 +7339,7 @@ Mobile_SelectThreeMons:
 	farcall Mobile_AlwaysReturnNotCarry
 	bit 7, c
 	jr z, .asm_10369b
-	ld hl, UnknownText_0x10375d
+	ld hl, MobileBattleMustPickThreeMonText
 	call PrintText
 	call YesNoBox
 	jr c, .asm_103696
@@ -7363,7 +7363,7 @@ Mobile_SelectThreeMons:
 	bit 7, [hl]
 	set 7, [hl]
 	jr nz, .asm_1036b5
-	ld hl, UnknownText_0x103762
+	ld hl, MobileBattleMoreInfoText
 	call PrintText
 	call YesNoBox
 	jr c, .asm_1036b5
@@ -7409,49 +7409,48 @@ Mobile_SelectThreeMons:
 	ret
 
 Function1036f9:
-	ld hl, UnknownText_0x103767
+	ld hl, MobileBattleRulesText
 	call PrintText
 	ret
 
 Function103700:
-	ld c, $0a
+	ld c, 10
 	ld hl, wSwarmFlags
 	bit SWARMFLAGS_MOBILE_4_F, [hl]
 	jr z, .asm_10370f
 	farcall MobileBattleGetRemainingTime
-
 .asm_10370f
 	ld a, c
 	ld [wStringBuffer2], a
 	ld a, [wStringBuffer2]
-	cp $05
-	jr nc, .asm_103724
-	cp $02
-	jr nc, .asm_10372c
-	cp $01
-	jr nc, .asm_103734
-	jr .asm_10373c
+	cp 5
+	jr nc, .five_or_more_mins
+	cp 2
+	jr nc, .two_to_five_mins
+	cp 1
+	jr nc, .one_min
+	jr .times_up
 
-.asm_103724
-	ld hl, UnknownText_0x10376c
+.five_or_more_mins
+	ld hl, WouldYouLikeToMobileBattleText
 	call PrintText
 	and a
 	ret
 
-.asm_10372c
-	ld hl, UnknownText_0x103771
+.two_to_five_mins
+	ld hl, WantAQuickMobileBattleText
 	call PrintText
 	and a
 	ret
 
-.asm_103734
-	ld hl, UnknownText_0x103776
+.one_min
+	ld hl, WantToRushThroughAMobileBattleText
 	call PrintText
 	and a
 	ret
 
-.asm_10373c
-	ld hl, UnknownText_0x10377b
+.times_up
+	ld hl, PleaseTryAgainTomorrowText
 	call PrintText
 	call JoyWaitAorB
 	scf
@@ -7470,32 +7469,32 @@ MenuData_10374f:
 	db "やめる@"
 	db "せつめい@"
 
-UnknownText_0x10375d:
-	text_far UnknownText_0x1c422a
+MobileBattleMustPickThreeMonText:
+	text_far _MobileBattleMustPickThreeMonText
 	text_end
 
-UnknownText_0x103762:
-	text_far UnknownText_0x1c4275
+MobileBattleMoreInfoText:
+	text_far _MobileBattleMoreInfoText
 	text_end
 
-UnknownText_0x103767:
-	text_far UnknownText_0x1c4298
+MobileBattleRulesText:
+	text_far _MobileBattleRulesText
 	text_end
 
-UnknownText_0x10376c:
-	text_far UnknownText_0x1c439c
+WouldYouLikeToMobileBattleText:
+	text_far _WouldYouLikeToMobileBattleText
 	text_end
 
-UnknownText_0x103771:
-	text_far UnknownText_0x1c43dc
+WantAQuickMobileBattleText:
+	text_far _WantAQuickMobileBattleText
 	text_end
 
-UnknownText_0x103776:
-	text_far UnknownText_0x1c4419
+WantToRushThroughAMobileBattleText:
+	text_far _WantToRushThroughAMobileBattleText
 	text_end
 
-UnknownText_0x10377b:
-	text_far UnknownText_0x1c445a
+PleaseTryAgainTomorrowText:
+	text_far _PleaseTryAgainTomorrowText
 	text_end
 
 Function103780:
@@ -7544,7 +7543,7 @@ Function1037c2:
 	ld a, [wdc5f]
 	and a
 	jr z, .nope
-	ld hl, UnknownText_0x1037e6
+	ld hl, TryAgainUsingSameSettingsText
 	call PrintText
 	call YesNoBox
 	jr c, .nope
@@ -7558,8 +7557,8 @@ Function1037c2:
 	ld [wScriptVar], a
 	ret
 
-UnknownText_0x1037e6:
-	text_far UnknownText_0x1c449c
+TryAgainUsingSameSettingsText:
+	text_far _TryAgainUsingSameSettingsText
 	text_end
 
 Function1037eb:
@@ -7622,7 +7621,7 @@ Function10383c:
 	ld [hli], a
 	ld [hli], a
 	ld [hl], a
-	ld hl, UnknownText_0x103876
+	ld hl, PickThreeMonForMobileBattleText
 	call PrintText
 	call JoyWaitAorB
 	farcall Script_reloadmappart
@@ -7641,8 +7640,8 @@ Function10383c:
 	ld [wScriptVar], a
 	ret
 
-UnknownText_0x103876:
-	text_far UnknownText_0x1c4508
+PickThreeMonForMobileBattleText:
+	text_far _PickThreeMonForMobileBattleText
 	text_end
 
 Function10387b:
@@ -7652,11 +7651,11 @@ Function10387b:
 	farcall MobileBattleGetRemainingTime
 	ld a, c
 	ld [wStringBuffer2], a
-	ld hl, UnknownText_0x103898
+	ld hl, MobileBattleRemainingTimeText
 	call PrintText
 	call JoyWaitAorB
 	ret
 
-UnknownText_0x103898:
-	text_far UnknownText_0x1c4525
+MobileBattleRemainingTimeText:
+	text_far _MobileBattleRemainingTimeText
 	text_end

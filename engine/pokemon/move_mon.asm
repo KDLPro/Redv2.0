@@ -54,7 +54,7 @@ TryAddMonToParty:
 	and a
 	jr nz, .skipnickname
 	ld a, [wCurPartySpecies]
-	ld [wNamedObjectIndexBuffer], a
+	ld [wNamedObjectIndex], a
 	call GetPokemonName
 	ld hl, wPartyMonNicknames
 	ldh a, [hMoveMon]
@@ -132,7 +132,7 @@ rept NUM_MOVES - 1
 	ld [hli], a
 endr
 	ld [hl], a
-	ld [wEvolutionOldSpecies], a
+	ld [wSkipMovesBeforeLevelUp], a
 	predef FillMoves
 
 .next
@@ -227,7 +227,12 @@ rept NUM_MOVES
 endr
 
 	; Initialize happiness.
+	ld a, [wMonType]
+	and $f
 	ld a, BASE_HAPPINESS
+	jr z, .got_happiness
+	ld a, $ff ; max happiness for enemy trainers
+.got_happiness
 	ld [de], a
 	inc de
 
@@ -444,7 +449,7 @@ AddTempmonToParty:
 	call CopyBytes
 
 	ld a, [wCurPartySpecies]
-	ld [wNamedObjectIndexBuffer], a
+	ld [wNamedObjectIndex], a
 	cp EGG
 	jr z, .egg
 	dec a
@@ -780,7 +785,7 @@ RetrieveMonFromDayCareMan:
 	call WaitSFX
 	call GetBreedMon1LevelGrowth
 	ld a, b
-	ld [wd002], a
+	ld [wPrevPartyLevel], a
 	ld a, e
 	ld [wCurPartyLevel], a
 	xor a
@@ -795,12 +800,12 @@ RetrieveMonFromDayCareLady:
 	call WaitSFX
 	call GetBreedMon2LevelGrowth
 	ld a, b
-	ld [wd002], a
+	ld [wPrevPartyLevel], a
 	ld a, e
 	ld [wCurPartyLevel], a
 	ld a, PC_DEPOSIT
 	ld [wPokemonWithdrawDepositParameter], a
-	jp RetrieveBreedmon
+	jp RetrieveBreedmon ; pointless
 
 RetrieveBreedmon:
 	ld hl, wPartyCount
@@ -876,8 +881,8 @@ RetrieveBreedmon:
 	call AddNTimes
 	ld d, h
 	ld e, l
-	ld a, $1
-	ld [wBuffer1], a
+	ld a, TRUE
+	ld [wSkipMovesBeforeLevelUp], a
 	predef FillMoves
 	ld a, [wPartyCount]
 	dec a
@@ -972,7 +977,7 @@ SendMonIntoBox:
 	call CopyBytes
 
 	ld a, [wCurPartySpecies]
-	ld [wNamedObjectIndexBuffer], a
+	ld [wNamedObjectIndex], a
 	call GetPokemonName
 
 	ld de, sBoxMonNicknames
@@ -1671,7 +1676,7 @@ GivePoke::
 
 .done
 	ld a, [wCurPartySpecies]
-	ld [wNamedObjectIndexBuffer], a
+	ld [wNamedObjectIndex], a
 	ld [wTempEnemyMonSpecies], a
 	call GetPokemonName
 	ld hl, wStringBuffer1
@@ -1687,7 +1692,7 @@ GivePoke::
 	push bc
 	push hl
 	ld a, [wScriptBank]
-	call GetFarHalfword
+	call GetFarWord
 	ld bc, MON_NAME_LENGTH
 	ld a, [wScriptBank]
 	call FarCopyBytes
@@ -1695,7 +1700,7 @@ GivePoke::
 	inc hl
 	inc hl
 	ld a, [wScriptBank]
-	call GetFarHalfword
+	call GetFarWord
 	pop bc
 	ld a, b
 	and a
@@ -1815,7 +1820,7 @@ InitNickname:
 	pop hl
 	ld de, wStringBuffer1
 	call InitName
-	ld a, $4 ; ExitAllMenus is in bank 0, XXX could this be in bank 4 in pokered?
+	ld a, $4 ; ExitAllMenus is in bank 0; maybe it used to be in bank 4
 	ld hl, ExitAllMenus
 	rst FarCall
 	ret

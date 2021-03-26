@@ -1194,19 +1194,19 @@ JohtoGrassWildMons:
 	db 10 percent, 10 percent, 10 percent ; encounter rates: morn/day/nite
 	; morn
 	db 2, PIDGEY
-	db 2, SENTRET
-	db 3, PIDGEY
-	db 3, SENTRET
+	db 2, PIKACHU
+	db 3, DUNSPARCE
+	db 3, IGGLYBUFF
 	db 2, RATTATA
-	db 3, HOPPIP
+	db 3, ELEKID
 	db 3, HOPPIP
 	; day
-	db 2, PIDGEY
-	db 2, SENTRET
+	db 2, DUNSPARCE
+	db 2, PIKACHU
 	db 3, PIDGEY
-	db 3, SENTRET
+	db 3, IGGLYBUFF
 	db 2, RATTATA
-	db 3, HOPPIP
+	db 3, ELEKID
 	db 3, HOPPIP
 	; nite
 	db 2, HOOTHOOT
@@ -1650,3 +1650,4 @@ JohtoGrassWildMons:
 	db 44, GOLBAT
 
 	db -1 ; end
+	

@@ -47,7 +47,7 @@ PredefPointers::
 	add_predef StatsScreenInit
 	add_predef DrawPlayerHP
 	add_predef DrawEnemyHP
-	add_predef PrintTempMonStats
+	add_predef PrintTempMonStatsDVs
 	add_predef GetTypeName
 	add_predef PrintMoveType
 	add_predef PrintType
@@ -60,7 +60,7 @@ PredefPointers::
 	add_predef Pokedex_GetArea
 	add_predef Unused_CheckShininess
 	add_predef DoBattleTransition
-	add_predef DummyPredef35
+	add_predef PrintTempMonStats
 	add_predef DummyPredef36
 	add_predef PlayBattleAnim
 	add_predef DummyPredef38
@@ -81,4 +81,4 @@ PredefPointers::
 	add_predef AnimateFrontpic
 	add_predef Unused_HOF_AnimateAlignedFrontpic
 	add_predef HOF_AnimateFrontpic
-	dbw -1, InexplicablyEmptyFunction ; ???
+	dbw -1, DummyEndPredef ; pointless

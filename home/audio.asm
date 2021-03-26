@@ -49,7 +49,7 @@ UpdateSound::
 	ret
 
 _LoadMusicByte::
-; wCurMusicByte = [a:de]
+; [wCurMusicByte] = [a:de]
 	ldh [hROMBank], a
 	ld [MBC3RomBank], a
 
@@ -436,7 +436,7 @@ SpecialMapMusic::
 	and a
 	ret
 
-.bike
+.bike ; unreferenced
 	ld de, MUSIC_BICYCLE
 	scf
 	ret

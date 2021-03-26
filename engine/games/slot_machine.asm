@@ -144,7 +144,7 @@ _SlotMachine:
 	call ByteFill
 	call Slots_InitReelTiles
 	call Slots_GetPals
-	ld a, $7
+	ld a, SPRITE_ANIM_DICT_SLOTS
 	ld hl, wSpriteAnimDict
 	ld [hli], a
 	ld [hl], $40
@@ -159,7 +159,7 @@ _SlotMachine:
 	call Random
 	and %00101010
 	ret nz
-	ld a, 1
+	ld a, TRUE
 	ld [wKeepSevenBiasChance], a ; 12.5% chance
 	ret
 
@@ -206,7 +206,7 @@ SlotsLoop:
 	ld a, [wFirstTwoReelsMatchingSevens]
 	and a
 	jr nz, .matching_sevens
-	ld a, %11100100 ; alternates two palettes
+	ld a, %11100100
 	call DmgToCgbBGPals
 	ret
 
@@ -215,7 +215,7 @@ SlotsLoop:
 	and $7
 	ret nz
 	ldh a, [rBGP]
-	xor %00001100
+	xor %00001100 ; alternates two palettes
 	call DmgToCgbBGPals
 	ret
 
@@ -249,7 +249,7 @@ DebugPrintSlotBias: ; unreferenced
 
 AnimateSlotReelIcons: ; unreferenced
 ; This animation was present in pokegold-spaceworld.
-	ld hl, wcf66
+	ld hl, wUnusedSlotReelIconDelay
 	ld a, [hl]
 	inc [hl]
 	and $7
@@ -551,7 +551,7 @@ Slots_GetCurrentReelState:
 	dec a
 	and $f
 	ld e, a
-	ld d, $0
+	ld d, 0
 	ld hl, REEL_TILEMAP_ADDR
 	add hl, bc
 	ld a, [hli]

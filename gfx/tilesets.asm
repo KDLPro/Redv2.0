@@ -338,101 +338,118 @@ INCBIN "data/tilesets/omanyte_word_room_metatiles.bin"
 TilesetAerodactylWordRoomMeta::
 INCBIN "data/tilesets/aerodactyl_word_room_metatiles.bin"
 
-TilesetMuseumGFX::
-INCBIN "gfx/tilesets/museum.2bpp.lz"
-
-TilesetMuseumMeta::
-INCBIN "data/tilesets/museum_metatiles.bin"
-
-TilesetMuseumColl::
-INCLUDE "data/tilesets/museum_collision.asm"
-
 
 SECTION "Tileset Data 9", ROMX
 
-TilesetKantoDojoGFX::
-INCBIN "gfx/tilesets/kanto_dojo.2bpp.lz"
+Tileset0Attr::
+TilesetJohtoAttr::
+INCBIN "data/tilesets/johto_attributes.bin"
 
-TilesetKantoDojoMeta::
-INCBIN "data/tilesets/kanto_dojo_metatiles.bin"
+TilesetJohtoModernAttr::
+INCBIN "data/tilesets/johto_modern_attributes.bin"
 
-TilesetKantoDojoColl::
-INCLUDE "data/tilesets/kanto_dojo_collision.asm"
+TilesetKantoAttr::
+INCBIN "data/tilesets/kanto_attributes.bin"
 
-TilesetKantoPoliceGFX::
-INCBIN "gfx/tilesets/kanto_police.2bpp.lz"
+TilesetBattleTowerOutsideAttr::
+INCBIN "data/tilesets/battle_tower_outside_attributes.bin"
 
-TilesetKantoPoliceMeta::
-INCBIN "data/tilesets/kanto_police_metatiles.bin"
+TilesetHouseAttr::
+INCBIN "data/tilesets/house_attributes.bin"
 
-TilesetKantoPoliceColl::
-INCLUDE "data/tilesets/kanto_police_collision.asm"
+TilesetPlayersHouseAttr::
+INCBIN "data/tilesets/players_house_attributes.bin"
 
-TilesetKantoPowerGFX::
-INCBIN "gfx/tilesets/kanto_power.2bpp.lz"
+TilesetPokecenterAttr::
+INCBIN "data/tilesets/pokecenter_attributes.bin"
 
-TilesetKantoPowerMeta::
-INCBIN "data/tilesets/kanto_power_metatiles.bin"
+TilesetGateAttr::
+INCBIN "data/tilesets/gate_attributes.bin"
 
-TilesetKantoPowerColl::
-INCLUDE "data/tilesets/kanto_power_collision.asm"
+TilesetPortAttr::
+INCBIN "data/tilesets/port_attributes.bin"
 
-TilesetKantoSandyGFX::
-INCBIN "gfx/tilesets/kanto_sandy.2bpp.lz"
-
-TilesetKantoSandyMeta::
-INCBIN "data/tilesets/kanto_sandy_metatiles.bin"
-
-TilesetKantoSandyColl::
-INCLUDE "data/tilesets/kanto_sandy_collision.asm"
+TilesetLabAttr::
+INCBIN "data/tilesets/lab_attributes.bin"
 
 
 SECTION "Tileset Data 10", ROMX
 
-TilesetSSAnneGFX::
-INCBIN "gfx/tilesets/ss_anne.2bpp.lz"
+TilesetFacilityAttr::
+INCBIN "data/tilesets/facility_attributes.bin"
 
-TilesetSSAnneMeta::
-INCBIN "data/tilesets/ss_anne_metatiles.bin"
+TilesetMartAttr::
+INCBIN "data/tilesets/mart_attributes.bin"
 
-TilesetSSAnneColl::
-INCBIN "data/tilesets/ss_anne_collision.asm"
+TilesetMansionAttr::
+INCBIN "data/tilesets/mansion_attributes.bin"
 
-TilesetSSAnneDeckGFX::
-INCBIN "gfx/tilesets/ssanne_deck.2bpp.lz"
+TilesetGameCornerAttr::
+INCBIN "data/tilesets/game_corner_attributes.bin"
 
-TilesetSSAnneDeckMeta::
-INCBIN "data/tilesets/ssanne_deck_metatiles.bin"
+TilesetEliteFourRoomAttr::
+INCBIN "data/tilesets/elite_four_room_attributes.bin"
 
-TilesetSSAnneDeckColl::
-INCBIN "data/tilesets/ssanne_deck_collision.asm"
+TilesetTraditionalHouseAttr::
+INCBIN "data/tilesets/traditional_house_attributes.bin"
 
-TilesetSSAnneCaptainGFX::
-INCBIN "gfx/tilesets/ssanne_captain.2bpp.lz"
+TilesetTrainStationAttr::
+INCBIN "data/tilesets/train_station_attributes.bin"
 
-TilesetSSAnneCaptainMeta::
-INCBIN "data/tilesets/ssanne_captain_metatiles.bin"
+TilesetChampionsRoomAttr::
+INCBIN "data/tilesets/champions_room_attributes.bin"
 
-TilesetSSAnneCaptainColl::
-INCBIN "data/tilesets/ssanne_captain_collision.asm"
+TilesetLighthouseAttr::
+INCBIN "data/tilesets/lighthouse_attributes.bin"
+
+TilesetPlayersRoomAttr::
+INCBIN "data/tilesets/players_room_attributes.bin"
+
+TilesetPokeComCenterAttr::
+INCBIN "data/tilesets/pokecom_center_attributes.bin"
+
+TilesetBattleTowerInsideAttr::
+INCBIN "data/tilesets/battle_tower_inside_attributes.bin"
+
+TilesetTowerAttr::
+INCBIN "data/tilesets/tower_attributes.bin"
 
 
 SECTION "Tileset Data 11", ROMX
 
-TilesetSSAnneRooms1GFX::
-INCBIN "gfx/tilesets/ss_anne_rooms_1.2bpp.lz"
+TilesetCaveAttr::
+TilesetDarkCaveAttr::
+INCBIN "data/tilesets/cave_attributes.bin"
 
-TilesetSSAnneRooms1Meta::
-INCBIN "data/tilesets/ss_anne_rooms_1_metatiles.bin"
+TilesetParkAttr::
+INCBIN "data/tilesets/park_attributes.bin"
 
-TilesetSSAnneRooms1Coll::
-INCBIN "data/tilesets/ss_anne_rooms_1_collision.asm"
+TilesetRuinsOfAlphAttr::
+INCBIN "data/tilesets/ruins_of_alph_attributes.bin"
 
-TilesetSSAnneRooms2GFX::
-INCBIN "gfx/tilesets/ss_anne_rooms_2.2bpp.lz"
+TilesetRadioTowerAttr::
+INCBIN "data/tilesets/radio_tower_attributes.bin"
 
-TilesetSSAnneRooms2Meta::
-INCBIN "data/tilesets/ss_anne_rooms_2_metatiles.bin"
+TilesetUndergroundAttr::
+INCBIN "data/tilesets/underground_attributes.bin"
 
-TilesetSSAnneRooms2Coll::
-INCBIN "data/tilesets/ss_anne_rooms_2_collision.asm"
+TilesetIcePathAttr::
+INCBIN "data/tilesets/ice_path_attributes.bin"
+
+TilesetForestAttr::
+INCBIN "data/tilesets/forest_attributes.bin"
+
+TilesetBetaWordRoomAttr::
+INCBIN "data/tilesets/beta_word_room_attributes.bin"
+
+TilesetHoOhWordRoomAttr::
+INCBIN "data/tilesets/ho_oh_word_room_attributes.bin"
+
+TilesetKabutoWordRoomAttr::
+INCBIN "data/tilesets/kabuto_word_room_attributes.bin"
+
+TilesetOmanyteWordRoomAttr::
+INCBIN "data/tilesets/omanyte_word_room_attributes.bin"
+
+TilesetAerodactylWordRoomAttr::
+INCBIN "data/tilesets/aerodactyl_word_room_attributes.bin"

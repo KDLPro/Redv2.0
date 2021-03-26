@@ -1,27 +1,30 @@
 LinkCommsBorderGFX:
 INCBIN "gfx/trade/border_tiles.2bpp"
 
-__LoadTradeScreenBorder:
+__LoadTradeScreenBorderGFX:
 	ld de, LinkCommsBorderGFX
 	ld hl, vTiles2
 	lb bc, BANK(LinkCommsBorderGFX), 70
 	call Get2bpp
 	ret
 
-Function16d42e:
-	ld hl, Tilemap_MobileTradeBorderFullscreen
+LoadMobileTradeBorderTilemap:
+	ld hl, MobileTradeBorderTilemap
 	decoord 0, 0
 	ld bc, SCREEN_WIDTH * SCREEN_HEIGHT
 	call CopyBytes
 	ret
 
-Function16d43b:
+TestMobileTradeBorderTilemap: ; unreferenced
+; Loads the mobile trade border graphics and tilemap,
+; with a placeholder SCGB_DIPLOMA layout, and exits
+; after pressing A or B. Possibly used for testing.
 	call LoadStandardMenuHeader
 	call ClearBGPalettes
 	call ClearTilemap
 	call ClearSprites
-	farcall __LoadTradeScreenBorder ; useless to farcall
-	farcall Function16d42e ; useless to farcall
+	farcall __LoadTradeScreenBorderGFX ; useless to farcall
+	farcall LoadMobileTradeBorderTilemap ; useless to farcall
 	ld b, SCGB_DIPLOMA
 	call GetSGBLayout
 	call SetPalettes
@@ -30,13 +33,13 @@ Function16d43b:
 	call Call_ExitMenu
 	ret
 
-Tilemap_MobileTradeBorderFullscreen:
-INCBIN "gfx/trade/border_mobile_fullscreen.tilemap"
+MobileTradeBorderTilemap:
+INCBIN "gfx/trade/border_mobile.tilemap"
 
-Tilemap_CableTradeBorderTop:
+CableTradeBorderTopTilemap:
 INCBIN "gfx/trade/border_cable_top.tilemap"
 
-Tilemap_CableTradeBorderBottom:
+CableTradeBorderBottomTilemap:
 INCBIN "gfx/trade/border_cable_bottom.tilemap"
 
 _LinkTextbox:
@@ -110,8 +113,8 @@ _LinkTextbox:
 	ret
 
 InitTradeSpeciesList:
-	call _LoadTradeScreenBorder
-	call Function16d6ae
+	call _LoadTradeScreenBorderGFX
+	call LoadCableTradeBorderTilemap
 	farcall InitMG_Mobile_LinkTradePalMap
 	farcall PlaceTradePartnerNamesAndParty
 	hlcoord 10, 17
@@ -122,8 +125,8 @@ InitTradeSpeciesList:
 .CancelString:
 	db "CANCEL@"
 
-_LoadTradeScreenBorder:
-	call __LoadTradeScreenBorder
+_LoadTradeScreenBorderGFX:
+	call __LoadTradeScreenBorderGFX
 	ret
 
 LinkComms_LoadPleaseWaitTextboxBorderGFX:
@@ -137,13 +140,13 @@ LoadTradeRoomBGPals:
 	farcall _LoadTradeRoomBGPals
 	ret
 
-Function16d6ae:
-	call Function16d42e
-	ld hl, Tilemap_CableTradeBorderTop
+LoadCableTradeBorderTilemap:
+	call LoadMobileTradeBorderTilemap
+	ld hl, CableTradeBorderTopTilemap
 	decoord 0, 0
 	ld bc, 2 * SCREEN_WIDTH
 	call CopyBytes
-	ld hl, Tilemap_CableTradeBorderBottom
+	ld hl, CableTradeBorderBottomTilemap
 	decoord 0, 16
 	ld bc, 2 * SCREEN_WIDTH
 	call CopyBytes
@@ -153,15 +156,15 @@ LinkTextbox:
 	call _LinkTextbox
 	ret
 
-Function16d6ce:
+PrintWaitingTextAndSyncAndExchangeNybble:
 	call LoadStandardMenuHeader
-	call Function16d6e1
+	call .PrintWaitingText
 	farcall WaitLinkTransfer
 	call Call_ExitMenu
 	call WaitBGMap2
 	ret
 
-Function16d6e1:
+.PrintWaitingText:
 	hlcoord 4, 10
 	ld b, 1
 	ld c, 10

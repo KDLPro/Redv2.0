@@ -19,6 +19,19 @@
 SPRITEANIMSTRUCT_LENGTH EQU const_value
 NUM_SPRITE_ANIM_STRUCTS EQU 10 ; see wSpriteAnimationStructs
 
+; wSpriteAnimDict keys (see wram.asm)
+; UnusedSpriteAnimGFX indexes (see data/sprite_anims/unused_gfx.asm)
+	const_def
+	const SPRITE_ANIM_DICT_DEFAULT      ; 0
+	const_skip 4                        ; unused
+	const SPRITE_ANIM_DICT_TEXT_CURSOR  ; 5
+	const SPRITE_ANIM_DICT_GS_SPLASH    ; 6
+	const SPRITE_ANIM_DICT_SLOTS        ; 7
+	const SPRITE_ANIM_DICT_ARROW_CURSOR ; 8
+
+; wSpriteAnimDict size (see wram.asm)
+NUM_SPRITEANIMDICT_ENTRIES EQU 10
+
 ; SpriteAnimSeqData indexes (see data/sprite_anims/sequences.asm)
 	const_def
 	const SPRITE_ANIM_INDEX_PARTY_MON                 ; 00
@@ -33,7 +46,7 @@ NUM_SPRITE_ANIM_STRUCTS EQU 10 ; see wSpriteAnimationStructs
 	const SPRITE_ANIM_INDEX_COMPOSE_MAIL_CURSOR       ; 09
 	const SPRITE_ANIM_INDEX_RED_WALK                  ; 0a
 	const SPRITE_ANIM_INDEX_UNUSED_CURSOR             ; 0b
-	const SPRITE_ANIM_INDEX_DUMMY_GAME                ; 0c
+	const SPRITE_ANIM_INDEX_MEMORY_GAME_CURSOR        ; 0c
 	const SPRITE_ANIM_INDEX_POKEGEAR_ARROW            ; 0d
 	const SPRITE_ANIM_INDEX_TRADE_POKE_BALL           ; 0e
 	const SPRITE_ANIM_INDEX_TRADE_POOF                ; 0f
@@ -83,7 +96,7 @@ NUM_SPRITE_ANIM_STRUCTS EQU 10 ; see wSpriteAnimationStructs
 	const SPRITE_ANIM_SEQ_SLOTS_EGG                 ; 0b
 	const SPRITE_ANIM_SEQ_MAIL_CURSOR               ; 0c
 	const SPRITE_ANIM_SEQ_UNUSED_CURSOR             ; 0d
-	const SPRITE_ANIM_SEQ_DUMMY_GAME_CURSOR         ; 0e
+	const SPRITE_ANIM_SEQ_MEMORY_GAME_CURSOR        ; 0e
 	const SPRITE_ANIM_SEQ_POKEGEAR_ARROW            ; 0f
 	const SPRITE_ANIM_SEQ_TRADE_POKE_BALL           ; 10
 	const SPRITE_ANIM_SEQ_TRADE_TUBE_BULGE          ; 11
