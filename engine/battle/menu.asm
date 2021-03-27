@@ -61,10 +61,10 @@ SafariBattleMenuHeader:
 	dba .PrintSafariBallsRemaining
 
 .Text:
-	db "サファりボール×　　@" ; "SAFARI BALL×  @"
-	db "エサをなげる@" ; "THROW BAIT"
-	db "いしをなげる@" ; "THROW ROCK"
-	db "にげる@" ; "RUN"
+	db "BALL×　　@" ; "SAFARI BALL×  @"
+	db "BAIT@" ; "THROW BAIT"
+	db "ROCK@" ; "THROW ROCK"
+	db "RUN@" ; "RUN"
 
 .PrintSafariBallsRemaining:
 	hlcoord 17, 13
