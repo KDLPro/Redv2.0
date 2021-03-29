@@ -1568,6 +1568,8 @@ HandleDefrost:
 	ld a, [wPlayerJustGotFrozen]
 	and a
 	jr z, .defrosting
+	xor a
+	ld [wPlayerJustGotFrozen], a
 	call BattleRandom
 	cp 21 percent
 	jr c, .one_turn
@@ -1584,32 +1586,25 @@ HandleDefrost:
 .one_turn
 	ld a, 1
 	ld [wPlayerFrozenTurns], a
-	ld a, [wPlayerIsSwitching]
-	and a
-	ret z
 	jr .go_last_p
 
 .two_turns
 	ld a, 2
 	ld [wPlayerFrozenTurns], a
-	ld a, [wPlayerIsSwitching]
-	and a
-	ret z
 	jr .go_last_p
 
 .three_turns
 	ld a, 3
 	ld [wPlayerFrozenTurns], a
-	ld a, [wPlayerIsSwitching]
-	and a
-	ret z
 	jr .go_last_p
 
 .go_last_p
-	ldh a, [hSerialConnectionStatus]
-	cp USING_EXTERNAL_CLOCK
-	jr nz, .defrosting
-	ret
+	ld a, [wPlayerIsSwitching]
+	and a
+	ret nz
+	ld a, [wEnemyGoesFirst]
+	and a
+	ret z
 .defrosting
 	ld a, [wPlayerFrozenTurns]
 	and a
@@ -1644,6 +1639,8 @@ HandleDefrost:
 	ld a, [wEnemyJustGotFrozen]
 	and a
 	jr z, .defrosting_e
+	xor a
+	ld [wEnemyJustGotFrozen], a
 	call BattleRandom
 	cp 21 percent
 	jr c, .one_turn_e
@@ -1660,32 +1657,25 @@ HandleDefrost:
 .one_turn_e
 	ld a, 1
 	ld [wEnemyFrozenTurns], a
-	ld a, [wEnemyIsSwitching]
-	and a
-	ret z
 	jr .go_last_e
 
 .two_turns_e
 	ld a, 2
 	ld [wEnemyFrozenTurns], a
-	ld a, [wEnemyIsSwitching]
-	and a
-	ret z
 	jr .go_last_e
 
 .three_turns_e
 	ld a, 3
 	ld [wEnemyFrozenTurns], a
-	ld a, [wEnemyIsSwitching]
-	and a
-	ret z
 	jr .go_last_e
 
 .go_last_e
-	ldh a, [hSerialConnectionStatus]
-	cp USING_EXTERNAL_CLOCK
-	jr z, .defrosting_e
-	ret
+	ld a, [wEnemyIsSwitching]
+	and a
+	ret nz
+	ld a, [wEnemyGoesFirst]
+	and a
+	ret nz
 .defrosting_e
 	ld a, [wEnemyFrozenTurns]
 	and a
@@ -4799,7 +4789,7 @@ CheckDanger:
 
 PrintPlayerHUD:
 	ld de, wBattleMonNick
-	hlcoord 10, 7
+	hlcoord 9, 7
 	call Battle_DummyFunction
 	call PlaceString
 
@@ -4841,14 +4831,14 @@ PrintPlayerHUD:
 .got_gender_char
 	hlcoord 17, 8
 	ld [hl], a
-	hlcoord 10, 8
 	push af ; back up gender
 	push hl
-	hlcoord 14, 8
+	hlcoord 10, 8
 	ld de, wBattleMonStatus
 	predef PlaceNonFaintStatus
 	pop hl
 	pop bc
+	hlcoord 14, 8
 	ld a, b
 	cp " "
 	jr nz, .copy_level ; male or female
@@ -4918,14 +4908,14 @@ DrawEnemyHUD:
 	hlcoord 9, 1
 	ld [hl], a
 
-	hlcoord 2, 1
 	push af
 	push hl
-	hlcoord 6, 1
+	hlcoord 2, 1
 	ld de, wEnemyMonStatus
 	predef PlaceNonFaintStatus
 	pop hl
 	pop bc
+	hlcoord 6, 1
 	ld a, b
 	cp " "
 	jr nz, .print_level

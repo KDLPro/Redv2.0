@@ -66,6 +66,8 @@ BattleBGMap:
 	ret
 
 LoseWhiteOutMoney:
+	xor a
+	ld [wSpinning], a
 ; Lose money proportional to your badges and highest-level Pokémon.
 	ld hl, wMoney
 ; Check if you have any money

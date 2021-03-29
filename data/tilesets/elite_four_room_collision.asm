@@ -62,3 +62,5 @@
 	tilecoll WALL, FLOOR, WALL, FLOOR ; 3d
 	tilecoll WALL, WALL, WALL, WALL ; 3e
 	tilecoll WALL, WALL, WALL, WALL ; 3f
+	tilecoll FLOOR, FLOOR, FLOOR, STOP_SPIN ; 40
+	tilecoll FLOOR, FLOOR, FLOOR, SPIN_LEFT ; 41

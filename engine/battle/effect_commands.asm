@@ -192,11 +192,6 @@ BattleCommand_CheckTurn:
 
 .not_asleep
 
-	call HandleDefrost
-	xor a
-	ld [wPlayerJustGotFrozen], a
-	ld [wEnemyJustGotFrozen], a
-
 	ld hl, wBattleMonStatus
 	bit FRZ, [hl]
 	jr z, .not_frozen
@@ -267,9 +262,9 @@ BattleCommand_CheckTurn:
 	ld de, ANIM_CONFUSED
 	call FarPlayBattleAnimation
 
-	; 50% chance of hitting itself
+	; 33% chance of hitting itself
 	call BattleRandom
-	cp 50 percent + 1
+	cp 33 percent + 1
 	jr nc, .not_confused
 
 	; clear confusion-dependent substatus
@@ -437,6 +432,7 @@ CheckEnemyTurn:
 
 	ld hl, FrozenSolidText
 	call StdBattleTextbox
+	
 	call CantMove
 	jp EndTurn
 
@@ -3720,7 +3716,7 @@ BattleCommand_PoisonTarget:
 	ld a, [wTypeModifier]
 	and $7f
 	ret z
-	call CheckIfTargetIsPoisonType
+	call CheckIfTargetIsImmuneToPoison
 	ret z
 	call GetOpponentItem
 	ld a, b
@@ -3751,7 +3747,7 @@ BattleCommand_Poison:
 	and $7f
 	jp z, .failed
 
-	call CheckIfTargetIsPoisonType
+	call CheckIfTargetIsImmuneToPoison
 	jp z, .failed
 
 	ld a, BATTLE_VARS_STATUS_OPP
@@ -3829,7 +3825,7 @@ BattleCommand_Poison:
 	cp EFFECT_TOXIC
 	ret
 
-CheckIfTargetIsPoisonType:
+CheckIfTargetIsImmuneToPoison:
 	ld de, wEnemyMonType1
 	ldh a, [hBattleTurn]
 	and a
@@ -3840,8 +3836,12 @@ CheckIfTargetIsPoisonType:
 	inc de
 	cp POISON
 	ret z
+	cp STEEL
+	ret z
 	ld a, [de]
 	cp POISON
+	ret z
+	cp STEEL
 	ret
 
 PoisonOpponent:
@@ -4143,6 +4143,8 @@ BattleCommand_ParalyzeTarget:
 	ld a, [wTypeModifier]
 	and $7f
 	ret z
+	call CheckIfTargetIsImmuneToParalysis
+	ret z
 	call GetOpponentItem
 	ld a, b
 	cp HELD_PREVENT_PARALYZE
@@ -4165,73 +4167,106 @@ BattleCommand_ParalyzeTarget:
 	ld hl, UseHeldStatusHealingItem
 	jp CallBattleCore
 
+CheckIfTargetIsImmuneToParalysis:
+	ld de, wEnemyMonType1
+	ldh a, [hBattleTurn]
+	and a
+	jr z, .ok
+	ld de, wBattleMonType1
+.ok
+	ld a, [de]
+	inc de
+	cp ELECTRIC
+	ret z
+	ld a, [de]
+	cp ELECTRIC
+	ret
+
+BattleCommand_CheckPowder:
+; Checks if the move is powder/spore-based and 
+; if the opponent is Grass-type
+    ld a, BATTLE_VARS_MOVE_ANIM
+    call GetBattleVar
+    ld hl, PowderMoves
+    call IsInByteArray
+    ret nc
+
+; If the opponent is Grass-type, the move fails.
+    ld hl, wEnemyMonType1
+    ldh a, [hBattleTurn]
+    and a
+    jr z, .checkgrasstype
+    ld hl, wBattleMonType1
+
+.checkgrasstype:
+    ld a, [hli]
+    cp GRASS
+    jp z, .Immune
+    ld a, [hl]
+    cp GRASS
+    ret nz
+    ;fallthrough
+.Immune:
+    ld a, 1
+    ld [wAttackMissed], a
+    ret
+
+
+INCLUDE "data/moves/powder_moves.asm"
+
 BattleCommand_AttackUp:
-; attackup
 	ld b, ATTACK
 	jr BattleCommand_StatUp
 
 BattleCommand_DefenseUp:
-; defenseup
 	ld b, DEFENSE
 	jr BattleCommand_StatUp
 
 BattleCommand_SpeedUp:
-; speedup
 	ld b, SPEED
 	jr BattleCommand_StatUp
 
 BattleCommand_SpecialAttackUp:
-; specialattackup
 	ld b, SP_ATTACK
 	jr BattleCommand_StatUp
 
 BattleCommand_SpecialDefenseUp:
-; specialdefenseup
 	ld b, SP_DEFENSE
 	jr BattleCommand_StatUp
 
 BattleCommand_AccuracyUp:
-; accuracyup
 	ld b, ACCURACY
 	jr BattleCommand_StatUp
 
 BattleCommand_EvasionUp:
-; evasionup
 	ld b, EVASION
 	jr BattleCommand_StatUp
 
 BattleCommand_AttackUp2:
-; attackup2
 	ld b, $10 | ATTACK
 	jr BattleCommand_StatUp
 
 BattleCommand_DefenseUp2:
-; defenseup2
 	ld b, $10 | DEFENSE
 	jr BattleCommand_StatUp
 
 BattleCommand_SpeedUp2:
-; speedup2
 	ld b, $10 | SPEED
 	jr BattleCommand_StatUp
 
 BattleCommand_SpecialAttackUp2:
-; specialattackup2
 	ld b, $10 | SP_ATTACK
 	jr BattleCommand_StatUp
 
 BattleCommand_SpecialDefenseUp2:
-; specialdefenseup2
 	ld b, $10 | SP_DEFENSE
 	jr BattleCommand_StatUp
 
 BattleCommand_AccuracyUp2:
-; accuracyup2
 	ld b, $10 | ACCURACY
 	jr BattleCommand_StatUp
 
 BattleCommand_EvasionUp2:
-; evasionup2
 	ld b, $10 | EVASION
 	jr BattleCommand_StatUp
 

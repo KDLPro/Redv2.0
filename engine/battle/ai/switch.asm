@@ -326,16 +326,7 @@ CheckAbleToSwitch:
 	call Random
 	cp 70 percent
 	ret c
-	call FindAliveEnemyMons
-	call FindEnemyMonsWithAtLeastQuarterMaxHP
-	call FindEnemyMonsThatResistPlayer
-	call FindAliveEnemyMonsWithASuperEffectiveMove
-	ld a, [wEnemyAISwitchScore]
-	cp 10
-	ret c
-	cp $ff
-	ret z
-	jp .not_2
+	jp .switch
 
 FindAliveEnemyMons:
 	ld a, [wOTPartyCount]

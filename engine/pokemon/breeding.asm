@@ -53,8 +53,6 @@ CheckBreedmonCompatibility:
 	jr z, .done
 
 .compute
-	ld c, 255
-	jp z, .done
 	ld a, [wBreedMon2Species]
 	ld b, a
 	ld a, [wBreedMon1Species]

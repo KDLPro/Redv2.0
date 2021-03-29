@@ -454,31 +454,6 @@ BrokenPlacePPUnits: ; unreferenced
 	ret
 
 Unused_PlaceEnemyHPLevel:
-	push hl
-	push hl
-	ld hl, wPartyMonNicknames
-	ld a, [wCurPartyMon]
-	call GetNick
-	pop hl
-	call PlaceString
-	call CopyMonToTempMon
-	pop hl
-	ld a, [wCurPartySpecies]
-	cp EGG
-	jr z, .egg
-	push hl
-	ld bc, -12
-	add hl, bc
-	ld b, 0
-	call DrawEnemyHP
-	pop hl
-	ld bc, 5
-	add hl, bc
-	push de
-	call PrintLevel
-	pop de
-
-.egg
 	ret
 
 PlaceStatusString:
