@@ -295,6 +295,25 @@ GetGender:
 	ld a, [hli]
 	and $f0
 	ld b, a
+; Special DV
+	push de
+	ld a, [hli]
+	and $f
+	swap a
+	cp b
+	jr c, .less
+	jr .greater
+.less
+	ld d, a
+	ld a, b
+	sub d
+	ld b, a
+	jr .speed
+.greater
+	sub a, b
+	ld b, a
+.speed
+	pop de
 ; Speed DV
 	ld a, [hl]
 	and $f0

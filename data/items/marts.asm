@@ -67,8 +67,7 @@ MartViolet:
 	db -1 ; end
 
 MartAzalea:
-	db 9 ; # items
-	db CHARCOAL
+	db 10 ; # items
 	db POKE_BALL
 	db POTION
 	db SUPER_POTION
@@ -76,7 +75,9 @@ MartAzalea:
 	db REPEL
 	db ANTIDOTE
 	db PARLYZ_HEAL
-	db FLOWER_MAIL
+	db X_DEFEND
+	db X_ATTACK
+	db X_SP_ATK
 	db -1 ; end
 
 MartCianwood:
@@ -114,7 +115,7 @@ MartGoldenrod2F2:
 MartGoldenrod3F:
 	db 7 ; # items
 	db X_SPEED
-	db X_SPECIAL
+	db X_SP_ATK
 	db X_DEFEND
 	db X_ATTACK
 	db DIRE_HIT
@@ -343,7 +344,7 @@ MartCeladon5F2:
 	db X_ATTACK
 	db X_DEFEND
 	db X_SPEED
-	db X_SPECIAL
+	db X_SP_ATK
 	db -1 ; end
 
 MartFuchsia:

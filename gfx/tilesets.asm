@@ -236,6 +236,9 @@ INCBIN "data/tilesets/johto_modern_metatiles.bin"
 TilesetJohtoModernColl::
 INCLUDE "data/tilesets/johto_modern_collision.asm"
 
+
+SECTION "Tileset Data 6", ROMX
+
 TilesetTraditionalHouseGFX::
 INCBIN "gfx/tilesets/traditional_house.2bpp.lz"
 
@@ -244,9 +247,6 @@ INCBIN "data/tilesets/traditional_house_metatiles.bin"
 
 TilesetTraditionalHouseColl::
 INCLUDE "data/tilesets/traditional_house_collision.asm"
-
-
-SECTION "Tileset Data 6", ROMX
 
 TilesetForestGFX::
 INCBIN "gfx/tilesets/forest.2bpp.lz"
@@ -281,6 +281,9 @@ INCLUDE "data/tilesets/lighthouse_collision.asm"
 TilesetForestColl::
 INCLUDE "data/tilesets/forest_collision.asm"
 
+
+SECTION "Tileset Data 7", ROMX
+
 TilesetFacilityGFX::
 INCBIN "gfx/tilesets/facility.2bpp.lz"
 
@@ -305,9 +308,6 @@ TilesetKabutoWordRoomColl::
 TilesetOmanyteWordRoomColl::
 TilesetAerodactylWordRoomColl::
 INCLUDE "data/tilesets/beta_word_room_collision.asm"
-
-
-SECTION "Tileset Data 7", ROMX
 
 TilesetRuinsOfAlphGFX::
 TilesetBetaWordRoomGFX::

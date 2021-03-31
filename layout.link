@@ -293,10 +293,11 @@ ROMX $77
 	"Pokedex Entries 193-251"
 ROMX $78
 	"bank78"
-	"Tileset Data 7"
 	"bank78_2"
-ROMX $7a
+ROMX $79
+	"Tileset Data 7"
 	"Debug Room"
+ROMX $7a
 	"Tileset Data 8"
 ROMX $7b
 	"Battle Tower Text"

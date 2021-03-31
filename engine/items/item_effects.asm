@@ -45,7 +45,7 @@ ItemEffects:
 	dw NoEffect            ; LUCKY_PUNCH
 	dw VitaminEffect       ; CALCIUM
 	dw RareCandyEffect     ; RARE_CANDY
-	dw XAccuracyEffect     ; X_ACCURACY
+	dw XItemEffect     ; X_ACCURACY
 	dw EvoStoneEffect      ; LEAF_STONE
 	dw NoEffect            ; METAL_POWDER
 	dw NoEffect            ; NUGGET
@@ -65,7 +65,7 @@ ItemEffects:
 	dw NoEffect            ; ITEM_32
 	dw XItemEffect         ; X_DEFEND
 	dw XItemEffect         ; X_SPEED
-	dw XItemEffect         ; X_SPECIAL
+	dw XItemEffect         ; X_SP_ATK
 	dw CoinCaseEffect      ; COIN_CASE
 	dw ItemfinderEffect    ; ITEMFINDER
 	dw PokeFluteEffect     ; POKE_FLUTE
@@ -2089,13 +2089,6 @@ RepelUsedEarlierIsStillInEffectText:
 	text_far _RepelUsedEarlierIsStillInEffectText
 	text_end
 
-XAccuracyEffect:
-	ld hl, wPlayerSubStatus4
-	bit SUBSTATUS_X_ACCURACY, [hl]
-	jp nz, WontHaveAnyEffect_NotUsedMessage
-	set SUBSTATUS_X_ACCURACY, [hl]
-	jp UseItemText
-
 PokeDollEffect:
 	ld a, [wBattleMode]
 	dec a ; WILD_BATTLE?
@@ -2142,7 +2135,9 @@ XItemEffect:
 
 .got_it
 	inc hl
-	ld b, [hl]
+    ld a, $10
+    or [hl]
+    ld b, a
 	xor a
 	ldh [hBattleTurn], a
 	ld [wAttackMissed], a

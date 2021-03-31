@@ -58,7 +58,7 @@
 	const ITEM_32      ; 32
 	const X_DEFEND     ; 33
 	const X_SPEED      ; 34
-	const X_SPECIAL    ; 35
+	const X_SP_ATK    ; 35
 	const COIN_CASE    ; 36
 	const ITEMFINDER   ; 37
 	const POKE_FLUTE   ; 38
