@@ -199,16 +199,35 @@ BattleCommand_CheckTurn:
 	; Flame Wheel and Sacred Fire thaw the user.
 	ld a, [wCurPlayerMove]
 	cp FLAME_WHEEL
-	jr z, .not_frozen
+	jr z, .defrost
 	cp SACRED_FIRE
-	jr z, .not_frozen
+	jr z, .defrost
 
+	ld a, [wPlayerJustGotFrozen]
+	and a
+	jr nz, .frozen
+	ld a, [wPlayerFrozenTurns]
+	and a
+	jp z, .defrost
+	
+.frozen
 	ld hl, FrozenSolidText
 	call StdBattleTextbox
 
 	call CantMove
 	jp EndTurn
 
+.defrost
+	xor a
+	ld [wBattleMonStatus], a
+	ld a, [wCurBattleMon]
+	ld hl, wPartyMon1Status
+	call GetPartyLocation
+	ld [hl], 0
+	call UpdateBattleHuds
+	ld hl, DefrostedOpponentText
+	call StdBattleTextbox
+	
 .not_frozen
 
 	ld hl, wPlayerSubStatus3
@@ -426,15 +445,39 @@ CheckEnemyTurn:
 	; Flame Wheel and Sacred Fire thaw the user.
 	ld a, [wCurEnemyMove]
 	cp FLAME_WHEEL
-	jr z, .not_frozen
+	jr z, .defrost
 	cp SACRED_FIRE
-	jr z, .not_frozen
+	jr z, .defrost
 
+	ld a, [wEnemyJustGotFrozen]
+	and a
+	jr nz, .frozen
+	ld a, [wEnemyFrozenTurns]
+	and a
+	jp z, .defrost
+
+.frozen
 	ld hl, FrozenSolidText
 	call StdBattleTextbox
 	
 	call CantMove
 	jp EndTurn
+	
+.defrost
+	xor a
+	ld [wEnemyMonStatus], a
+
+	ld a, [wBattleMode]
+	dec a
+	jr z, .wild
+	ld a, [wCurOTMon]
+	ld hl, wOTPartyMon1Status
+	call GetPartyLocation
+	ld [hl], 0
+.wild
+	call UpdateBattleHuds
+	ld hl, DefrostedOpponentText
+	jp StdBattleTextbox
 
 .not_frozen
 

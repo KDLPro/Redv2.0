@@ -1614,18 +1614,7 @@ HandleDefrost:
 .decr_frozen
 	dec a
 	ld [wPlayerFrozenTurns], a
-	ret nz
-
-	xor a
-	ld [wBattleMonStatus], a
-	ld a, [wCurBattleMon]
-	ld hl, wPartyMon1Status
-	call GetPartyLocation
-	ld [hl], 0
-	call UpdateBattleHuds
-	call SetEnemyTurn
-	ld hl, DefrostedOpponentText
-	jp StdBattleTextbox
+	ret
 
 .do_enemy_turn
 	ld a, [wEnemyMonStatus]
@@ -1685,24 +1674,7 @@ HandleDefrost:
 .decr_frozen_e
 	dec a
 	ld [wEnemyFrozenTurns], a
-	ret nz
-
-	xor a
-	ld [wEnemyMonStatus], a
-
-	ld a, [wBattleMode]
-	dec a
-	jr z, .wild
-	ld a, [wCurOTMon]
-	ld hl, wOTPartyMon1Status
-	call GetPartyLocation
-	ld [hl], 0
-.wild
-
-	call UpdateBattleHuds
-	call SetPlayerTurn
-	ld hl, DefrostedOpponentText
-	jp StdBattleTextbox
+	ret
 
 HandleSafeguard:
 	ldh a, [hSerialConnectionStatus]

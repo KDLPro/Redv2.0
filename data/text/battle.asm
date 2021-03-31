@@ -720,7 +720,7 @@ WasBurnedText:
 	prompt
 
 DefrostedOpponentText:
-	text "<TARGET>"
+	text "<USER>"
 	line "was defrosted!"
 	prompt
 
