@@ -259,7 +259,7 @@ HatchEggs:
 	ld [hl], a
 	pop hl
 	push hl
-	ld bc, MON_STAT_EXP - 1
+	ld bc, MON_EVS - 1
 	add hl, bc
 	ld b, FALSE
 	predef CalcMonStats

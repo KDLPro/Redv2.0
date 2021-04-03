@@ -48,7 +48,7 @@ ItemDescriptions:
 	dw FreshWaterDesc
 	dw SodaPopDesc
 	dw LemonadeDesc
-	dw XAttackDesc
+	dw XAtkDesc
 	dw XSpDefDesc
 	dw XDefendDesc
 	dw XSpeedDesc
@@ -136,7 +136,7 @@ ItemDescriptions:
 	dw PassDesc
 	dw TeruSama9Desc
 	dw TeruSama10Desc
-	dw TeruSama11Desc
+	dw ZincDesc
 	dw CharcoalDesc
 	dw BerryJuiceDesc
 	dw ScopeLensDesc
@@ -359,15 +359,15 @@ HPUpDesc:
 	next "one #MON.@"
 
 ProteinDesc:
-	db   "Raises ATTACK of"
+	db   "Raises Atk of"
 	next "one #MON.@"
 
 IronDesc:
-	db   "Raises DEFENSE of"
+	db   "Raises Def of"
 	next "one #MON.@"
 
 CarbosDesc:
-	db   "Raises SPEED of"
+	db   "Raises Speed of"
 	next "one #MON.@"
 
 LuckyPunchDesc:
@@ -375,7 +375,7 @@ LuckyPunchDesc:
 	next "ratio of CHANSEY.@"
 
 CalciumDesc:
-	db   "Ups SPECIAL stats"
+	db   "Ups Sp. Atk stats"
 	next "of one #MON.@"
 
 RareCandyDesc:
@@ -391,7 +391,7 @@ LeafStoneDesc:
 	next "kinds of #MON.@"
 
 MetalPowderDesc:
-	db   "Raises DEFENSE of"
+	db   "Raises Def of"
 	next "DITTO. (HOLD)@"
 
 NuggetDesc:
@@ -445,25 +445,25 @@ LemonadeDesc:
 	db   "Restores #MON"
 	next "HP by 80.@"
 
-XAttackDesc:
-	db   "Raises ATTACK."
+XAtkDesc:
+	db   "Raises Attack."
 	next "(1 BTL)@"
 
 XSpDefDesc:
-	db   "Raises SPECIAL"
-	next "DEFENSE. (1 BTL)@"
+	db   "Raises Sp."
+	next "Def. (1 BTL)@"
 
 XDefendDesc:
-	db   "Raises DEFENSE."
+	db   "Raises Defense."
 	next "(1 BTL)@"
 
 XSpeedDesc:
-	db   "Raises SPEED."
+	db   "Raises Speed."
 	next "(1 BTL)@"
 
 XSpAtkDesc:
-	db   "Raises SPECIAL"
-	next "ATTACK. (1 BTL)@"
+	db   "Raises Sp."
+	next "Atk. (1 BTL)@"
 
 CoinCaseDesc:
 	db   "Holds up to 9,999"
@@ -785,8 +785,9 @@ TeruSama9Desc:
 TeruSama10Desc:
 	db   "?@"
 
-TeruSama11Desc:
-	db   "?@"
+ZincDesc:
+	db   "Ups Sp. Def stats"
+	next "of one #MON.@"
 
 CharcoalDesc:
 	db   "Powers up fire-"
@@ -839,7 +840,7 @@ DragonScaleDesc:
 	next "item.@"
 
 BerserkGeneDesc:
-	db   "Boosts ATTACK but"
+	db   "Boosts Atk but"
 	next "causes confusion.@"
 
 TeruSama18Desc:

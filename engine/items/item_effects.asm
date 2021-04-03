@@ -45,7 +45,7 @@ ItemEffects:
 	dw NoEffect            ; LUCKY_PUNCH
 	dw VitaminEffect       ; CALCIUM
 	dw RareCandyEffect     ; RARE_CANDY
-	dw XItemEffect     ; X_ACCURACY
+	dw XItemEffect         ; X_ACCURACY
 	dw EvoStoneEffect      ; LEAF_STONE
 	dw NoEffect            ; METAL_POWDER
 	dw NoEffect            ; NUGGET
@@ -149,7 +149,7 @@ ItemEffects:
 	dw NoEffect            ; PASS
 	dw NoEffect            ; ITEM_87
 	dw NoEffect            ; ITEM_88
-	dw NoEffect            ; ITEM_89
+	dw VitaminEffect       ; ZINC
 	dw NoEffect            ; CHARCOAL
 	dw RestoreHPEffect     ; BERRY_JUICE
 	dw NoEffect            ; SCOPE_LENS
@@ -1143,23 +1143,65 @@ VitaminEffect:
 
 	call RareCandy_StatBooster_GetParameters
 
-	call GetStatExpRelativePointer
+	call GetEVRelativePointer
 
-	ld a, MON_STAT_EXP
+	ld a, MON_EVS
 	call GetPartyParamLocation
+
+	push de
+	ld d, 10
+	push af
+	push bc
+	push hl
+	ld e, 6
+	ld bc, 0
+.count_evs
+	ld a, [hli]
+	add c
+	ld c, a
+	jr nc, .cont
+	inc b
+.cont
+	dec e
+	jr nz, .count_evs
+	ld a, d
+	add c
+	ld c, a
+	adc b
+	sub c 
+	ld b, a
+	ld e, d
+.decrease_evs_gained
+	callfar IsEvsGreaterThan510
+	jr z, .check_ev_overflow
+	jr c, .check_ev_overflow
+	dec e
+	dec bc
+	jr .decrease_evs_gained
+.check_ev_overflow
+	pop hl 
+	pop bc 
+	pop af
 
 	add hl, bc
 	ld a, [hl]
-	cp 100
+	cp 150
 	jr nc, NoEffectMessage
-
-	add 10
+	
+	ld a, e
+	cp 0
+	jr z, NoEffectMessage
+	
+	ld a, [hl]
+	add e
 	ld [hl], a
+	pop de
 	call UpdateStatsAfterItem
 
-	call GetStatExpRelativePointer
+	call GetEVRelativePointer
 
 	ld hl, StatStrings
+	add hl, bc
 	add hl, bc
 	ld a, [hli]
 	ld h, [hl]
@@ -1188,7 +1230,7 @@ UpdateStatsAfterItem:
 	call GetPartyParamLocation
 	ld d, h
 	ld e, l
-	ld a, MON_STAT_EXP - 1
+	ld a, MON_EVS - 1
 	call GetPartyParamLocation
 	ld b, TRUE
 	predef_jump CalcMonStats
@@ -1207,15 +1249,17 @@ StatStrings:
 	dw .attack
 	dw .defense
 	dw .speed
-	dw .special
+	dw .sp_atk
+	dw .sp_def
 
-.health  db "HEALTH@"
-.attack  db "ATTACK@"
-.defense db "DEFENSE@"
-.speed   db "SPEED@"
-.special db "SPECIAL@"
+.health  db "HP@"
+.attack  db "Atk@"
+.defense db "Def@"
+.speed   db "Spe@"
+.sp_atk  db "Sp. Atk@"
+.sp_def  db "Sp. Def@"
 
-GetStatExpRelativePointer:
+GetEVRelativePointer:
 	ld a, [wCurItem]
 	ld hl, StatExpItemPointerOffsets
 .next
@@ -1232,11 +1276,12 @@ GetStatExpRelativePointer:
 	ret
 
 StatExpItemPointerOffsets:
-	db HP_UP,    MON_HP_EXP - MON_STAT_EXP
-	db PROTEIN, MON_ATK_EXP - MON_STAT_EXP
-	db IRON,    MON_DEF_EXP - MON_STAT_EXP
-	db CARBOS,  MON_SPD_EXP - MON_STAT_EXP
-	db CALCIUM, MON_SPC_EXP - MON_STAT_EXP
+	db HP_UP,    MON_HP_EV - MON_EVS
+	db PROTEIN, MON_ATK_EV - MON_EVS
+	db IRON,    MON_DEF_EV - MON_EVS
+	db CARBOS,  MON_SPD_EV - MON_EVS
+	db CALCIUM, MON_SAT_EV - MON_EVS
+	db ZINC,    MON_SDF_EV - MON_EVS
 
 RareCandy_StatBooster_GetParameters:
 	ld a, [wCurPartySpecies]

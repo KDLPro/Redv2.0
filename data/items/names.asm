@@ -135,7 +135,7 @@ ItemNames::
 	db "Pass@"
 	db "Teru-Sama@"
 	db "Teru-Sama@"
-	db "Teru-Sama@"
+	db "Zinc@"
 	db "Charcoal@"
 	db "Berry Juice@"
 	db "Scope Lens@"

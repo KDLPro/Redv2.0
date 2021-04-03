@@ -500,7 +500,7 @@ DayCare_GiveEgg:
 	ld e, l
 	pop hl
 	push bc
-	ld b, FALSE
+	ld b, TRUE
 	predef CalcMonStats
 	pop bc
 	ld hl, MON_HP
@@ -636,8 +636,8 @@ DayCare_InitBreeding:
 	ldh a, [hMultiplicand + 2]
 	ld [hl], a
 	xor a
-	ld b, wEggMonDVs - wEggMonStatExp
-	ld hl, wEggMonStatExp
+	ld b, wEggMonDVs - wEggMonEVs
+	ld hl, wEggMonEVs
 .loop2
 	ld [hli], a
 	dec b

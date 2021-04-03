@@ -411,6 +411,9 @@ EvolvingText:
 	text_end
 
 LearnLevelMoves:
+	ld a, [wTempMonLevel]
+	cp MAX_LEVEL
+	ret nc
 	ld a, [wTempSpecies]
 	ld [wCurPartySpecies], a
 	dec a

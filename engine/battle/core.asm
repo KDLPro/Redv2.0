@@ -6342,7 +6342,7 @@ LoadEnemyMon:
 ; Fill stats
 	ld de, wEnemyMonMaxHP
 	ld b, FALSE
-	ld hl, wEnemyMonDVs - (MON_DVS - MON_STAT_EXP + 1)
+	ld hl, wEnemyMonDVs - (MON_DVS - MON_EVS + 1)
 	predef CalcMonStats
 
 ; If we're in a trainer battle,
@@ -7127,60 +7127,108 @@ GiveExperiencePoints:
 	pop bc
 	jp z, .next_mon
 
-; give stat exp
-	ld hl, MON_STAT_EXP + 1
+; Give EVs
+; e = 0 for no Pokerus, 1 for Pokerus
+	ld e, 0
+	ld hl, MON_PKRUS
 	add hl, bc
-	ld d, h
-	ld e, l
-	ld hl, wEnemyMonBaseStats - 1
-	push bc
-	ld c, NUM_EXP_STATS
-.stat_exp_loop
-	inc hl
-	ld a, [de]
-	add [hl]
-	ld [de], a
-	jr nc, .no_carry_stat_exp
-	dec de
-	ld a, [de]
-	inc a
-	jr z, .stat_exp_maxed_out
-	ld [de], a
-	inc de
-
-.no_carry_stat_exp
-	push hl
-	push bc
-	ld a, MON_PKRUS
-	call GetPartyParamLocation
 	ld a, [hl]
 	and a
-	pop bc
-	pop hl
-	jr z, .stat_exp_awarded
-	ld a, [de]
-	add [hl]
-	ld [de], a
-	jr nc, .stat_exp_awarded
-	dec de
-	ld a, [de]
+	jr z, .no_pokerus
+	inc e
+.no_pokerus
+	ld hl, MON_EVS
+	add hl, bc
+	push bc
+	ld a, [wEnemyMonSpecies]
+	ld [wCurSpecies], a
+	call GetBaseData
+; EV yield format: %hhaaddss %ttff0000
+; h = hp, a = atk, d = def, s = spd
+; t = sat, f = sdf, 0 = unused bits
+	ld a, [wBaseHPAtkDefSpdEVs]
+	ld b, a
+	ld c, 6 ; six EVs
+.ev_loop
+	rlc b
+	rlc b
+	ld a, b
+	and %11
+	bit 0, e
+	jr z, .no_pokerus_boost
+	add a
+.no_pokerus_boost 
+; Make sure total EVs never surpass 510
+	push de
+	ld d, a
+	push af
+	push bc
+	push hl
+	ld a, c
+.find_correct_ev_add  ; if address of first ev is changed, find the correct ev address
+	cp 6
+	jr nc, .found_add
+	dec hl
 	inc a
-	jr z, .stat_exp_maxed_out
-	ld [de], a
-	inc de
-	jr .stat_exp_awarded
-
-.stat_exp_maxed_out
-	ld a, $ff
-	ld [de], a
-	inc de
-	ld [de], a
-
-.stat_exp_awarded
-	inc de
-	inc de
+	jr .find_correct_ev_add
+.found_add 
+	ld e, 6
+	ld bc, 0
+.count_evs
+	ld a, [hli]
+	add c
+	ld c, a
+	jr nc, .cont
+	inc b
+.cont
+	dec e
+	jr nz, .count_evs
+	ld a, d
+	add c
+	ld c, a
+	adc b
+	sub c 
+	ld b, a
+	ld e, d
+.decrease_evs_gained
+	call IsEvsGreaterThan510
+	jr z, .check_ev_overflow
+	jr c, .check_ev_overflow
+	dec e
+	dec bc
+	jr .decrease_evs_gained
+.check_ev_overflow
+	pop hl 
+	pop bc 
+	pop af
+	ld a, e
+	pop de
+	add [hl]
+	cp MAX_EV
+	jr nc, .ev_overflow
+	cp MAX_EV + 1
+	jr c, .got_ev
+.ev_overflow
+	ld a, MAX_EV
+.got_ev
+	ld [hli], a
 	dec c
-	jr nz, .stat_exp_loop
+	jr z, .evs_done
+; Use the second byte for Sp.Atk and Sp.Def
+	ld a, c
+	cp 2 ; two stats left, Sp.Atk and Sp.Def
+	jr nz, .ev_loop
+	ld a, [wBaseSpAtkSpDefEVs]
+	ld b, a
+	jr .ev_loop
+.evs_done
+	pop bc
+	ld hl, MON_LEVEL
+	add hl, bc
+	ld a, [hl]
+	cp MAX_LEVEL
+	call nc, NoExp
+	push bc
 	xor a
 	ldh [hMultiplicand + 0], a
 	ldh [hMultiplicand + 1], a
@@ -7230,8 +7278,10 @@ GiveExperiencePoints:
 	ld a, [wCurPartyMon]
 	ld hl, wPartyMonNicknames
 	call GetNick
+	ld a, [wEnemyMonBaseExp]
+	and a
 	ld hl, Text_MonGainedExpPoint
-	call BattleTextbox
+	call nz, BattleTextbox
 	ld a, [wStringBuffer2 + 1]
 	ldh [hQuotient + 3], a
 	ld a, [wStringBuffer2]
@@ -7307,9 +7357,10 @@ GiveExperiencePoints:
 	add hl, bc
 	ld a, [hl]
 	cp MAX_LEVEL
-	jp nc, .next_mon
+	jp nc, .calculate_stats
 	cp d
 	jp z, .next_mon
+.calculate_stats
 ; <NICKNAME> grew to level ##!
 	ld [wTempLevel], a
 	ld a, [wCurPartyLevel]
@@ -7333,7 +7384,7 @@ GiveExperiencePoints:
 	add hl, bc
 	ld d, h
 	ld e, l
-	ld hl, MON_STAT_EXP - 1
+	ld hl, MON_EVS - 1
 	add hl, bc
 	push bc
 	ld b, TRUE
@@ -7380,6 +7431,7 @@ GiveExperiencePoints:
 	jr nz, .transformed
 	ld hl, MON_ATK
 	add hl, bc
+	push bc
 	ld de, wPlayerStats
 	ld bc, PARTYMON_STRUCT_LENGTH - MON_ATK
 	call CopyBytes
@@ -7411,6 +7463,13 @@ GiveExperiencePoints:
 	call LoadTilemapToTempTilemap
 
 .skip_exp_bar_animation
+	pop bc
+	push bc
+	ld hl, MON_LEVEL
+	add hl, bc
+	ld a, [hl]
+	cp MAX_LEVEL
+	jp nc, .level_loop
 	xor a ; PARTYMON
 	ld [wMonType], a
 	predef CopyMonToTempMon
@@ -7442,6 +7501,7 @@ GiveExperiencePoints:
 	push bc
 	predef LearnLevelMoves
 	pop bc
+	jr nc, .max_level
 	ld a, b
 	cp c
 	jr nz, .level_loop
@@ -7454,7 +7514,12 @@ GiveExperiencePoints:
 	predef SmallFarFlagAction
 	pop af
 	ld [wCurPartyLevel], a
+	jr .next_mon
 
+.max_level
+	pop af
+	pop af
+	ld [wCurPartyLevel], a
 .next_mon
 	ld a, [wPartyCount]
 	ld b, a
@@ -7504,6 +7569,21 @@ GiveExperiencePoints:
 	ld [hli], a
 	dec c
 	jr nz, .base_stat_division_loop
+	ret
+
+IsEvsGreaterThan510:
+   ; EV total in bc
+   ; Returns c if lower
+   ld a, b
+   cp HIGH(MAX_TOTAL_EV)
+   ret nz
+   ld a, c
+   cp LOW(MAX_TOTAL_EV)
+   ret
+  
+NoExp:
+	xor a
+	ld [wEnemyMonBaseExp], a
 	ret
 
 BoostExp:

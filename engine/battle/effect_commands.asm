@@ -1838,8 +1838,8 @@ BattleCommand_CheckHit:
 	ld c, a
 
 .got_acc_eva
-	cp b
-	jr c, .skip_foresight_check
+	cp BASE_STAT_LEVEL + 1
+    jr c, .skip_foresight_check 
 
 	; if the target's evasion is greater than the user's accuracy,
 	; check the target's foresight status

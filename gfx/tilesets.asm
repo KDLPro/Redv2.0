@@ -282,7 +282,7 @@ TilesetForestColl::
 INCLUDE "data/tilesets/forest_collision.asm"
 
 
-SECTION "Tileset Data 7", ROMX
+SECTION "Tileset Data 8", ROMX
 
 TilesetFacilityGFX::
 INCBIN "gfx/tilesets/facility.2bpp.lz"
@@ -309,6 +309,9 @@ TilesetOmanyteWordRoomColl::
 TilesetAerodactylWordRoomColl::
 INCLUDE "data/tilesets/beta_word_room_collision.asm"
 
+
+SECTION "Tileset Data 7", ROMX
+
 TilesetRuinsOfAlphGFX::
 TilesetBetaWordRoomGFX::
 TilesetHoOhWordRoomGFX::
@@ -322,9 +325,6 @@ INCBIN "data/tilesets/ruins_of_alph_metatiles.bin"
 
 TilesetRuinsOfAlphColl::
 INCLUDE "data/tilesets/ruins_of_alph_collision.asm"
-
-
-SECTION "Tileset Data 8", ROMX
 
 TilesetHoOhWordRoomMeta::
 INCBIN "data/tilesets/ho_oh_word_room_metatiles.bin"

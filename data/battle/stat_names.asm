@@ -1,8 +1,8 @@
 StatNames:
 ; entries correspond to stat ids
-	db "Atk@"
-	db "Def@"
-	db "Spd@"
+	db "Attack@"
+	db "Defense@"
+	db "Speed@"
 	db "Sp. Atk@"
 	db "Sp. Def@"
 	db "Accuracy@"
