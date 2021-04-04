@@ -292,28 +292,29 @@ GetGender:
 	call z, OpenSRAM
 
 ; Attack DV
-	ld a, [hli]
-	and $f0
-	ld b, a
+    ld a, [hl]
+	add $10
+    and $10
+    swap a
+    add a     ; Atk DV << 1
+    ld b, a   ; Store it in register b
+; Defense DV
+    ld a, [hli]
+    and $1
+    add a     ; Def DV << 1
+    add a     ; Def DV << 2
+    or b     ; Add (Atk DV << 1) + (Def DV << 2)
+    ld b, a   ; Store result in b.
 ; Special DV
-	push de
-	ld a, [hli]
-	and $f
+    ld a, [hl]
+	inc a
+    and $1
+    add a     ; Spec DV << 1
+    add a     ; Spec DV << 2
+    add a     ; Spec DV << 3
+    or b     ; Add (Spec DV << 3)
 	swap a
-	cp b
-	jr c, .less
-	jr .greater
-.less
-	ld d, a
-	ld a, b
-	sub d
-	ld b, a
-	jr .speed
-.greater
-	sub a, b
-	ld b, a
-.speed
-	pop de
+    ld b, a   ; Again, stored in b.
 ; Speed DV
 	ld a, [hl]
 	and $f0
@@ -333,6 +334,8 @@ GetGender:
 	ld a, [wCurPartySpecies]
 	dec a
 	ld hl, BaseData + BASE_GENDER
+	inc hl
+	inc hl
 	ld bc, BASE_DATA_SIZE
 	call AddNTimes
 	pop bc
