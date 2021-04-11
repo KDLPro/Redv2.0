@@ -229,8 +229,16 @@ CheckAbleToSwitch:
 .switch ; Try to switch
     call FindAliveEnemyMons
     call FindEnemyMonsWithAtLeastQuarterMaxHP
+	ld a, [wPlayerIsSwitching]
+	and a
+	jr z, .find_better_mons
+	call Random
+	cp 60 percent + 1
+	jr c, .cont_switch
+.find_better_mons
     call FindEnemyMonsThatResistPlayer
     call FindAliveEnemyMonsWithASuperEffectiveMove
+.cont_switch
     ld a, e
     cp 2
     jr nz, .not_2

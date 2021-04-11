@@ -162,6 +162,16 @@ BattleTurn:
 	call CheckContestBattleOver
 	jp c, .quit
 
+	ld a, [wPlayerIsSwitching]
+	and a
+	jr z, .cont
+	xor a
+	ld hl, wPlayerUsedMoves
+	ld [hli], a
+	ld [hli], a
+	ld [hli], a
+	ld [hl], a
+.cont
 	xor a
 	ld [wPlayerIsSwitching], a
 	ld [wEnemyIsSwitching], a
@@ -4178,11 +4188,6 @@ rept 4
 	ld [hli], a
 endr
 	ld [hl], a
-	ld hl, wPlayerUsedMoves
-	ld [hli], a
-	ld [hli], a
-	ld [hli], a
-	ld [hl], a
 	ld [wPlayerDisableCount], a
 	ld [wPlayerFuryCutterCount], a
 	ld [wPlayerProtectCount], a
@@ -7227,7 +7232,7 @@ GiveExperiencePoints:
 	add hl, bc
 	ld a, [hl]
 	cp MAX_LEVEL
-	call nc, NoExp
+	jp nc, .next_mon
 	push bc
 	xor a
 	ldh [hMultiplicand + 0], a
@@ -7278,10 +7283,8 @@ GiveExperiencePoints:
 	ld a, [wCurPartyMon]
 	ld hl, wPartyMonNicknames
 	call GetNick
-	ld a, [wEnemyMonBaseExp]
-	and a
 	ld hl, Text_MonGainedExpPoint
-	call nz, BattleTextbox
+	call BattleTextbox
 	ld a, [wStringBuffer2 + 1]
 	ldh [hQuotient + 3], a
 	ld a, [wStringBuffer2]
@@ -7357,10 +7360,9 @@ GiveExperiencePoints:
 	add hl, bc
 	ld a, [hl]
 	cp MAX_LEVEL
-	jp nc, .calculate_stats
+	jp nc, .next_mon
 	cp d
 	jp z, .next_mon
-.calculate_stats
 ; <NICKNAME> grew to level ##!
 	ld [wTempLevel], a
 	ld a, [wCurPartyLevel]
@@ -7431,7 +7433,6 @@ GiveExperiencePoints:
 	jr nz, .transformed
 	ld hl, MON_ATK
 	add hl, bc
-	push bc
 	ld de, wPlayerStats
 	ld bc, PARTYMON_STRUCT_LENGTH - MON_ATK
 	call CopyBytes
@@ -7463,13 +7464,6 @@ GiveExperiencePoints:
 	call LoadTilemapToTempTilemap
 
 .skip_exp_bar_animation
-	pop bc
-	push bc
-	ld hl, MON_LEVEL
-	add hl, bc
-	ld a, [hl]
-	cp MAX_LEVEL
-	jp nc, .level_loop
 	xor a ; PARTYMON
 	ld [wMonType], a
 	predef CopyMonToTempMon
@@ -7501,7 +7495,6 @@ GiveExperiencePoints:
 	push bc
 	predef LearnLevelMoves
 	pop bc
-	jr nc, .max_level
 	ld a, b
 	cp c
 	jr nz, .level_loop
@@ -7514,12 +7507,7 @@ GiveExperiencePoints:
 	predef SmallFarFlagAction
 	pop af
 	ld [wCurPartyLevel], a
-	jr .next_mon
 
-.max_level
-	pop af
-	pop af
-	ld [wCurPartyLevel], a
 .next_mon
 	ld a, [wPartyCount]
 	ld b, a
@@ -7544,10 +7532,30 @@ GiveExperiencePoints:
 	ld c, PARTY_LENGTH
 	ld d, 0
 .count_loop
+	push bc
+	push de
+	ld a, [wPartyCount]
+	cp c
+	jr c, .no_mon
+	ld a, c
+	dec a
+	ld hl, wPartyMon1Level
+	call GetPartyLocation
+	ld a, [hl]
+.no_mon
+	cp MAX_LEVEL
+	pop de
+	pop bc
+	jr nz, .gains_exp
+	srl b
+	ld a, d
+	jr .no_exp
+.gains_exp
 	xor a
 	srl b
 	adc d
 	ld d, a
+.no_exp
 	dec c
 	jr nz, .count_loop
 	cp 2
@@ -7581,10 +7589,7 @@ IsEvsGreaterThan510:
    cp LOW(MAX_TOTAL_EV)
    ret
   
-NoExp:
-	xor a
-	ld [wEnemyMonBaseExp], a
-	ret
+
 
 BoostExp:
 ; Multiply experience by 1.5x

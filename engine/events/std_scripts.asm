@@ -108,7 +108,7 @@ PokecenterNurseScript:
 
 	farwritetext NurseAskHealText
 	yesorno
-	iffalse .done
+	iffalse .no_heal
 
 	farwritetext NurseTakePokemonText
 	pause 20
@@ -142,6 +142,19 @@ PokecenterNurseScript:
 	pause 10
 	turnobject LAST_TALKED, DOWN
 	pause 10
+	turnobject PLAYER, DOWN
+
+	waitbutton
+	closetext
+	end
+
+.no_heal
+	farwritetext NurseGoodbyeText
+
+	turnobject LAST_TALKED, UP
+	pause 10
+	turnobject LAST_TALKED, DOWN
+	pause 10
 
 	waitbutton
 	closetext
@@ -164,6 +177,7 @@ PokecenterNurseScript:
 .pokerus_done
 	setflag ENGINE_CAUGHT_POKERUS
 	specialphonecall SPECIALCALL_POKERUS
+	turnobject PLAYER, DOWN
 	end
 
 DifficultBookshelfScript:

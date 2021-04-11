@@ -45,9 +45,8 @@ BattleCommand_Disable:
 	and a
 	jr z, .failed
 .loop2
-	call BattleRandom
-	and 7
-	jr z, .loop2
+	; Fix for 4 turns 
+	ld a, 3
 	inc a
 	inc c
 	swap c

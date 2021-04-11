@@ -311,7 +311,7 @@ BattleCommand_CheckTurn:
 
 	; 75% chance of infatuation
 	call BattleRandom
-	cp 75 percent + 1
+	cp 25 percent + 1
 	jr c, .not_infatuated
 
 	ld hl, InfatuationText
@@ -584,7 +584,7 @@ CheckEnemyTurn:
 
 	; 75% chance of infatuation
 	call BattleRandom
-	cp 75 percent + 1
+	cp 25 percent + 1
 	jr c, .not_infatuated
 
 	ld hl, InfatuationText
@@ -1633,9 +1633,13 @@ BattleCommand_CheckHit:
 	call GetBattleVar
 	cp EFFECT_ALWAYS_HIT
 	ret z
+	; If the move is OHKO, ignore accuracy and evasion modifiers.
+    cp EFFECT_OHKO
+    jr z, .skip_stat_modifiers
 
-	call .StatModifiers
+    call .StatModifiers
 
+.skip_stat_modifiers
 	ld a, [wPlayerMoveStruct + MOVE_ACC]
 	ld b, a
 	ldh a, [hBattleTurn]
@@ -5598,7 +5602,7 @@ BattleCommand_HeldFlinch:
 
 BattleCommand_OHKO:
 ; ohko
-
+	
 	call ResetDamage
 	ld a, [wTypeModifier]
 	and $7f
@@ -5615,14 +5619,25 @@ BattleCommand_OHKO:
 	pop de
 	ld bc, wEnemyMoveStruct + MOVE_ACC
 .got_move_accuracy
-	ld a, [de]
-	sub [hl]
+    ld a, [de]   ; User's lvl
+	add 5		 ; add 5 to result so that it works if opponent's level - player's level <= 5
+    sub [hl]     ; substract Opponent's lvl from it
 	jr c, .no_effect
-	add a
-	ld e, a
+	cp 1
+	jr nc, .opponent_higher_lv
+    ld e, a   ; a
+    add a     ; 2a
+    add e     ; a + 2a = 3a
+    ld e, a 
+    ld a, [bc]
+    add e     ; + Acc
+    jr nc, .finish_ohko
+	jp .cont
+.opponent_higher_lv
 	ld a, [bc]
-	add e
+	sub 5
 	jr nc, .finish_ohko
+.cont
 	ld a, $ff
 .finish_ohko
 	ld [bc], a

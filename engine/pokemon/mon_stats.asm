@@ -285,15 +285,9 @@ GetGender:
 	call AddNTimes
 
 .DVs:
-; sBoxMon data is read directly from SRAM.
-	ld a, [wMonType]
-	cp BOXMON
-	ld a, BANK(sBox)
-	call z, OpenSRAM
-
 ; Attack DV
     ld a, [hl]
-	add $10
+	cpl
     and $10
     swap a
     add a     ; Atk DV << 1
@@ -307,7 +301,7 @@ GetGender:
     ld b, a   ; Store result in b.
 ; Special DV
     ld a, [hl]
-	inc a
+	cpl
     and $1
     add a     ; Spec DV << 1
     add a     ; Spec DV << 2
@@ -315,14 +309,6 @@ GetGender:
     or b     ; Add (Spec DV << 3)
 	swap a
     ld b, a   ; Again, stored in b.
-; Speed DV
-	ld a, [hl]
-	and $f0
-	swap a
-
-; Put our DVs together.
-	or b
-	ld b, a
 
 ; Close SRAM if we were dealing with a sBoxMon.
 	ld a, [wMonType]
