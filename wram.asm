@@ -401,7 +401,7 @@ wBattleMon:: battle_struct wBattleMon
 	ds 2
 
 wWildMon:: db
-	ds 1
+wPlayerHasSEMove:: db
 
 wEnemyTrainerItem1:: db
 wEnemyTrainerItem2:: db

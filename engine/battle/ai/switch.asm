@@ -1,3 +1,13 @@
+CheckPlayerHasSEMove:
+; Check if Player has super-effective move
+	ld a, [wPlayerHasSEMove]
+	and 1 ; 1 = Player has SE move
+	ret z
+	ld a, [wEnemyAISwitchScore]
+	sub 5
+	ld [wEnemyAISwitchScore], a
+	ret
+
 CheckPlayerMoveTypeMatchups:
 ; Check how well the moves you've already used
 ; fare against the enemy's Pokemon.  Used to
@@ -46,8 +56,6 @@ CheckPlayerMoveTypeMatchups:
 	jr .next
 
 .super_effective
-	call .doubledown
-	call .doubledown
 	call .doubledown
 	pop hl
 	jr .done
@@ -229,16 +237,8 @@ CheckAbleToSwitch:
 .switch ; Try to switch
     call FindAliveEnemyMons
     call FindEnemyMonsWithAtLeastQuarterMaxHP
-	ld a, [wPlayerIsSwitching]
-	and a
-	jr z, .find_better_mons
-	call Random
-	cp 60 percent + 1
-	jr c, .cont_switch
-.find_better_mons
     call FindEnemyMonsThatResistPlayer
     call FindAliveEnemyMonsWithASuperEffectiveMove
-.cont_switch
     ld a, e
     cp 2
     jr nz, .not_2
@@ -265,6 +265,7 @@ CheckAbleToSwitch:
 
 .no_perish
 	call CheckPlayerMoveTypeMatchups
+	call CheckPlayerHasSEMove
 	ld a, [wEnemyAISwitchScore]
 	cp 10
 	ret nc
@@ -315,6 +316,7 @@ CheckAbleToSwitch:
 	
 .no_last_counter_move
 	call CheckPlayerMoveTypeMatchups
+	call CheckPlayerHasSEMove
 	ld a, [wEnemyAISwitchScore]
 	cp 10
 	ret nc

@@ -1779,21 +1779,21 @@ MorningSun:
 	checkobedience
 	usedmovetext
 	doturn
-	healmorn
+	timebasedhealcontinue
 	endmove
 
 Synthesis:
 	checkobedience
 	usedmovetext
 	doturn
-	healday
+	timebasedhealcontinue
 	endmove
 
 Moonlight:
 	checkobedience
 	usedmovetext
 	doturn
-	healnite
+	timebasedhealcontinue
 	endmove
 
 HiddenPower:

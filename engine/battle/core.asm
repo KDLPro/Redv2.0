@@ -166,6 +166,7 @@ BattleTurn:
 	and a
 	jr z, .cont
 	xor a
+	ld [wPlayerHasSEMove], a
 	ld hl, wPlayerUsedMoves
 	ld [hli], a
 	ld [hli], a
@@ -1991,6 +1992,32 @@ GetHalfMaxHP:
 	inc c
 .end
 	ret
+	
+GetThirdMaxHP::
+; Assumes HP<768
+    call GetMaxHP
+    xor a
+    inc b
+.loop
+    dec b
+    inc a
+    dec bc
+    dec bc
+    dec bc
+    inc b
+    jr nz, .loop
+    dec a
+    ld c, a
+    ret nz
+    inc c ; At least 1.
+    ret
+
+GetTwoThirdsMaxHP: ; 2/3 Max HP
+    ; outputs bc from GetThirdMaxHP
+    call GetThirdMaxHP
+    sla c  ; Multiply by 2
+    rl b
+    ret 
 
 GetMaxHP:
 ; output: bc, wHPBuffer1
@@ -3267,6 +3294,8 @@ EnemySwitch_SetMode:
 .skip
 	; 'b' contains the PartyNr of the mon the AI will switch to
 	call LoadEnemyMonToSwitchTo
+	xor a
+	ld [wPlayerHasSEMove], a
 	ld a, 1
 	ld [wEnemyIsSwitching], a
 	call ClearEnemyMonBox
@@ -4766,7 +4795,7 @@ CheckDanger:
 
 PrintPlayerHUD:
 	ld de, wBattleMonNick
-	hlcoord 9, 7
+	hlcoord 10, 7
 	call Battle_DummyFunction
 	call PlaceString
 

@@ -453,3 +453,18 @@ INCBIN "data/tilesets/omanyte_word_room_attributes.bin"
 
 TilesetAerodactylWordRoomAttr::
 INCBIN "data/tilesets/aerodactyl_word_room_attributes.bin"
+
+
+SECTION "Tileset Data 12", ROMX
+
+TilesetPalletTownGFX::
+INCBIN "gfx/tilesets/pallet_town.2bpp.lz"
+
+TilesetPalletTownMeta::
+INCBIN "data/tilesets/pallet_town_metatiles.bin"
+
+TilesetPalletTownColl::
+INCLUDE "data/tilesets/pallet_town_collision.asm"
+
+TilesetPalletTownAttr::
+INCBIN "data/tilesets/pallet_town_attributes.bin"

@@ -2417,11 +2417,27 @@ BattleCommand_SuperEffectiveText:
 	and $7f
 	cp 10 ; 1.0
 	ret z
+.se
 	ld hl, SuperEffectiveText
-	jr nc, .print
+	jr nc, .se_2
+.nve
 	ld hl, NotVeryEffectiveText
+	jr .print
+.se_2
+	call SEMoveFound
 .print
 	jp StdBattleTextbox
+	
+SEMoveFound:
+	ldh a, [hBattleTurn]
+	and a
+	ret nz
+	ld a, [wPlayerHasSEMove]
+	and 1
+	ret nz
+	inc a
+	ld [wPlayerHasSEMove], a
+	ret
 
 BattleCommand_CheckFaint:
 ; checkfaint
@@ -3715,21 +3731,21 @@ BattleCommand_SleepTarget:
 .random_sleep
 	call BattleRandom
 	cp 51 percent
-	jr c, .one_turn
-	cp 86 percent
 	jr c, .two_turns
-	jr .three_turns
+	cp 86 percent
+	jr c, .three_turns
+	jr .four_turns
 
-.one_turn
-	ld a, 1
-	jr .continue
-	
 .two_turns
 	ld a, 2
 	jr .continue
 	
 .three_turns
 	ld a, 3
+	jr .continue
+	
+.four_turns
+	ld a, 4
 	
 .continue
 	inc a
@@ -5805,10 +5821,6 @@ BattleCommand_Charge:
 	text_far _BattleDugText
 	text_end
 
-BattleCommand_Unused3C:
-; effect0x3c
-	ret
-
 BattleCommand_TrapTarget:
 ; traptarget
 
@@ -6583,6 +6595,8 @@ INCLUDE "engine/battle/move_effects/sandstorm.asm"
 INCLUDE "engine/battle/move_effects/rollout.asm"
 
 BattleCommand_Unused5D:
+BattleCommand_UnusedB:
+BattleCommand_UnusedC:
 ; effect0x5d
 	ret
 
@@ -6636,21 +6650,6 @@ INCLUDE "engine/battle/move_effects/pursuit.asm"
 
 INCLUDE "engine/battle/move_effects/rapid_spin.asm"
 
-BattleCommand_HealMorn:
-; healmorn
-	ld b, MORN_F
-	jr BattleCommand_TimeBasedHealContinue
-
-BattleCommand_HealDay:
-; healday
-	ld b, DAY_F
-	jr BattleCommand_TimeBasedHealContinue
-
-BattleCommand_HealNite:
-; healnite
-	ld b, NITE_F
-	; fallthrough
-
 BattleCommand_TimeBasedHealContinue:
 ; Time- and weather-sensitive heal.
 
@@ -6671,17 +6670,8 @@ BattleCommand_TimeBasedHealContinue:
 	push bc
 	call CompareBytes
 	pop bc
+	dec c  ; The original value of c should be 1.
 	jr z, .Full
-
-; Don't factor in time of day in link battles.
-	ld a, [wLinkMode]
-	and a
-	jr nz, .Weather
-
-	ld a, [wTimeOfDay]
-	cp b
-	jr z, .Weather
-	dec c ; double
 
 .Weather:
 	ld a, [wBattleWeather]
@@ -6728,10 +6718,9 @@ BattleCommand_TimeBasedHealContinue:
 	jp StdBattleTextbox
 
 .Multipliers:
-	dw GetEighthMaxHP
 	dw GetQuarterMaxHP
 	dw GetHalfMaxHP
-	dw GetMaxHP
+    dw GetTwoThirdsMaxHP
 
 INCLUDE "engine/battle/move_effects/hidden_power.asm"
 

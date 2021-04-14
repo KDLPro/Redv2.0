@@ -1129,7 +1129,7 @@ BattleAnim_Surf:
 .loop
 	anim_sound 0, 1, SFX_SURF
 	anim_wait 32
-	anim_loop 4, .loop
+	anim_loop 3, .loop
 	anim_incobj 1
 	anim_wait 56
 	anim_ret
