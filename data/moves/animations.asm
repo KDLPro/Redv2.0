@@ -592,7 +592,7 @@ BattleAnim_InWhirlpool:
 	anim_bgeffect ANIM_BG_WHIRLPOOL, $0, $0, $0
 	anim_sound 0, 1, SFX_SURF
 .loop
-	anim_obj ANIM_OBJ_GUST, 132, 72, $0
+	anim_obj ANIM_OBJ_WHIRLPOOL, 132, 72, $0
 	anim_wait 6
 	anim_loop 6, .loop
 	anim_incbgeffect ANIM_BG_WHIRLPOOL
@@ -909,8 +909,8 @@ BattleAnim_DragonRage:
 .loop
 	anim_sound 6, 2, SFX_EMBER
 	anim_obj ANIM_OBJ_DRAGON_RAGE, 64, 92, $0
-	anim_wait 3
-	anim_loop 16, .loop
+	anim_wait 4
+	anim_loop 12, .loop
 	anim_wait 64
 	anim_ret
 
@@ -949,7 +949,7 @@ BattleAnim_FireBlast:
 	anim_loop 10, .loop1
 .loop2
 	anim_sound 0, 1, SFX_EMBER
-	anim_wait 8
+	anim_wait 6
 	anim_loop 10, .loop2
 	anim_incobj 1
 	anim_incobj 2
@@ -962,15 +962,13 @@ BattleAnim_FireBlast:
 	anim_incobj 9
 	anim_incobj 10
 	anim_wait 2
-.loop3
 	anim_sound 0, 1, SFX_EMBER
 	anim_obj ANIM_OBJ_FIRE_BLAST, 136, 56, $1
 	anim_obj ANIM_OBJ_FIRE_BLAST, 136, 56, $2
 	anim_obj ANIM_OBJ_FIRE_BLAST, 136, 56, $3
 	anim_obj ANIM_OBJ_FIRE_BLAST, 136, 56, $4
 	anim_obj ANIM_OBJ_FIRE_BLAST, 136, 56, $5
-	anim_wait 16
-	anim_loop 2, .loop3
+	anim_wait 12
 	anim_wait 32
 	anim_ret
 
@@ -1090,10 +1088,6 @@ BattleAnim_HydroPump:
 	anim_1gfx ANIM_GFX_WATER
 	anim_call BattleAnim_UserObj_2Row
 	anim_sound 0, 1, SFX_HYDRO_PUMP
-	anim_obj ANIM_OBJ_HYDRO_PUMP, 108, 72, $0
-	anim_bgeffect ANIM_BG_WATER, $1c, $0, $0
-	anim_wait 8
-	anim_sound 0, 1, SFX_HYDRO_PUMP
 	anim_obj ANIM_OBJ_HYDRO_PUMP, 116, 72, $0
 	anim_bgeffect ANIM_BG_WATER, $8, $0, $0
 	anim_wait 8
@@ -1113,10 +1107,6 @@ BattleAnim_HydroPump:
 	anim_obj ANIM_OBJ_HYDRO_PUMP, 148, 72, $0
 	anim_bgeffect ANIM_BG_WATER, $30, $0, $0
 	anim_wait 8
-	anim_sound 0, 1, SFX_HYDRO_PUMP
-	anim_obj ANIM_OBJ_HYDRO_PUMP, 156, 72, $0
-	anim_bgeffect ANIM_BG_WATER, $1c, $0, $0
-	anim_wait 32
 	anim_call BattleAnim_ShowMon_1
 	anim_bgeffect ANIM_BG_END_WATER, $0, $0, $0
 	anim_wait 16
@@ -1312,30 +1302,6 @@ BattleAnim_RazorWind:
 	anim_wait 4
 	anim_loop 3, .loop
 	anim_wait 24
-	anim_ret
-
-BattleAnim_Sonicboom_JP: ; unreferenced
-	anim_2gfx ANIM_GFX_WHIP, ANIM_GFX_HIT
-.loop
-	anim_sound 3, 0, SFX_RAZOR_WIND
-	anim_obj ANIM_OBJ_SONICBOOM_JP, 64, 80, $3
-	anim_wait 8
-	anim_sound 3, 0, SFX_RAZOR_WIND
-	anim_obj ANIM_OBJ_SONICBOOM_JP, 64, 88, $2
-	anim_wait 8
-	anim_sound 3, 0, SFX_RAZOR_WIND
-	anim_obj ANIM_OBJ_SONICBOOM_JP, 64, 96, $4
-	anim_wait 8
-	anim_loop 2, .loop
-	anim_wait 32
-	anim_incobj 1
-	anim_incobj 2
-	anim_incobj 3
-	anim_incobj 4
-	anim_incobj 5
-	anim_incobj 6
-	anim_obj ANIM_OBJ_HIT_YFIX, 136, 56, $0
-	anim_wait 16
 	anim_ret
 
 BattleAnim_Gust:
@@ -2359,8 +2325,8 @@ BattleAnim_PetalDance:
 	anim_2gfx ANIM_GFX_FLOWER, ANIM_GFX_HIT
 .loop
 	anim_obj ANIM_OBJ_PETAL_DANCE, 48, 56, $0
-	anim_wait 11
-	anim_loop 8, .loop
+	anim_wait 7
+	anim_loop 4, .loop
 	anim_wait 128
 	anim_wait 64
 	anim_sound 0, 1, SFX_COMET_PUNCH
@@ -2740,6 +2706,18 @@ BattleAnim_Thrash:
 	anim_sound 0, 1, SFX_DOUBLE_KICK
 	anim_obj ANIM_OBJ_KICK, 152, 40, $0
 	anim_obj ANIM_OBJ_HIT_BIG_YFIX, 152, 40, $0
+	anim_wait 6
+	anim_sound 0, 1, SFX_POUND
+	anim_obj ANIM_OBJ_PALM, 152, 72, $0
+	anim_obj ANIM_OBJ_HIT_BIG_YFIX, 152, 72, $0
+	anim_wait 6
+	anim_sound 0, 1, SFX_MOVE_PUZZLE_PIECE
+	anim_obj ANIM_OBJ_PUNCH, 136, 56, $0
+	anim_obj ANIM_OBJ_HIT_BIG_YFIX, 136, 56, $0
+	anim_wait 6
+	anim_sound 0, 1, SFX_DOUBLE_KICK
+	anim_obj ANIM_OBJ_KICK, 120, 40, $0
+	anim_obj ANIM_OBJ_HIT_BIG_YFIX, 120, 40, $0
 	anim_wait 16
 	anim_ret
 
@@ -2951,19 +2929,19 @@ BattleAnim_Waterfall:
 	anim_wait 16
 	anim_call BattleAnim_ShowMon_0
 	anim_sound 0, 1, SFX_LICK
-	anim_obj ANIM_OBJ_HIT_YFIX, 136, 56, $0
+	anim_obj ANIM_OBJ_WATERFALL_YFIX, 136, 56, $0
 	anim_wait 3
 	anim_sound 0, 1, SFX_LICK
-	anim_obj ANIM_OBJ_HIT_YFIX, 136, 48, $0
+	anim_obj ANIM_OBJ_WATERFALL_YFIX, 136, 48, $0
 	anim_wait 3
 	anim_sound 0, 1, SFX_LICK
-	anim_obj ANIM_OBJ_HIT_YFIX, 136, 40, $0
+	anim_obj ANIM_OBJ_WATERFALL_YFIX, 136, 40, $0
 	anim_wait 3
 	anim_sound 0, 1, SFX_LICK
-	anim_obj ANIM_OBJ_HIT_YFIX, 136, 32, $0
+	anim_obj ANIM_OBJ_WATERFALL_YFIX, 136, 32, $0
 	anim_wait 3
 	anim_sound 0, 1, SFX_LICK
-	anim_obj ANIM_OBJ_HIT_YFIX, 136, 24, $0
+	anim_obj ANIM_OBJ_WATERFALL_YFIX, 136, 24, $0
 	anim_wait 8
 	anim_ret
 
@@ -4097,8 +4075,10 @@ BattleAnim_Dragonbreath:
 	anim_sound 6, 2, SFX_EMBER
 .loop
 	anim_obj ANIM_OBJ_DRAGONBREATH, 64, 92, $4
-	anim_wait 4
-	anim_loop 10, .loop
+	anim_wait 5
+	anim_obj ANIM_OBJ_DRAGONBREATH_2, 64, 92, $4
+	anim_wait 5
+	anim_loop 5, .loop
 	anim_wait 64
 	anim_ret
 
@@ -4566,7 +4546,7 @@ BattleAnim_Whirlpool:
 	anim_sound 0, 1, SFX_SURF
 	anim_wait 16
 .loop
-	anim_obj ANIM_OBJ_GUST, 132, 72, $0
+	anim_obj ANIM_OBJ_WHIRLPOOL, 132, 72, $0
 	anim_wait 6
 	anim_loop 9, .loop
 	anim_wait 64
