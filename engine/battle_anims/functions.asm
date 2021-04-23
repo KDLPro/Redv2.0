@@ -2016,7 +2016,7 @@ BattleAnimFunction_Kick:
 	ld [hl], $2
 	ld hl, BATTLEANIMSTRUCT_YCOORD
 	add hl, bc
-	dec [hl]
+	inc [hl]
 	ret
 
 .three

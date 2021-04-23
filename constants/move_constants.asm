@@ -41,7 +41,7 @@
 	const TACKLE       ; 21
 	const BODY_SLAM    ; 22
 	const WRAP         ; 23
-	const TAKE_DOWN    ; 24
+	const WILD_CHARGE  ; 24
 	const THRASH       ; 25
 	const DOUBLE_EDGE  ; 26
 	const TAIL_WHIP    ; 27
@@ -150,7 +150,7 @@
 	const LOVELY_KISS  ; 8e
 	const SKY_ATTACK   ; 8f
 	const TRANSFORM    ; 90
-	const BUBBLE       ; 91
+	const AQUA_JET     ; 91
 	const DIZZY_PUNCH  ; 92
 	const SPORE        ; 93
 	const FLASH        ; 94

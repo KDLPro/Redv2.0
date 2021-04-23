@@ -13,6 +13,8 @@ BattleCommand_PayDay:
 .ok
 
 	add a
+	add a
+	add a
 	ld hl, wPayDayMoney + 2
 	add [hl]
 	ld [hld], a

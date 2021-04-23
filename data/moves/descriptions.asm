@@ -35,7 +35,7 @@ MoveDescriptions::
 	dw TackleDescription
 	dw BodySlamDescription
 	dw WrapDescription
-	dw TakeDownDescription
+	dw WildChargeDescription
 	dw ThrashDescription
 	dw DoubleEdgeDescription
 	dw TailWhipDescription
@@ -144,7 +144,7 @@ MoveDescriptions::
 	dw LovelyKissDescription
 	dw SkyAttackDescription
 	dw TransformDescription
-	dw BubbleDescription
+	dw AquaJetDescription
 	dw DizzyPunchDescription
 	dw SporeDescription
 	dw FlashDescription
@@ -404,9 +404,9 @@ WrapDescription:
 	db   "Squeezes the foe"
 	next "for 2-5 turns.@"
 
-TakeDownDescription:
-	db   "A tackle that also"
-	next "hurts the user.@"
+WildChargeDescription:
+	db   "An electric tackle"
+	next "that causes recoil.@"
 
 ThrashDescription:
 	db   "Works 2-3 turns"
@@ -840,9 +840,9 @@ TransformDescription:
 	db   "The user assumes"
 	next "the foe's guise.@"
 
-BubbleDescription:
-	db   "An attack that may"
-	next "reduce SPEED.@"
+AquaJetDescription:
+	db   "Lets the user get"
+	next "in the first hit.@"
 
 DizzyPunchDescription:
 	db   "An attack that may"

@@ -5,7 +5,10 @@ FruitTreeScript::
 	getitemname STRING_BUFFER_3, USE_SCRIPT_VAR
 	writetext FruitBearingTreeText
 	promptbutton
+	readvar VAR_WEEKDAY
+	ifnotequal SUNDAY, .check
 	callasm TryResetFruitTrees
+.check
 	callasm CheckFruitTree
 	iffalse .fruit
 	writetext NothingHereText
