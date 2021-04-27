@@ -190,9 +190,9 @@ CheckAbleToSwitch:
 	cp 0
 	jr c, .cont_check_2
 	jr z, .cont_check_2
-	 ; Check if player has at least 2 stat buffs
+	 ; Check if player has at least 4 stat buffs
 	ld a, b
-	cp 2
+	cp 4
 	ret nc
 	 ; Otherwise, roll to check other clauses or not
     call Random

@@ -1600,8 +1600,13 @@ BattleAnim_Fly:
 	anim_if_param_equal $2, .miss
 	anim_1gfx ANIM_GFX_HIT
 	anim_sound 0, 1, SFX_WING_ATTACK
+	anim_obj ANIM_OBJ_HIT_YFIX, 116, 36, $0
+	anim_wait 3
+	anim_sound 0, 1, SFX_WING_ATTACK
+	anim_obj ANIM_OBJ_HIT_YFIX, 126, 46, $0
+	anim_wait 3
 	anim_obj ANIM_OBJ_HIT_YFIX, 136, 56, $0
-	anim_wait 32
+	anim_wait 24
 .miss:
 	anim_bgeffect ANIM_BG_SHOW_MON, $0, BG_EFFECT_USER, $0
 	anim_wait 32
@@ -2238,8 +2243,8 @@ BattleAnim_Smog:
 
 BattleAnim_PoisonGas:
 	anim_1gfx ANIM_GFX_HAZE
-	anim_sound 16, 2, SFX_BUBBLEBEAM
 .loop
+	anim_sound 16, 2, SFX_BUBBLEBEAM
 	anim_obj ANIM_OBJ_POISON_GAS, 44, 80, $2
 	anim_wait 8
 	anim_loop 10, .loop
@@ -2248,10 +2253,10 @@ BattleAnim_PoisonGas:
 
 BattleAnim_HornAttack:
 	anim_2gfx ANIM_GFX_HORN, ANIM_GFX_HIT
-	anim_obj ANIM_OBJ_HORN, 72, 80, $1
-	anim_wait 16
+	anim_obj ANIM_OBJ_HORN, 64, 84, $1
+	anim_wait 24
 	anim_sound 0, 1, SFX_HORN_ATTACK
-	anim_obj ANIM_OBJ_HIT_YFIX, 136, 56, $0
+	anim_obj ANIM_OBJ_HIT_YFIX, 130, 56, $0
 	anim_wait 16
 	anim_ret
 
@@ -2278,7 +2283,7 @@ BattleAnim_HornDrill:
 	anim_2gfx ANIM_GFX_HORN, ANIM_GFX_HIT
 	anim_bgeffect ANIM_BG_FLASH_INVERTED, $0, $8, $40
 	anim_obj ANIM_OBJ_HORN, 72, 80, $3
-	anim_wait 8
+	anim_wait 16
 .loop
 	anim_sound 0, 1, SFX_HORN_ATTACK
 	anim_obj ANIM_OBJ_HIT_BIG_YFIX, 132, 40, $0
@@ -3795,12 +3800,24 @@ BattleAnim_Charm:
 	anim_ret
 
 BattleAnim_Rollout:
-	anim_1gfx ANIM_GFX_HIT
+	anim_2gfx ANIM_GFX_HIT, ANIM_GFX_ROCKS
 	anim_sound 0, 0, SFX_SPARK
 	anim_call BattleAnim_TargetObj_2Row
 	anim_bgeffect ANIM_BG_ROLLOUT, $60, $1, $1
 	anim_bgeffect ANIM_BG_BODY_SLAM, $0, BG_EFFECT_USER, $0
 	anim_wait 4
+	anim_sound 0, 0, SFX_TACKLE
+	anim_obj ANIM_OBJ_ROLLOUT, 67, 102, $1
+	anim_obj ANIM_OBJ_ROLLOUT, 83, 102, $0
+	anim_wait 3
+	anim_sound 0, 0, SFX_TACKLE
+	anim_obj ANIM_OBJ_ROLLOUT, 88, 92, $1
+	anim_obj ANIM_OBJ_ROLLOUT, 104, 92, $0
+	anim_wait 3
+	anim_sound 0, 1, SFX_TACKLE
+	anim_obj ANIM_OBJ_ROLLOUT, 108, 82, $1
+	anim_obj ANIM_OBJ_ROLLOUT, 124, 82, $0
+	anim_wait 3
 	anim_sound 0, 1, SFX_MEGA_PUNCH
 	anim_obj ANIM_OBJ_HIT_BIG, 136, 40, $0
 	anim_wait 8
@@ -4117,10 +4134,12 @@ BattleAnim_Megahorn:
 	anim_bgeffect ANIM_BG_SHAKE_SCREEN_X, $40, $2, $0
 	anim_wait 48
 	anim_bgeffect ANIM_BG_FLASH_INVERTED, $0, $8, $3
-	anim_obj ANIM_OBJ_HORN, 72, 80, $1
+	anim_obj ANIM_OBJ_HORN, 64, 84, $1
+	anim_wait 24
+	anim_bgeffect ANIM_BG_SHAKE_SCREEN_X, $40, $2, $0
+	anim_bgeffect ANIM_BG_FLASH_INVERTED, $0, $8, $3
 	anim_sound 0, 1, SFX_HORN_ATTACK
-	anim_wait 16
-	anim_obj ANIM_OBJ_HIT_BIG_YFIX, 136, 56, $0
+	anim_obj ANIM_OBJ_HIT_YFIX, 130, 56, $0
 	anim_wait 16
 	anim_ret
 
@@ -4363,7 +4382,7 @@ BattleAnim_HiddenPower:
 .loop
 	anim_sound 0, 0, SFX_SWORDS_DANCE
 	anim_wait 8
-	anim_loop 12, .loop
+	anim_loop 4, .loop
 	anim_incbgeffect ANIM_BG_CYCLE_MON_LIGHT_DARK_REPEATING
 	anim_call BattleAnim_ShowMon_0
 	anim_wait 1
@@ -4492,7 +4511,7 @@ BattleAnim_PsychUp:
 	anim_ret
 
 BattleAnim_Extremespeed:
-	anim_2gfx ANIM_GFX_SPEED, ANIM_GFX_CUT
+	anim_3gfx ANIM_GFX_SPEED, ANIM_GFX_HIT, ANIM_GFX_WIND
 	anim_bgeffect ANIM_BG_HIDE_MON, $0, BG_EFFECT_USER, $0
 	anim_sound 0, 0, SFX_MENU
 	anim_obj ANIM_OBJ_SPEED_LINE, 24, 88, $2
@@ -4501,10 +4520,29 @@ BattleAnim_Extremespeed:
 	anim_obj ANIM_OBJ_SPEED_LINE, 48, 88, $80
 	anim_obj ANIM_OBJ_SPEED_LINE, 56, 88, $81
 	anim_obj ANIM_OBJ_SPEED_LINE, 64, 88, $82
-	anim_wait 12
-	anim_sound 0, 1, SFX_CUT
-	anim_obj ANIM_OBJ_CUT_LONG_DOWN_LEFT, 152, 40, $0
-	anim_wait 32
+	anim_wait 4
+	anim_obj ANIM_OBJ_AGILITY, 8, 24, $10
+	anim_obj ANIM_OBJ_AGILITY, 8, 48, $2
+	anim_obj ANIM_OBJ_AGILITY, 8, 88, $8
+	anim_wait 4
+	anim_obj ANIM_OBJ_AGILITY, 8, 32, $6
+	anim_obj ANIM_OBJ_AGILITY, 8, 56, $c
+	anim_obj ANIM_OBJ_AGILITY, 8, 80, $4
+	anim_obj ANIM_OBJ_AGILITY, 8, 104, $e
+.loop
+	anim_sound 0, 0, SFX_RAZOR_WIND
+	anim_wait 4
+	anim_loop 8, .loop
+	anim_incobj 1
+	anim_incobj 2
+	anim_incobj 3
+	anim_incobj 4
+	anim_incobj 5
+	anim_incobj 6
+	anim_incobj 7
+	anim_sound 0, 1, SFX_COMET_PUNCH
+	anim_obj ANIM_OBJ_HIT_BIG_YFIX, 136, 56, $0
+	anim_wait 8
 	anim_bgeffect ANIM_BG_SHOW_MON, $0, BG_EFFECT_USER, $0
 	anim_wait 16
 	anim_ret

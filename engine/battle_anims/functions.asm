@@ -88,7 +88,7 @@ DoBattleAnimFrame:
 	dw BattleAnimFunction_RapidSpin
 	dw BattleAnimFunction_BetaPursuit
 	dw BattleAnimFunction_RainSandstorm
-	dw BattleAnimFunction_AnimObjB0
+	dw BattleAnimFunction_Rollout
 	dw BattleAnimFunction_PsychUp
 	dw BattleAnimFunction_AncientPower
 	dw BattleAnimFunction_RockSmash
@@ -2984,9 +2984,9 @@ BattleAnimFunction_Horn:
 	ld hl, BATTLEANIMSTRUCT_XCOORD
 	add hl, bc
 	ld a, [hl]
-	cp $58
+	cp $76
 	ret nc
-	ld a, $2
+	ld a, $5
 	call BattleAnim_StepToTarget
 	ret
 
@@ -4120,37 +4120,59 @@ BattleAnimFunction_RainSandstorm:
 	ld [hl], a
 	ret
 
-BattleAnimFunction_AnimObjB0: ; unused
-; Used by object ANIM_OBJ_B0, with itself is not used in any animation
-; Obj Param: Lower nybble is added to VAR1 while upper nybble is added to XCOORD
-	ld hl, BATTLEANIMSTRUCT_XCOORD
-	add hl, bc
-	ld d, [hl]
-	ld hl, BATTLEANIMSTRUCT_VAR1
-	add hl, bc
-	ld e, [hl]
+BattleAnimFunction_Rollout:
+; Modified version of AncientPower
+; Object moves up and down in an arc for $20 frames and then disappear
+	call BattleAnim_AnonJumptable
+.anon_dw
+	dw .zero
+	dw .one
+	
+.zero ; right
 	ld hl, BATTLEANIMSTRUCT_PARAM
 	add hl, bc
 	ld a, [hl]
-	ld l, a
-	and $f0
-	ld h, a
-	swap a
-	or h
-	ld h, a
-	ld a, l
-	and $f
-	swap a
-	ld l, a
-	add hl, de
-	ld e, l
-	ld d, h
-	ld hl, BATTLEANIMSTRUCT_XCOORD
-	add hl, bc
-	ld [hl], d
+	and a
+    jr nz, .one
 	ld hl, BATTLEANIMSTRUCT_VAR1
 	add hl, bc
-	ld [hl], e
+	ld a, [hl]
+	cp $10
+	jr nc, .done
+	inc [hl]
+	ld hl, BATTLEANIMSTRUCT_XCOORD
+	add hl, bc
+	inc [hl]
+	ld d, 7
+	call BattleAnim_Sine
+	xor $ff
+	inc a
+	ld hl, BATTLEANIMSTRUCT_YOFFSET
+	add hl, bc
+	ld [hl], a
+	ret
+	
+.one ; left
+	ld hl, BATTLEANIMSTRUCT_VAR1
+	add hl, bc
+	ld a, [hl]
+	cp $10
+	jr nc, .done
+	inc [hl]
+	ld hl, BATTLEANIMSTRUCT_XCOORD
+	add hl, bc
+	dec [hl]
+	ld d, 7
+	call BattleAnim_Sine
+	xor $ff
+	inc a
+	ld hl, BATTLEANIMSTRUCT_YOFFSET
+	add hl, bc
+	ld [hl], a
+	ret
+
+.done
+	call DeinitBattleAnimation
 	ret
 
 BattleAnimFunction_PsychUp:

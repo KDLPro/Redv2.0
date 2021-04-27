@@ -8,6 +8,7 @@ Features include:
 - New areas
 - Physical/Special Split
 - New moves and deleted redundant moves
+- Modified gender formula to have female Pokémon have good stats
 - New items and upgraded existing ones
 - Better battle AI
 - Tougher battles
