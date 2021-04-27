@@ -339,14 +339,10 @@ PokeBallEffect:
 	jr nc, .max_1
 	ld a, $ff
 .max_1
-
-	; BUG: farcall overwrites a, and GetItemHeldEffect takes b anyway.
-	; This is probably the reason the HELD_CATCH_CHANCE effect is never used.
-	; Uncomment the line below to fix.
 	ld d, a
 	push de
 	ld a, [wBattleMonItem]
-	; ld b, a
+	ld b, a
 	farcall GetItemHeldEffect
 	ld a, b
 	cp HELD_CATCH_CHANCE
@@ -1185,7 +1181,7 @@ VitaminEffect:
 
 	add hl, bc
 	ld a, [hl]
-	cp 200
+	cp 220
 	jr nc, NoEffectMessage
 	
 	ld a, e
