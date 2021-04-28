@@ -5,6 +5,7 @@ This is a romhack of Pokémon Crystal.
 Features include:
 
 - Revamped story (with Officers)
+- Johto post-game
 - New areas
 - Physical/Special Split
 - Item price rework
@@ -13,5 +14,5 @@ Features include:
 - New items and upgraded existing ones
 - Better battle AI
 - Tougher battles
-- Johto post-game
+- Forced Set mode
 - and more!

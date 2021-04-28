@@ -283,3 +283,33 @@ Sfx_Twinkle_Ch5:
 	octave 5
 	note G_, 6
 	sound_ret
+	
+Sfx_WaterPulse:
+	channel_count 3
+	channel 5, Sfx_WaterPulse_Ch5
+	channel 6, Sfx_WaterPulse_Ch6
+	channel 8, Sfx_WaterPulse_Ch8
+	
+Sfx_WaterPulse_Ch5:
+	duty_cycle 2
+	square_note 4, 3, -7, 85
+.loop:
+	square_note 4, 13, -7, 85
+	sound_loop 4, .loop
+	square_note 4, 13, 1, 85
+	sound_ret
+
+Sfx_WaterPulse_Ch6:
+	duty_cycle_pattern 2, 3, 0, 3
+	square_note 4, 2, -7, 101
+.loop:
+	square_note 4, 12, -7, 101
+	sound_loop 4, .loop
+	square_note 4, 12, 1, 101
+	sound_ret
+
+Sfx_WaterPulse_Ch8:
+	noise_note 2, 9, 7, 5
+	noise_note 2, 10, 1, 5
+	sound_loop 10, Sfx_WaterPulse_Ch8
+	sound_ret

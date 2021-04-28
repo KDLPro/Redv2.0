@@ -3,7 +3,7 @@ MoveDescriptions::
 	dw PoundDescription
 	dw KarateChopDescription
 	dw DoubleslapDescription
-	dw CometPunchDescription
+	dw WaterPulseDescription
 	dw MegaPunchDescription
 	dw PayDayDescription
 	dw FirePunchDescription
@@ -276,9 +276,9 @@ DoubleslapDescription:
 	db   "Repeatedly slaps"
 	next "2-5 times.@"
 
-CometPunchDescription:
-	db   "Repeatedly punches"
-	next "2-5 times.@"
+WaterPulseDescription:
+	db   "An attack that may"
+	next "cause confusion.@"
 
 MegaPunchDescription:
 	db   "A powerful punch"

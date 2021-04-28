@@ -2,7 +2,7 @@ MoveNames::
 	db "POUND@"
 	db "KARATE CHOP@"
 	db "DOUBLESLAP@"
-	db "COMET PUNCH@"
+	db "WATER PULSE@"
 	db "MEGA PUNCH@"
 	db "PAY DAY@"
 	db "FIRE PUNCH@"

@@ -4,7 +4,7 @@ BattleAnimations::
 	dw BattleAnim_Pound
 	dw BattleAnim_KarateChop
 	dw BattleAnim_Doubleslap
-	dw BattleAnim_CometPunch
+	dw BattleAnim_WaterPulse
 	dw BattleAnim_MegaPunch
 	dw BattleAnim_PayDay
 	dw BattleAnim_FirePunch
@@ -497,8 +497,8 @@ BattleAnim_Confused:
 
 BattleAnim_Slp:
 	anim_1gfx ANIM_GFX_STATUS
-	anim_sound 0, 0, SFX_TAIL_WHIP
 .loop
+	anim_sound 0, 1, SFX_TAIL_WHIP
 	anim_obj ANIM_OBJ_ASLEEP, 64, 80, $0
 	anim_wait 40
 	anim_loop 3, .loop
@@ -695,22 +695,17 @@ BattleAnim_Doubleslap:
 	anim_wait 8
 	anim_ret
 
-BattleAnim_CometPunch:
-	anim_1gfx ANIM_GFX_HIT
-	anim_if_param_equal $1, .alternate
-	anim_sound 0, 1, SFX_COMET_PUNCH
-	anim_obj ANIM_OBJ_PUNCH, 144, 48, $0
-	anim_wait 6
-	anim_obj ANIM_OBJ_HIT_YFIX, 144, 48, $0
+BattleAnim_WaterPulse:
+	anim_1gfx ANIM_GFX_PSYCHIC
+	anim_bgeffect ANIM_BG_WHIRLPOOL, $0, $0, $0
+.loop
+	anim_sound 6, 2, SFX_WATER_PULSE
+	anim_obj ANIM_OBJ_WATER_PULSE, 64, 88, $2
 	anim_wait 8
-	anim_ret
-
-.alternate:
-	anim_sound 0, 1, SFX_COMET_PUNCH
-	anim_obj ANIM_OBJ_PUNCH, 120, 64, $0
-	anim_wait 6
-	anim_obj ANIM_OBJ_HIT_YFIX, 120, 64, $0
-	anim_wait 8
+	anim_loop 3, .loop
+	anim_wait 64
+	anim_incbgeffect ANIM_BG_WHIRLPOOL
+	anim_wait 1
 	anim_ret
 
 BattleAnim_MegaPunch:
@@ -2375,12 +2370,20 @@ BattleAnim_Transform:
 BattleAnim_PetalDance:
 	anim_sound 0, 0, SFX_MENU
 	anim_2gfx ANIM_GFX_FLOWER, ANIM_GFX_HIT
+	anim_sound 0, 1, SFX_SHINE
 .loop
 	anim_obj ANIM_OBJ_PETAL_DANCE, 48, 56, $0
 	anim_wait 7
 	anim_loop 4, .loop
-	anim_wait 128
-	anim_wait 64
+	anim_wait 11
+	anim_sound 0, 1, SFX_SHINE
+	anim_wait 39
+	anim_sound 0, 1, SFX_SHINE
+	anim_wait 39
+	anim_sound 0, 1, SFX_SHINE
+	anim_wait 39
+	anim_sound 0, 1, SFX_SHINE
+	anim_wait 32
 	anim_sound 0, 1, SFX_COMET_PUNCH
 	anim_obj ANIM_OBJ_HIT_BIG_YFIX, 136, 56, $0
 	anim_wait 16
@@ -4466,15 +4469,15 @@ BattleAnim_RainDance:
 	anim_ret
 
 BattleAnim_SunnyDay:
-	anim_1gfx ANIM_GFX_WATER
+	anim_1gfx ANIM_GFX_SHINE
 	anim_bgp $90
 	anim_sound 0, 1, SFX_MORNING_SUN
-	anim_obj ANIM_OBJ_RAIN, 88, 0, $2
-	anim_wait 8
-	anim_obj ANIM_OBJ_RAIN, 88, 0, $2
-	anim_wait 8
-	anim_obj ANIM_OBJ_RAIN, 88, 0, $2
-	anim_wait 128
+.loop
+	anim_obj ANIM_OBJ_SUNNY_DAY, 16, 24, $88
+	anim_wait 6
+	anim_loop 5, .loop
+	anim_wait 32
+	anim_ret
 	anim_ret
 
 BattleAnim_MirrorCoat:
