@@ -276,15 +276,17 @@ NUM_ATTACKS EQU const_value - 1
 	const ANIM_IN_SANDSTORM      ; 10b
 	const ANIM_IN_NIGHTMARE      ; 10c
 	const ANIM_IN_WHIRLPOOL      ; 10d
+	const ANIM_IN_RAIN           ; 10e
+	const ANIM_IN_SUN            ; 10f
 ; battle anims
-	const ANIM_MISS              ; 10e
-	const ANIM_ENEMY_DAMAGE      ; 10f
-	const ANIM_ENEMY_STAT_DOWN   ; 110
-	const ANIM_PLAYER_STAT_DOWN  ; 111
-	const ANIM_PLAYER_DAMAGE     ; 112
-	const ANIM_WOBBLE            ; 113
-	const ANIM_SHAKE             ; 114
-	const ANIM_HIT_CONFUSION     ; 115
+	const ANIM_MISS              ; 110
+	const ANIM_ENEMY_DAMAGE      ; 111
+	const ANIM_ENEMY_STAT_DOWN   ; 112
+	const ANIM_PLAYER_STAT_DOWN  ; 113
+	const ANIM_PLAYER_DAMAGE     ; 114
+	const ANIM_WOBBLE            ; 115
+	const ANIM_SHAKE             ; 116
+	const ANIM_HIT_CONFUSION     ; 117
 
 ; wNumHits uses offsets from ANIM_MISS
 	const_def

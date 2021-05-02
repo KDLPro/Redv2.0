@@ -300,7 +300,6 @@ HandleBetweenTurnEffects:
 	call HandleSafeguard
 	call HandleScreens
 	call HandleStatBoostingHeldItems
-	call HandleHealingItems
 	call UpdateBattleMonInParty
 	call LoadTilemapToTempTilemap
 	jp HandleEncore
@@ -925,6 +924,7 @@ Battle_EnemyFirst:
 
 .switch_item
 	call SetEnemyTurn
+	call HandleHealingItems
 	call ResidualDamage
 	jp z, HandleEnemyMonFaint
 	call RefreshBattleHuds
@@ -939,6 +939,7 @@ Battle_EnemyFirst:
 	call HasPlayerFainted
 	jp z, HandlePlayerMonFaint
 	call SetPlayerTurn
+	call HandleHealingItems
 	call ResidualDamage
 	jp z, HandlePlayerMonFaint
 	call RefreshBattleHuds
@@ -965,6 +966,7 @@ Battle_PlayerFirst:
 	jp z, HandlePlayerMonFaint
 	push bc
 	call SetPlayerTurn
+	call HandleHealingItems
 	call ResidualDamage
 	pop bc
 	jp z, HandlePlayerMonFaint
@@ -988,6 +990,7 @@ Battle_PlayerFirst:
 
 .switched_or_used_item
 	call SetEnemyTurn
+	call HandleHealingItems
 	call ResidualDamage
 	jp z, HandleEnemyMonFaint
 	call RefreshBattleHuds
@@ -1763,7 +1766,7 @@ HandleScreens:
 .Your:
 	db "Your@"
 .Enemy:
-	db "Enemy@"
+	db "Foe@"
 
 .LightScreenTick:
 	ld a, [de]
@@ -1796,8 +1799,16 @@ HandleWeather:
 
 	ld hl, wWeatherCount
 	dec [hl]
-	jr z, .ended
+	jp z, .ended
 
+	ld a, [wBattleWeather]
+	cp WEATHER_SUN
+	call z, .play_sun
+	cp WEATHER_RAIN
+	call z, .play_rain
+	cp WEATHER_SANDSTORM
+	call z, .play_sandstorm
+	
 	ld hl, .WeatherMessages
 	call .PrintWeatherMessage
 
@@ -1814,6 +1825,18 @@ HandleWeather:
 	call .SandstormDamage
 	call SetEnemyTurn
 	jr .SandstormDamage
+	
+.play_sun
+	ld de, ANIM_IN_SUN
+	jp Call_PlayBattleAnim
+	
+.play_rain
+	ld de, ANIM_IN_RAIN
+	jp Call_PlayBattleAnim
+	
+.play_sandstorm
+	ld de, ANIM_IN_SANDSTORM
+	jp Call_PlayBattleAnim
 
 .enemy_first
 	call SetEnemyTurn
@@ -1851,8 +1874,6 @@ HandleWeather:
 	call SwitchTurnCore
 	xor a
 	ld [wNumHits], a
-	ld de, ANIM_IN_SANDSTORM
-	call Call_PlayBattleAnim
 	call SwitchTurnCore
 	call GetEighthMaxHP
 	call SubtractHPFromUser
@@ -4370,24 +4391,6 @@ RecallPlayerMon:
 	ret
 
 HandleHealingItems:
-	ldh a, [hSerialConnectionStatus]
-	cp USING_EXTERNAL_CLOCK
-	jr z, .player_1
-	call SetPlayerTurn
-	call HandleHPHealingItem
-	call UseHeldStatusHealingItem
-	call UseConfusionHealingItem
-	call SetEnemyTurn
-	call HandleHPHealingItem
-	call UseHeldStatusHealingItem
-	jp UseConfusionHealingItem
-
-.player_1
-	call SetEnemyTurn
-	call HandleHPHealingItem
-	call UseHeldStatusHealingItem
-	call UseConfusionHealingItem
-	call SetPlayerTurn
 	call HandleHPHealingItem
 	call UseHeldStatusHealingItem
 	jp UseConfusionHealingItem

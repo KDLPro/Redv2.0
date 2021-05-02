@@ -48,7 +48,7 @@ BattleText_WildFled:
 	prompt
 
 BattleText_EnemyFled:
-	text "Enemy @"
+	text "Foe @"
 	text_ram wEnemyMonNick
 	text_start
 	line "fled!"
@@ -65,8 +65,9 @@ HurtByBurnText:
 	prompt
 
 LeechSeedSapsText:
-	text "LEECH SEED saps"
-	line "<USER>!"
+	text "<USER>'s"
+	line "health is sapped"
+	cont "by LEECH SEED!"
 	prompt
 
 HasANightmareText:
@@ -80,8 +81,9 @@ HurtByCurseText:
 	prompt
 
 SandstormHitsText:
-	text "The SANDSTORM hits"
-	line "<USER>!"
+	text "<USER>"
+	line "is buffeted by"
+	cont "the SANDSTORM!"
 	prompt
 
 PerishCountText:
@@ -160,7 +162,7 @@ BattleText_TheSandstormSubsided:
 	prompt
 
 BattleText_EnemyMonFainted:
-	text "Enemy @"
+	text "Foe @"
 	text_ram wEnemyMonNick
 	text_start
 	line "fainted!"
@@ -288,8 +290,8 @@ BattleText_UserHurtBySpikes:
 
 RecoveredUsingText:
 	text "<TARGET>"
-	line "recovered using a"
-	cont "@"
+	line "recovered using "
+	cont "a/an @"
 	text_ram wStringBuffer1
 	text "!"
 	prompt

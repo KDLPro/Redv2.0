@@ -271,6 +271,8 @@ BattleAnimations::
 	dw BattleAnim_InSandstorm
 	dw BattleAnim_InNightmare
 	dw BattleAnim_InWhirlpool
+	dw BattleAnim_InRain
+	dw BattleAnim_InSun
 	dw BattleAnim_Miss
 	dw BattleAnim_EnemyDamage
 	dw BattleAnim_EnemyStatDown
@@ -497,11 +499,15 @@ BattleAnim_Confused:
 
 BattleAnim_Slp:
 	anim_1gfx ANIM_GFX_STATUS
-.loop
 	anim_sound 0, 1, SFX_TAIL_WHIP
 	anim_obj ANIM_OBJ_ASLEEP, 64, 80, $0
 	anim_wait 40
-	anim_loop 3, .loop
+	anim_sound 0, 1, SFX_TAIL_WHIP
+	anim_obj ANIM_OBJ_ASLEEP, 64, 80, $0
+	anim_wait 40
+	anim_sound 0, 1, SFX_TAIL_WHIP
+	anim_obj ANIM_OBJ_ASLEEP, 64, 80, $0
+	anim_wait 40
 	anim_wait 32
 	anim_ret
 
@@ -1919,10 +1925,10 @@ BattleAnim_ConfuseRay:
 	anim_ret
 
 BattleAnim_Leer:
-	anim_1gfx ANIM_GFX_BEAM
-	anim_bgeffect ANIM_BG_CYCLE_OBPALS_GRAY_AND_YELLOW, $0, $2, $0
-	anim_call BattleAnimSub_EyeBeams
-	anim_wait 16
+	anim_1gfx ANIM_GFX_SPEED
+	anim_sound 6, 2, SFX_SHINE
+	anim_obj ANIM_OBJ_LEER_SHINE, 64, 84, $0
+	anim_wait 8
 	anim_ret
 
 BattleAnim_Reflect:
@@ -2079,9 +2085,10 @@ BattleAnim_Headbutt:
 	anim_bgeffect ANIM_BG_WITHDRAW, $0, BG_EFFECT_USER, $50
 	anim_wait 32
 	anim_incbgeffect ANIM_BG_WITHDRAW
+	anim_bgeffect ANIM_BG_TACKLE, $0, BG_EFFECT_USER, $0
+	anim_wait 4
 	anim_sound 0, 1, SFX_HEADBUTT
 	anim_obj ANIM_OBJ_HIT_YFIX, 136, 56, $0
-	anim_bgeffect ANIM_BG_SHAKE_SCREEN_X, $14, $2, $0
 	anim_wait 8
 	anim_call BattleAnim_ShowMon_0
 	anim_ret
@@ -3234,11 +3241,12 @@ BattleAnim_Nightmare:
 BattleAnim_FlameWheel:
 	anim_1gfx ANIM_GFX_FIRE
 .loop
-	anim_sound 0, 0, SFX_EMBER
-	anim_obj ANIM_OBJ_FLAME_WHEEL, 48, 96, $0
+	anim_sound 0, 1, SFX_EMBER
+	anim_obj ANIM_OBJ_BURNED, 44, 96, $10
+	anim_obj ANIM_OBJ_BURNED, 44, 96, $90
 	anim_wait 6
-	anim_loop 8, .loop
-	anim_wait 96
+	anim_loop 12, .loop
+	anim_wait 48
 	anim_call BattleAnim_TargetObj_1Row
 	anim_bgeffect ANIM_BG_TACKLE, $0, BG_EFFECT_USER, $0
 	anim_wait 4
@@ -3495,42 +3503,12 @@ BattleAnim_SweetKiss:
 
 BattleAnim_BellyDrum:
 	anim_2gfx ANIM_GFX_HIT, ANIM_GFX_NOISE
+.loop
 	anim_sound 0, 0, SFX_BELLY_DRUM
 	anim_obj ANIM_OBJ_BELLY_DRUM_HAND, 64, 104, $0
 	anim_obj ANIM_OBJ_BELLY_DRUM_NOTE, 64, 92, $f8
-	anim_wait 24
-	anim_sound 0, 0, SFX_BELLY_DRUM
-	anim_obj ANIM_OBJ_BELLY_DRUM_HAND, 64, 104, $0
-	anim_obj ANIM_OBJ_BELLY_DRUM_NOTE, 64, 92, $f8
-	anim_wait 24
-	anim_sound 0, 0, SFX_BELLY_DRUM
-	anim_obj ANIM_OBJ_BELLY_DRUM_HAND, 64, 104, $0
-	anim_obj ANIM_OBJ_BELLY_DRUM_NOTE, 64, 92, $f8
-	anim_wait 12
-	anim_sound 0, 0, SFX_BELLY_DRUM
-	anim_obj ANIM_OBJ_BELLY_DRUM_HAND, 64, 104, $0
-	anim_obj ANIM_OBJ_BELLY_DRUM_NOTE, 64, 92, $f8
-	anim_wait 12
-	anim_sound 0, 0, SFX_BELLY_DRUM
-	anim_obj ANIM_OBJ_BELLY_DRUM_HAND, 64, 104, $0
-	anim_obj ANIM_OBJ_BELLY_DRUM_NOTE, 64, 92, $f8
-	anim_wait 24
-	anim_sound 0, 0, SFX_BELLY_DRUM
-	anim_obj ANIM_OBJ_BELLY_DRUM_HAND, 64, 104, $0
-	anim_obj ANIM_OBJ_BELLY_DRUM_NOTE, 64, 92, $f8
-	anim_wait 12
-	anim_sound 0, 0, SFX_BELLY_DRUM
-	anim_obj ANIM_OBJ_BELLY_DRUM_HAND, 64, 104, $0
-	anim_obj ANIM_OBJ_BELLY_DRUM_NOTE, 64, 92, $f8
-	anim_wait 12
-	anim_sound 0, 0, SFX_BELLY_DRUM
-	anim_obj ANIM_OBJ_BELLY_DRUM_HAND, 64, 104, $0
-	anim_obj ANIM_OBJ_BELLY_DRUM_NOTE, 64, 92, $f8
-	anim_wait 12
-	anim_sound 0, 0, SFX_BELLY_DRUM
-	anim_obj ANIM_OBJ_BELLY_DRUM_HAND, 64, 104, $0
-	anim_obj ANIM_OBJ_BELLY_DRUM_NOTE, 64, 92, $f8
-	anim_wait 12
+	anim_wait 18
+	anim_loop 3, .loop
 	anim_ret
 
 BattleAnim_SludgeBomb:
@@ -4455,6 +4433,7 @@ BattleAnim_Twister:
 	anim_wait 32
 	anim_ret
 
+BattleAnim_InRain:
 BattleAnim_RainDance:
 	anim_1gfx ANIM_GFX_WATER
 	anim_bgp $f8
@@ -4468,6 +4447,7 @@ BattleAnim_RainDance:
 	anim_wait 128
 	anim_ret
 
+BattleAnim_InSun:
 BattleAnim_SunnyDay:
 	anim_1gfx ANIM_GFX_SHINE
 	anim_bgp $90

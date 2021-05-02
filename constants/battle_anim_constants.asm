@@ -158,7 +158,6 @@ BATTLEANIM_BASE_TILE EQU 7 * 7  ; Maximum size of a pokemon picture
 	const ANIM_OBJ_DISABLE
 	const ANIM_OBJ_AGILITY
 	const ANIM_OBJ_HEART
-	const ANIM_OBJ_FLAME_WHEEL
 	const ANIM_OBJ_SACRED_FIRE
 	const ANIM_OBJ_COTTON_SPORE
 	const ANIM_OBJ_MILK_DRINK
@@ -178,7 +177,7 @@ BATTLEANIM_BASE_TILE EQU 7 * 7  ; Maximum size of a pokemon picture
 	const ANIM_OBJ_DRAGONBREATH
 	const ANIM_OBJ_CONVERSION
 	const ANIM_OBJ_SPIDER_WEB
-	const ANIM_OBJ_CAKE_UNUSED
+	const ANIM_OBJ_LEER_SHINE
 	const ANIM_OBJ_NIGHTMARE
 	const ANIM_OBJ_IN_NIGHTMARE
 	const ANIM_OBJ_LOVELY_KISS
@@ -496,6 +495,7 @@ BATTLEANIM_BASE_TILE EQU 7 * 7  ; Maximum size of a pokemon picture
 	const BATTLEANIMFRAMESET_B6
 	const BATTLEANIMFRAMESET_B7
 	const BATTLEANIMFRAMESET_B8
+	const BATTLEANIMFRAMESET_B9
 
 ; BattleAnimOAMData indexes (see data/battle_anims/oam.asm)
 	const_def
