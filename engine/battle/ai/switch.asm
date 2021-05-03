@@ -144,6 +144,10 @@ CheckAbleToSwitch:
     jr nz, .checkstat
     jp	 .checkperish
 .checkstat
+	 ; Checks if Toxic Count is at least 3
+	 
+	 ; Checks if Encore Count is at least 3
+	 
 	 ; Checks if Evasion is greater than 0
 	ld a, [wEnemyEvaLevel]
     cp BASE_STAT_LEVEL + 1
@@ -190,10 +194,10 @@ CheckAbleToSwitch:
 	cp 0
 	jr c, .cont_check_2
 	jr z, .cont_check_2
-	 ; Check if player has at least 4 stat buffs
+	 ; Check if player has at least 2 stat buffs
 	ld a, b
-	cp 4
-	ret nc
+	cp 2
+	jr .switch
 	 ; Otherwise, roll to check other clauses or not
     call Random
     cp 35 percent

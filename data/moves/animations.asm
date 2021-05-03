@@ -3245,7 +3245,7 @@ BattleAnim_FlameWheel:
 	anim_obj ANIM_OBJ_BURNED, 44, 96, $10
 	anim_obj ANIM_OBJ_BURNED, 44, 96, $90
 	anim_wait 6
-	anim_loop 12, .loop
+	anim_loop 6, .loop
 	anim_wait 48
 	anim_call BattleAnim_TargetObj_1Row
 	anim_bgeffect ANIM_BG_TACKLE, $0, BG_EFFECT_USER, $0
