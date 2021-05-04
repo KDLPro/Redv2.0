@@ -499,13 +499,13 @@ BattleAnim_Confused:
 
 BattleAnim_Slp:
 	anim_1gfx ANIM_GFX_STATUS
-	anim_sound 0, 1, SFX_TAIL_WHIP
+	anim_sound 0, 1, SFX_SNORE
 	anim_obj ANIM_OBJ_ASLEEP, 64, 80, $0
 	anim_wait 40
-	anim_sound 0, 1, SFX_TAIL_WHIP
+	anim_sound 0, 1, SFX_SNORE
 	anim_obj ANIM_OBJ_ASLEEP, 64, 80, $0
 	anim_wait 40
-	anim_sound 0, 1, SFX_TAIL_WHIP
+	anim_sound 0, 1, SFX_SNORE
 	anim_obj ANIM_OBJ_ASLEEP, 64, 80, $0
 	anim_wait 40
 	anim_wait 32
@@ -970,7 +970,6 @@ BattleAnim_FireBlast:
 	anim_obj ANIM_OBJ_FIRE_BLAST, 136, 56, $4
 	anim_obj ANIM_OBJ_FIRE_BLAST, 136, 56, $5
 	anim_wait 12
-	anim_wait 32
 	anim_ret
 
 BattleAnim_IcePunch:
@@ -3255,11 +3254,11 @@ BattleAnim_FlameWheel:
 	anim_obj ANIM_OBJ_FIRE_BLAST, 136, 48, $1
 	anim_obj ANIM_OBJ_FIRE_BLAST, 136, 48, $4
 	anim_obj ANIM_OBJ_FIRE_BLAST, 136, 48, $5
-	anim_wait 8
-	anim_bgeffect ANIM_BG_SHOW_MON, $0, BG_EFFECT_TARGET, $0
-	anim_wait 4
+	anim_wait 7
 	anim_incobj 9
-	anim_wait 8
+	anim_incobj 10
+	anim_incobj 11
+	anim_call BattleAnim_ShowMon_0
 	anim_ret
 
 BattleAnim_Snore:

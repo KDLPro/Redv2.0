@@ -55,7 +55,7 @@ ItemNames::
 	db "Coin Case@"
 	db "Itemfinder@"
 	db "Teru-Sama@"
-	db "Exp.Share@"
+	db "Exp. Share@"
 	db "Old Rod@"
 	db "Good Rod@"
 	db "Silver Leaf@"

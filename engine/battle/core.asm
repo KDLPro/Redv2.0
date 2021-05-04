@@ -7201,6 +7201,10 @@ GiveExperiencePoints:
 	ld a, [wBattleMode]
 	dec a
 	call nz, BoostExp
+; Boost experience for battle participants
+	ld a, [wGivingExperienceToExpShareHolders]
+	and a
+	call nz, HalveExp
 ; Boost experience for Lucky Egg
 	push bc
 	ld a, MON_ITEM
@@ -7493,9 +7497,7 @@ GiveExperiencePoints:
 	ret c
 
 	ld [wTempByteValue], a
-	ld hl, wEnemyMonBaseStats
-	ld c, wEnemyMonEnd - wEnemyMonBaseStats
-.base_stat_division_loop
+	ld hl, wEnemyMonBaseExp
 	xor a
 	ldh [hDividend + 0], a
 	ld a, [hl]
@@ -7505,9 +7507,7 @@ GiveExperiencePoints:
 	ld b, 2
 	call Divide
 	ldh a, [hQuotient + 3]
-	ld [hli], a
-	dec c
-	jr nz, .base_stat_division_loop
+	ld [hl], a
 	ret
 
 IsEvsGreaterThan510:
@@ -7520,8 +7520,6 @@ IsEvsGreaterThan510:
    cp LOW(MAX_TOTAL_EV)
    ret
   
-
-
 BoostExp:
 ; Multiply experience by 1.5x
 	push bc
@@ -7541,11 +7539,23 @@ BoostExp:
 	ldh [hProduct + 2], a
 	pop bc
 	ret
+	
+HalveExp:
+	ld hl, hProduct + 2
+	srl [hl]
+	inc hl
+	rr [hl]
+	ret
 
 Text_MonGainedExpPoint:
 	text_far Text_Gained
 	text_asm
 	ld hl, ExpPointsText
+	ld a, [wGivingExperienceToExpShareHolders]
+	and a
+	ret z
+	
+	ld hl, ExpPointsFromShareText
 	ld a, [wStringBuffer2 + 2] ; IsTradedMon
 	and a
 	ret z
@@ -7559,6 +7569,10 @@ BoostedExpPointsText:
 
 ExpPointsText:
 	text_far _ExpPointsText
+	text_end
+	
+ExpPointsFromShareText:
+	text_far _ExpPointsFromShareText
 	text_end
 
 AnimateExpBar:

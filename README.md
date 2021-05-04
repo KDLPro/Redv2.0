@@ -8,6 +8,8 @@ Features include:
 - Johto post-game
 - New areas
 - Physical/Special Split
+- Balance changes for Pokémon and a few types 
+- Added new types to some Pokémon
 - Item price rework
 - New moves and deleted redundant moves
 - Modified gender formula to have female Pokémon have good stats

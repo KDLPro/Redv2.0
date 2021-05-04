@@ -99,10 +99,8 @@ TypeMatchups:
 	db GHOST,        GHOST,        SUPER_EFFECTIVE
 	db DRAGON,       DRAGON,       SUPER_EFFECTIVE
 	db DRAGON,       STEEL,        NOT_VERY_EFFECTIVE
-	db DRAGON,       ICE,          NOT_VERY_EFFECTIVE
 	db DARK,         FIGHTING,     NOT_VERY_EFFECTIVE
 	db DARK,         PSYCHIC_TYPE, SUPER_EFFECTIVE
-	db DARK,         BUG,          NOT_VERY_EFFECTIVE
 	db DARK,         GHOST,        SUPER_EFFECTIVE
 	db DARK,         DARK,         NOT_VERY_EFFECTIVE
 	db STEEL,        FIRE,         NOT_VERY_EFFECTIVE

@@ -104,14 +104,22 @@ _BoostedExpPointsText::
 	line "a boosted"
 	cont "@"
 	text_decimal wStringBuffer2, 2, 4
-	text " EXP. Points!"
+	text " Exp. Points!"
 	prompt
 
 _ExpPointsText::
 	text_start
 	line "@"
 	text_decimal wStringBuffer2, 2, 4
-	text " EXP. Points!"
+	text " Exp. Points!"
+	prompt
+	
+_ExpPointsFromShareText::
+	text_start
+	line "@"
+	text_decimal wStringBuffer2, 2, 4
+	text " Exp. Points"
+	cont "from Exp. Share!"
 	prompt
 
 _GoMonText::
@@ -144,7 +152,7 @@ _BattleMonNickCommaText::
 
 _ThatsEnoughComeBackText::
 	text " that's"
-	line "enough! Come back!@"
+	line "enough! Return!@"
 	text_end
 
 _OKComeBackText::
@@ -154,7 +162,7 @@ _OKComeBackText::
 
 _GoodComeBackText::
 	text " good!"
-	line "Come back!@"
+	line "Return!@"
 	text_end
 
 _ComeBackText::
