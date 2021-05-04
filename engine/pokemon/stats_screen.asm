@@ -575,13 +575,13 @@ StatsScreen_LoadGFX:
 	dw LoadBluePage
 
 LoadPinkPage:
-	hlcoord 0, 9
+	hlcoord 0, 8
 	ld b, $0
 	predef DrawPlayerHP
-	hlcoord 8, 9
+	hlcoord 8, 8
 	ld [hl], $41 ; right HP/exp bar end cap
 	ld de, .Status_Type
-	hlcoord 0, 12
+	hlcoord 0, 13
 	call PlaceString
 	ld a, [wTempMonPokerusStatus]
 	ld b, a
@@ -596,7 +596,7 @@ LoadPinkPage:
 	ld a, [wMonType]
 	cp BOXMON
 	jr z, .StatusOK
-	hlcoord 6, 13
+	hlcoord 6, 14
 	push hl
 	ld de, wTempMonStatus
 	predef PlaceStatusString
@@ -605,14 +605,37 @@ LoadPinkPage:
 	jr .StatusOK
 .HasPokerus:
 	ld de, .PkrsStr
-	hlcoord 1, 13
+	hlcoord 1, 14
 	call PlaceString
 	jr .done_status
 .StatusOK:
 	ld de, .OK_str
 	call PlaceString
 .done_status
-	hlcoord 1, 15
+	ld de, .HP_DVs
+	hlcoord 0, 10
+	call PlaceString
+	ld de, .HP_EVs
+	hlcoord 0, 11
+	call PlaceString
+	hlcoord 6, 11
+	ld de, wTempMonEVs
+	xor a
+	ld [wTempMonPadding], a
+	ld a, [de]
+	ld [wTempMonPadding + 1], a
+	ld de, wTempMonPadding
+	lb bc, 2, 3
+	call PrintNum
+	call .CalcHPDVs
+	hlcoord 6, 10
+	ld de, wTempMonPadding
+	lb bc, 2, 3
+	call PrintNum
+	xor a
+	ld [wTempMonPadding + 1], a
+	
+	hlcoord 1, 16
 	predef PrintMonTypes
 	hlcoord 9, 8
 	ld de, SCREEN_WIDTH
@@ -700,6 +723,12 @@ LoadPinkPage:
 .Status_Type:
 	db   "STATUS/"
 	next "TYPE/@"
+	
+.HP_DVs:
+	db "HP DV@"
+
+.HP_EVs:
+	db "HP EV@"
 
 .OK_str:
 	db "OK @"
@@ -715,6 +744,35 @@ LoadPinkPage:
 
 .PkrsStr:
 	db "#RUS@"
+	
+.CalcHPDVs:
+	push bc
+	ld hl, wTempMonDVs
+	ld a, [hl]
+	swap a
+	and 1
+	add a
+	add a
+	add a
+	ld b, a
+	ld a, [hli]
+	and 1
+	add a
+	add a
+	add b
+	ld b, a
+	ld a, [hl]
+	swap a
+	and 1
+	add a
+	add b
+	ld b, a
+	ld a, [hl]
+	and 1
+	add b
+	ld [wTempMonPadding + 1], a
+	pop bc
+	ret
 
 LoadGreenPage:
 	ld de, .Item
@@ -763,7 +821,7 @@ LoadGreenPage:
 
 LoadBluePage:
 	call .PlaceOTInfo
-	hlcoord 10, 8
+	hlcoord 9, 8
 	ld de, SCREEN_WIDTH
 	ld b, 10
 	ld a, $31 ; vertical divider
@@ -772,7 +830,7 @@ LoadBluePage:
 	add hl, de
 	dec b
 	jr nz, .vertical_divider
-	hlcoord 11, 8
+	hlcoord 10, 8
 	ld bc, 6
 	predef PrintTempMonStatsDVs
 	ret
@@ -784,7 +842,7 @@ LoadBluePage:
 	ld de, OTString
 	hlcoord 0, 12
 	call PlaceString
-	hlcoord 2, 10
+	hlcoord 1, 10
 	lb bc, PRINTNUM_LEADINGZEROS | 2, 5
 	ld de, wTempMonID
 	call PrintNum
@@ -792,7 +850,7 @@ LoadBluePage:
 	call GetNicknamePointer
 	call CopyNickname
 	farcall CorrectNickErrors
-	hlcoord 2, 13
+	hlcoord 1, 13
 	call PlaceString
 	ld a, [wTempMonCaughtGender]
 	and a
@@ -804,7 +862,7 @@ LoadBluePage:
 	jr z, .got_gender
 	ld a, "♀"
 .got_gender
-	hlcoord 9, 13
+	hlcoord 8, 13
 	ld [hl], a
 .done
 	ret
