@@ -12,7 +12,7 @@ MoveDescriptions::
 	dw ScratchDescription
 	dw VicegripDescription
 	dw GuillotineDescription
-	dw RazorWindDescription
+	dw XScissorDescription
 	dw SwordsDanceDescription
 	dw CutDescription
 	dw GustDescription
@@ -127,7 +127,7 @@ MoveDescriptions::
 	dw BoneClubDescription
 	dw FireBlastDescription
 	dw WaterfallDescription
-	dw ClampDescription
+	dw RockTombDescription
 	dw SwiftDescription
 	dw SkullBashDescription
 	dw SpikeCannonDescription
@@ -312,9 +312,9 @@ GuillotineDescription:
 	db   "A one-hit KO,"
 	next "pincer attack.@"
 
-RazorWindDescription:
-	db   "1st turn: Prepare"
-	next "2nd turn: Attack@"
+XScissorDescription:
+	db   "Slashes like a"
+	next "pair of scissors.@"
 
 SwordsDanceDescription:
 	db   "A dance that in-"
@@ -458,7 +458,7 @@ SupersonicDescription:
 
 SonicboomDescription:
 	db   "Always inflicts"
-	next "20HP damage.@"
+	next "25 HP damage.@"
 
 DisableDescription:
 	db   "Disables the foe's"
@@ -590,7 +590,7 @@ StringShotDescription:
 
 DragonRageDescription:
 	db   "Always inflicts"
-	next "40HP damage.@"
+	next "45 HP damage.@"
 
 FireSpinDescription:
 	db   "Traps foe in fire"
@@ -772,9 +772,9 @@ WaterfallDescription:
 	db   "An aquatic charge"
 	next "attack.@"
 
-ClampDescription:
-	db   "Traps the foe for"
-	next "2-5 turns.@"
+RockTombDescription:
+	db   "An rock move that"
+	next "lowers SPEED.@"
 
 SwiftDescription:
 	db   "An attack that"

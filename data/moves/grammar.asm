@@ -21,6 +21,8 @@ MoveGrammar:
 	db BONEMERANG
 	db REST
 	db SHARPEN
+	db X_SCISSOR
+	db AQUA_JET
 	db SUBSTITUTE
 	db MIND_READER
 	db SNORE
@@ -82,7 +84,6 @@ MoveGrammar:
 	db SCREECH
 	db METRONOME
 	db LICK
-	db CLAMP
 	db CONSTRICT
 	db POISON_GAS
 	db AQUA_JET

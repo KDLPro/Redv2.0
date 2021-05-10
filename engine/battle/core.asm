@@ -924,9 +924,9 @@ Battle_EnemyFirst:
 
 .switch_item
 	call SetEnemyTurn
-	call HandleHealingItems
 	call ResidualDamage
 	jp z, HandleEnemyMonFaint
+	call HandleHealingItems
 	call RefreshBattleHuds
 	call PlayerTurn_EndOpponentProtectEndureDestinyBond
 	call CheckMobileBattleError
@@ -939,9 +939,9 @@ Battle_EnemyFirst:
 	call HasPlayerFainted
 	jp z, HandlePlayerMonFaint
 	call SetPlayerTurn
-	call HandleHealingItems
 	call ResidualDamage
 	jp z, HandlePlayerMonFaint
+	call HandleHealingItems
 	call RefreshBattleHuds
 	xor a ; BATTLEPLAYERACTION_USEMOVE
 	ld [wBattlePlayerAction], a
@@ -966,11 +966,11 @@ Battle_PlayerFirst:
 	jp z, HandlePlayerMonFaint
 	push bc
 	call SetPlayerTurn
-	call HandleHealingItems
 	call ResidualDamage
 	pop bc
 	jp z, HandlePlayerMonFaint
 	push bc
+	call HandleHealingItems
 	call RefreshBattleHuds
 	pop af
 	jr c, .switched_or_used_item
@@ -990,9 +990,9 @@ Battle_PlayerFirst:
 
 .switched_or_used_item
 	call SetEnemyTurn
-	call HandleHealingItems
 	call ResidualDamage
 	jp z, HandleEnemyMonFaint
+	call HandleHealingItems
 	call RefreshBattleHuds
 	xor a ; BATTLEPLAYERACTION_USEMOVE
 	ld [wBattlePlayerAction], a
@@ -2156,10 +2156,35 @@ UpdateHPBar:
 
 HandleEnemyMonFaint:
 	call FaintEnemyPokemon
-	ld hl, wBattleMonHP
-	ld a, [hli]
-	or [hl]
+	ld a, [wBattleMode]
+	dec a
+	jr z, .wild
+	ld a, [wCurOTMon]
+	ld hl, wOTPartyMon1HP
+	call GetPartyLocation
+	xor a
+	ld [hli], a
+	ld [hl], a
+
+.wild
+	call HasPlayerFainted
 	call z, FaintYourPokemon
+	call HasPlayerFainted
+	jr z, .faint_done
+	ld a, [wBattleMode]
+	dec a
+	jr z, .faint_done
+	call CheckEnemyTrainerDefeated
+	jr z, .faint_done
+	; Deal residual damage to opponent's mon if it's a trainer battle 
+	; and the opponent is not winning yet
+	call ResidualDamage
+	call HasPlayerFainted
+	call z, FaintYourPokemon
+	call HasPlayerFainted
+	jr z, .faint_done
+	call HandleHealingItems
+.faint_done
 	xor a
 	ld [wWhichMonFaintedFirst], a
 	call UpdateBattleStateAndExperienceAfterEnemyFaint
@@ -2253,17 +2278,6 @@ DoubleSwitch:
 
 UpdateBattleStateAndExperienceAfterEnemyFaint:
 	call UpdateBattleMonInParty
-	ld a, [wBattleMode]
-	dec a
-	jr z, .wild
-	ld a, [wCurOTMon]
-	ld hl, wOTPartyMon1HP
-	call GetPartyLocation
-	xor a
-	ld [hli], a
-	ld [hl], a
-
-.wild
 	ld hl, wPlayerSubStatus3
 	res SUBSTATUS_IN_LOOP, [hl]
 	xor a
@@ -2746,10 +2760,23 @@ INCLUDE "data/trainers/leaders.asm"
 
 HandlePlayerMonFaint:
 	call FaintYourPokemon
-	ld hl, wEnemyMonHP
-	ld a, [hli]
-	or [hl]
+	call HasEnemyFainted
 	call z, FaintEnemyPokemon
+	call HasEnemyFainted
+	jr z, .faint_done
+	call CheckPlayerPartyForFitMon
+	ld a, d
+	and a
+	jr z, .faint_done
+	; Deal residual damage to player's ,pm if it's a trainer battle 
+	; and the opponent is not winning yet
+	call ResidualDamage
+	call HasEnemyFainted
+	call z, FaintEnemyPokemon
+	call HasEnemyFainted
+	jr z, .faint_done
+	call HandleHealingItems
+.faint_done
 	ld a, $1
 	ld [wWhichMonFaintedFirst], a
 	call UpdateFaintedPlayerMon
@@ -2761,6 +2788,17 @@ HandlePlayerMonFaint:
 	ld a, [hli]
 	or [hl]
 	jr nz, .notfainted
+	ld a, [wBattleMode]
+	dec a
+	jr z, .wild
+	ld a, [wCurOTMon]
+	ld hl, wOTPartyMon1HP
+	call GetPartyLocation
+	xor a
+	ld [hli], a
+	ld [hl], a
+
+.wild
 	call UpdateBattleStateAndExperienceAfterEnemyFaint
 	ld a, [wBattleMode]
 	dec a

@@ -322,7 +322,6 @@ AI_Smart_EffectHandlers:
 	dbw EFFECT_TOXIC,            AI_Smart_Toxic
 	dbw EFFECT_LIGHT_SCREEN,     AI_Smart_LightScreen
 	dbw EFFECT_OHKO,             AI_Smart_Ohko
-	dbw EFFECT_RAZOR_WIND,       AI_Smart_RazorWind
 	dbw EFFECT_SUPER_FANG,       AI_Smart_SuperFang
 	dbw EFFECT_TRAP_TARGET,      AI_Smart_TrapTarget
 	dbw EFFECT_PRIORITY_HIT,     AI_Smart_PriorityHit

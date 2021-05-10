@@ -9,7 +9,7 @@
 	const POUND        ; 01
 	const KARATE_CHOP  ; 02
 	const DOUBLESLAP   ; 03
-	const COMET_PUNCH  ; 04
+	const WATER_PULSE  ; 04
 	const MEGA_PUNCH   ; 05
 	const PAY_DAY      ; 06
 	const FIRE_PUNCH   ; 07
@@ -17,7 +17,7 @@
 	const THUNDERPUNCH ; 09
 	const SCRATCH      ; 0a
 	const VICEGRIP     ; 0b
-	const GUILLOTINE   ; 0c
+	const X_SCISSOR   ; 0c
 	const RAZOR_WIND   ; 0d
 	const SWORDS_DANCE ; 0e
 	const CUT          ; 0f
@@ -150,7 +150,7 @@
 	const LOVELY_KISS  ; 8e
 	const SKY_ATTACK   ; 8f
 	const TRANSFORM    ; 90
-	const AQUA_JET      ; 91
+	const AQUA_JET     ; 91
 	const DIZZY_PUNCH  ; 92
 	const SPORE        ; 93
 	const FLASH        ; 94
@@ -276,15 +276,17 @@ NUM_ATTACKS EQU const_value - 1
 	const ANIM_IN_SANDSTORM      ; 10b
 	const ANIM_IN_NIGHTMARE      ; 10c
 	const ANIM_IN_WHIRLPOOL      ; 10d
+	const ANIM_IN_RAIN           ; 10e
+	const ANIM_IN_SUN            ; 10f
 ; battle anims
-	const ANIM_MISS              ; 10e
-	const ANIM_ENEMY_DAMAGE      ; 10f
-	const ANIM_ENEMY_STAT_DOWN   ; 110
-	const ANIM_PLAYER_STAT_DOWN  ; 111
-	const ANIM_PLAYER_DAMAGE     ; 112
-	const ANIM_WOBBLE            ; 113
-	const ANIM_SHAKE             ; 114
-	const ANIM_HIT_CONFUSION     ; 115
+	const ANIM_MISS              ; 110
+	const ANIM_ENEMY_DAMAGE      ; 111
+	const ANIM_ENEMY_STAT_DOWN   ; 112
+	const ANIM_PLAYER_STAT_DOWN  ; 113
+	const ANIM_PLAYER_DAMAGE     ; 114
+	const ANIM_WOBBLE            ; 115
+	const ANIM_SHAKE             ; 116
+	const ANIM_HIT_CONFUSION     ; 117
 
 ; wNumHits uses offsets from ANIM_MISS
 	const_def

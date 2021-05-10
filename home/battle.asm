@@ -147,7 +147,18 @@ RefreshBattleHuds::
 	jp WaitBGMap
 
 UpdateBattleHuds::
+	ld hl, wBattleMonHP
+	ld a, [hli]
+	or [hl]
+	jp z, .player_fainted
+	jp c, .player_fainted
 	farcall UpdatePlayerHUD
+.player_fainted
+	ld hl, wEnemyMonHP
+	ld a, [hli]
+	or [hl]
+	ret z
+	ret c
 	farcall UpdateEnemyHUD
 	ret
 

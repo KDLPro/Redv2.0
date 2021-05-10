@@ -21,6 +21,7 @@ DoBattleAnimFrame:
 	dw BattleAnimFunction_ThrowFromUserToTarget
 	dw BattleAnimFunction_ThrowFromUserToTargetAndDisappear
 	dw BattleAnimFunction_Drop
+	dw BattleAnimFunction_DropNoBounce
 	dw BattleAnimFunction_MoveFromUserToTargetSpinAround
 	dw BattleAnimFunction_Shake
 	dw BattleAnimFunction_FireBlast
@@ -522,6 +523,52 @@ BattleAnimFunction_Drop:
 
 .done
 	call DeinitBattleAnimation
+	ret
+	
+BattleAnimFunction_DropNoBounce:
+; Drops obj on the ground
+	call BattleAnim_AnonJumptable
+.anon_dw
+	dw .zero
+	dw .one
+.zero
+	call BattleAnim_IncAnonJumptableIndex
+	ld hl, BATTLEANIMSTRUCT_VAR1
+	add hl, bc
+	ld [hl], $30
+	inc hl
+	ld [hl], $48
+.one
+	ld hl, BATTLEANIMSTRUCT_VAR1
+	add hl, bc
+	ld a, [hli]
+	ld d, [hl]
+	call BattleAnim_Sine
+	ld hl, BATTLEANIMSTRUCT_YOFFSET
+	add hl, bc
+	ld [hl], a
+	and a
+	ret z
+	ld hl, BATTLEANIMSTRUCT_VAR1
+	add hl, bc
+	inc [hl]
+	ld a, [hl]
+	and $3f
+	ret nz
+	ld hl, BATTLEANIMSTRUCT_VAR1
+	add hl, bc
+	ld [hl], $20
+	ld hl, BATTLEANIMSTRUCT_VAR2
+	add hl, bc
+	ld a, [hl]
+	ld hl, BATTLEANIMSTRUCT_PARAM
+	add hl, bc
+	sub [hl]
+	ret z
+	ret c
+	ld hl, BATTLEANIMSTRUCT_VAR2
+	add hl, bc
+	ld [hl], a
 	ret
 
 BattleAnimFunction_MoveFromUserToTargetSpinAround:

@@ -1327,16 +1327,12 @@ DebugRoom_BoxStructStrings:
 .BaseExp0:  db "BASE EXP[0]@" ; unreferenced
 .BaseExp1:  db "BASE EXP[1]@" ; unreferenced
 .BaseExp2:  db "BASE EXP[2]@" ; unreferenced
-.HPExp0:    db "HP EXP[0]@"
-.HPExp1:    db "HP EXP[1]@"
-.AttkExp0:  db "ATTK EXP[0]@"
-.AttkExp1:  db "ATTK EXP[1]@"
-.DfnsExp0:  db "DFNS EXP[0]@"
-.DfnsExp1:  db "DFNS EXP[1]@"
-.SpeedExp0: db "SPEED EXP[0]@"
-.SpeedExp1: db "SPEED EXP[1]@"
-.SpclExp0:  db "SPCL EXP[0]@"
-.SpclExp1:  db "SPCL EXP[1]@"
+.HPEV:      db "HP EV@"
+.AttackEV:  db "ATTACK EV@"
+.DefenseEV: db "DEFENSE EV@"
+.SpeedEV:   db "SPEED EV@"
+.SpclAtkEV: db "SPCL ATK EV@"
+.SpclDefEV: db "SPCL DEF EV@"
 .PowerRnd0: db "POWER RND[0]<LF>  RARE:--1-1010@"
 .PowerRnd1: db "POWER RND[1]<LF>  RARE:10101010@"
 .PP1:       db "PP 1@"

@@ -13,7 +13,7 @@ BattleAnimations::
 	dw BattleAnim_Scratch
 	dw BattleAnim_Vicegrip
 	dw BattleAnim_Guillotine
-	dw BattleAnim_RazorWind
+	dw BattleAnim_XScissor
 	dw BattleAnim_SwordsDance
 	dw BattleAnim_Cut
 	dw BattleAnim_Gust
@@ -128,7 +128,7 @@ BattleAnimations::
 	dw BattleAnim_BoneClub
 	dw BattleAnim_FireBlast
 	dw BattleAnim_Waterfall
-	dw BattleAnim_Clamp
+	dw BattleAnim_RockTomb
 	dw BattleAnim_Swift
 	dw BattleAnim_SkullBash
 	dw BattleAnim_SpikeCannon
@@ -1289,29 +1289,19 @@ BattleAnim_Thunder:
 	anim_wait 48
 	anim_ret
 
-BattleAnim_RazorWind:
-	anim_if_param_equal $1, BattleAnim_FocusEnergy
-	anim_1gfx ANIM_GFX_WHIP
-	anim_bgeffect ANIM_BG_CYCLE_OBPALS_GRAY_AND_YELLOW, $0, $1, $0
-.loop
-	anim_bgeffect ANIM_BG_FLASH_INVERTED, $0, $4, $2
-	anim_sound 0, 1, SFX_RAZOR_WIND
-	anim_obj ANIM_OBJ_RAZOR_WIND2, 152, 40, $3
-	anim_wait 4
-	anim_sound 0, 1, SFX_RAZOR_WIND
-	anim_obj ANIM_OBJ_RAZOR_WIND2, 136, 56, $3
-	anim_wait 4
-	anim_sound 0, 1, SFX_RAZOR_WIND
-	anim_obj ANIM_OBJ_RAZOR_WIND2, 152, 64, $3
-	anim_wait 4
-	anim_sound 0, 1, SFX_RAZOR_WIND
-	anim_obj ANIM_OBJ_RAZOR_WIND1, 120, 40, $83
-	anim_wait 4
-	anim_sound 0, 1, SFX_RAZOR_WIND
-	anim_obj ANIM_OBJ_RAZOR_WIND1, 120, 64, $83
-	anim_wait 4
-	anim_loop 3, .loop
-	anim_wait 24
+BattleAnim_Guillotine:
+	anim_1gfx ANIM_GFX_CUT
+	anim_bgeffect ANIM_BG_FLASH_INVERTED, $0, $8, $10
+	anim_bgeffect ANIM_BG_SHAKE_SCREEN_X, $40, $2, $0
+	anim_sound 0, 1, SFX_VICEGRIP
+	anim_obj ANIM_OBJ_CUT_DOWN_LEFT, 156, 44, $0
+	anim_obj ANIM_OBJ_CUT_DOWN_LEFT, 152, 40, $0
+	anim_obj ANIM_OBJ_CUT_DOWN_LEFT, 148, 36, $0
+	anim_obj ANIM_OBJ_CUT_UP_RIGHT, 124, 76, $0
+	anim_obj ANIM_OBJ_CUT_UP_RIGHT, 120, 72, $0
+	anim_obj ANIM_OBJ_CUT_UP_RIGHT, 116, 68, $0
+	anim_obj ANIM_OBJ_CUT_UP_RIGHT, 120, 72, $0
+	anim_wait 32
 	anim_ret
 
 BattleAnim_Gust:
@@ -1555,17 +1545,20 @@ BattleAnim_Slash:
 	anim_wait 28
 	anim_ret
 
-BattleAnim_Clamp:
-	anim_2gfx ANIM_GFX_CUT, ANIM_GFX_HIT
-	anim_obj ANIM_OBJ_CLAMP, 136, 56, $a0
-	anim_obj ANIM_OBJ_CLAMP, 136, 56, $20
-	anim_wait 16
-	anim_sound 0, 1, SFX_BITE
-	anim_obj ANIM_OBJ_HIT_YFIX, 144, 48, $18
-	anim_wait 32
-	anim_sound 0, 1, SFX_BITE
-	anim_obj ANIM_OBJ_HIT_YFIX, 128, 64, $18
-	anim_wait 16
+BattleAnim_RockTomb:
+	anim_1gfx ANIM_GFX_ROCKS
+	anim_sound 0, 1, SFX_STRENGTH
+	anim_obj ANIM_OBJ_ROCK_TOMB, 130, 64, $48
+	anim_wait 10
+	anim_sound 0, 1, SFX_STRENGTH
+	anim_obj ANIM_OBJ_ROCK_TOMB, 120, 64, $48
+	anim_wait 10
+	anim_sound 0, 1, SFX_STRENGTH
+	anim_obj ANIM_OBJ_ROCK_TOMB, 150, 64, $48
+	anim_wait 10
+	anim_sound 0, 1, SFX_STRENGTH
+	anim_obj ANIM_OBJ_ROCK_TOMB, 140, 64, $48
+	anim_wait 20
 	anim_ret
 
 BattleAnim_Bite:
@@ -2246,7 +2239,8 @@ BattleAnim_PoisonGas:
 	anim_1gfx ANIM_GFX_HAZE
 .loop
 	anim_sound 16, 2, SFX_BUBBLEBEAM
-	anim_obj ANIM_OBJ_POISON_GAS, 44, 80, $2
+	anim_obj ANIM_OBJ_POISON_GAS_R, 44, 80, $2
+	anim_obj ANIM_OBJ_POISON_GAS_B, 44, 81, $2
 	anim_wait 8
 	anim_loop 10, .loop
 	anim_wait 128
@@ -2535,18 +2529,11 @@ BattleAnim_DrillPeck:
 	anim_wait 16
 	anim_ret
 
-BattleAnim_Guillotine:
+BattleAnim_XScissor:
 	anim_1gfx ANIM_GFX_CUT
-	anim_bgeffect ANIM_BG_FLASH_INVERTED, $0, $8, $10
-	anim_bgeffect ANIM_BG_SHAKE_SCREEN_X, $40, $2, $0
-	anim_sound 0, 1, SFX_VICEGRIP
-	anim_obj ANIM_OBJ_CUT_DOWN_LEFT, 156, 44, $0
-	anim_obj ANIM_OBJ_CUT_DOWN_LEFT, 152, 40, $0
-	anim_obj ANIM_OBJ_CUT_DOWN_LEFT, 148, 36, $0
-	anim_obj ANIM_OBJ_CUT_UP_RIGHT, 124, 76, $0
-	anim_obj ANIM_OBJ_CUT_UP_RIGHT, 120, 72, $0
-	anim_obj ANIM_OBJ_CUT_UP_RIGHT, 116, 68, $0
-	anim_obj ANIM_OBJ_CUT_UP_RIGHT, 120, 72, $0
+	anim_sound 0, 1, SFX_CUT
+	anim_obj ANIM_OBJ_FURY_CUTTER_LEFT, 147, 40, $0
+	anim_obj ANIM_OBJ_FURY_CUTTER_RIGHT, 117, 40, $0
 	anim_wait 32
 	anim_ret
 

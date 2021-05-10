@@ -197,7 +197,7 @@ CheckAbleToSwitch:
 	 ; Check if player has at least 2 stat buffs
 	ld a, b
 	cp 2
-	jr .switch
+	jr nc, .switch
 	 ; Otherwise, roll to check other clauses or not
     call Random
     cp 35 percent

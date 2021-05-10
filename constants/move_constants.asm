@@ -18,7 +18,7 @@
 	const SCRATCH      ; 0a
 	const VICEGRIP     ; 0b
 	const GUILLOTINE   ; 0c
-	const RAZOR_WIND   ; 0d
+	const X_SCISSOR    ; 0d
 	const SWORDS_DANCE ; 0e
 	const CUT          ; 0f
 	const GUST         ; 10
@@ -133,7 +133,7 @@
 	const BONE_CLUB    ; 7d
 	const FIRE_BLAST   ; 7e
 	const WATERFALL    ; 7f
-	const CLAMP        ; 80
+	const ROCK_TOMB    ; 80
 	const SWIFT        ; 81
 	const SKULL_BASH   ; 82
 	const SPIKE_CANNON ; 83
