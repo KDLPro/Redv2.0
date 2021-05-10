@@ -483,8 +483,8 @@ PokeBallEffect:
 
 	ld hl, Text_GotchaMonWasCaught
 	call PrintText
-
 	call ClearSprites
+	callfar RemoveToxicAfterBattle
 
 	ld a, [wTempSpecies]
 	dec a
@@ -1469,8 +1469,6 @@ HealStatus:
 	ret nc
 	xor a
 	ld [wBattleMonStatus], a
-	ld hl, wPlayerSubStatus5
-	res SUBSTATUS_TOXIC, [hl]
 	ld hl, wPlayerSubStatus1
 	res SUBSTATUS_NIGHTMARE, [hl]
 	call GetItemHealingAction

@@ -3848,7 +3848,7 @@ BattleCommand_Poison:
 	jr .finished
 
 .toxic
-	set SUBSTATUS_TOXIC, [hl]
+	set TOX, [hl]
 	xor a
 	ld [de], a
 	call .apply_poison
@@ -3872,7 +3872,7 @@ BattleCommand_Poison:
 	jp RefreshBattleHuds
 
 .check_toxic
-	ld a, BATTLE_VARS_SUBSTATUS5_OPP
+	ld a, BATTLE_VARS_STATUS_OPP
 	call GetBattleVarAddr
 	ldh a, [hBattleTurn]
 	and a
@@ -5191,6 +5191,7 @@ BattleCommand_ForceSwitch:
 	inc a ; TRUE
 	ld [wForcedSwitch], a
 	call SetBattleDraw
+	callfar RemoveToxicAfterBattle
 	ld a, [wPlayerMoveStructAnimation]
 	jp .succeed
 
@@ -5284,6 +5285,7 @@ BattleCommand_ForceSwitch:
 	inc a ; TRUE
 	ld [wForcedSwitch], a
 	call SetBattleDraw
+	callfar RemoveToxicAfterBattle
 	ld a, [wEnemyMoveStructAnimation]
 	jr .succeed
 
@@ -6274,9 +6276,6 @@ BattleCommand_Heal:
 	push de
 	push af
 	call BattleCommand_MoveDelay
-	ld a, BATTLE_VARS_SUBSTATUS5
-	call GetBattleVarAddr
-	res SUBSTATUS_TOXIC, [hl]
 	ld a, BATTLE_VARS_STATUS
 	call GetBattleVarAddr
 	ld a, [hl]

@@ -200,7 +200,7 @@ ALL_STATUS EQU (1 << PSN) | (1 << BRN) | (1 << FRZ) | (1 << PAR) | SLP
 
 ; wPlayerSubStatus5 or wEnemySubStatus5 bit flags
 	const_def
-	const SUBSTATUS_TOXIC
+	const_skip
 	const_skip
 	const_skip
 	const SUBSTATUS_TRANSFORMED

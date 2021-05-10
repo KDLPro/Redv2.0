@@ -116,6 +116,7 @@ DoBattle:
 	jp BattleMenu
 
 WildFled_EnemyFled_LinkBattleCanceled:
+	call RemoveToxicAfterBattle
 	call SafeLoadTempTilemapToTilemap
 	ld a, [wBattleResult]
 	and BATTLERESULT_BITMASK
@@ -275,6 +276,12 @@ HandleBetweenTurnEffects:
 	call HandlePerishSong
 	call CheckFaint_PlayerThenEnemy
 	ret c
+	call SetPlayerTurn
+	call ResidualDamage
+	call z, HandlePlayerMonFaint
+	call SetEnemyTurn
+	call ResidualDamage
+	call z, HandleEnemyMonFaint
 	jr .NoMoreFaintingConditions
 
 .CheckEnemyFirst:
@@ -292,6 +299,12 @@ HandleBetweenTurnEffects:
 	call HandlePerishSong
 	call CheckFaint_EnemyThenPlayer
 	ret c
+	call SetEnemyTurn
+	call ResidualDamage
+	call z, HandleEnemyMonFaint
+	call SetPlayerTurn
+	call ResidualDamage
+	call z, HandlePlayerMonFaint
 
 .NoMoreFaintingConditions:
 	call HandleLeftovers
@@ -924,8 +937,6 @@ Battle_EnemyFirst:
 
 .switch_item
 	call SetEnemyTurn
-	call ResidualDamage
-	jp z, HandleEnemyMonFaint
 	call HandleHealingItems
 	call RefreshBattleHuds
 	call PlayerTurn_EndOpponentProtectEndureDestinyBond
@@ -939,8 +950,6 @@ Battle_EnemyFirst:
 	call HasPlayerFainted
 	jp z, HandlePlayerMonFaint
 	call SetPlayerTurn
-	call ResidualDamage
-	jp z, HandlePlayerMonFaint
 	call HandleHealingItems
 	call RefreshBattleHuds
 	xor a ; BATTLEPLAYERACTION_USEMOVE
@@ -966,9 +975,7 @@ Battle_PlayerFirst:
 	jp z, HandlePlayerMonFaint
 	push bc
 	call SetPlayerTurn
-	call ResidualDamage
 	pop bc
-	jp z, HandlePlayerMonFaint
 	push bc
 	call HandleHealingItems
 	call RefreshBattleHuds
@@ -990,8 +997,6 @@ Battle_PlayerFirst:
 
 .switched_or_used_item
 	call SetEnemyTurn
-	call ResidualDamage
-	jp z, HandleEnemyMonFaint
 	call HandleHealingItems
 	call RefreshBattleHuds
 	xor a ; BATTLEPLAYERACTION_USEMOVE
@@ -1078,9 +1083,9 @@ ResidualDamage:
 	ld de, wEnemyToxicCount
 .check_toxic
 
-	ld a, BATTLE_VARS_SUBSTATUS5
+	ld a, BATTLE_VARS_STATUS
 	call GetBattleVar
-	bit SUBSTATUS_TOXIC, a
+	bit TOX, a
 	jr z, .did_toxic
 	call GetSixteenthMaxHP
 	ld a, [de]
@@ -2207,6 +2212,8 @@ HandleEnemyMonFaint:
 	dec a
 	jr nz, .trainer
 
+	call RemoveToxicAfterBattle
+	
 	ld a, 1
 	ld [wBattleEnded], a
 	ret
@@ -2504,6 +2511,7 @@ EnemyPartyMonEntrance:
 
 WinTrainerBattle:
 ; Player won the battle
+	call RemoveToxicAfterBattle
 	call StopDangerSound
 	ld a, $1
 	ld [wBattleLowHealthAlarm], a
@@ -3102,6 +3110,7 @@ LostBattle:
 	cp BATTLETYPE_CANLOSE
 	jr nz, .not_canlose
 
+	call RemoveToxicAfterBattle
 ; Remove the enemy from the screen.
 	hlcoord 0, 0
 	lb bc, 8, 21
@@ -3119,6 +3128,7 @@ LostBattle:
 	ret
 
 .battle_tower
+	call RemoveToxicAfterBattle
 ; Remove the enemy from the screen.
 	hlcoord 0, 0
 	lb bc, 8, 21
@@ -3137,6 +3147,7 @@ LostBattle:
 	ret
 
 .not_canlose
+	call RemoveToxicAfterBattle
 	ld a, [wLinkMode]
 	and a
 	jr nz, .LostLinkBattle
@@ -3171,6 +3182,7 @@ LostBattle:
 	ret
 
 .mobile
+	call RemoveToxicAfterBattle
 ; Remove the enemy from the screen.
 	hlcoord 0, 0
 	lb bc, 8, 21
@@ -3790,6 +3802,7 @@ endr
 	ld [wEnemyDisableCount], a
 	ld [wEnemyFuryCutterCount], a
 	ld [wEnemyProtectCount], a
+	ld [wEnemyToxicCount], a
 	ld [wEnemyRageCounter], a
 	ld [wEnemyDisabledMove], a
 	ld [wEnemyMinimized], a
@@ -4018,6 +4031,7 @@ TryToRunAwayFromBattle:
 	and BATTLERESULT_BITMASK
 	add b
 	ld [wBattleResult], a
+	call RemoveToxicAfterBattle
 	call StopDangerSound
 	push de
 	ld de, SFX_RUN
@@ -4268,6 +4282,7 @@ endr
 	ld [wPlayerDisableCount], a
 	ld [wPlayerFuryCutterCount], a
 	ld [wPlayerProtectCount], a
+	ld [wPlayerToxicCount], a
 	ld [wPlayerRageCounter], a
 	ld [wDisabledMove], a
 	ld [wPlayerMinimized], a
@@ -4283,6 +4298,19 @@ BreakAttraction:
 	res SUBSTATUS_IN_LOVE, [hl]
 	ld hl, wEnemySubStatus1
 	res SUBSTATUS_IN_LOVE, [hl]
+	ret
+
+RemoveToxicAfterBattle::
+; removes toxic from mons after battle
+	ld a, [wPartyCount]
+	ld hl, wPartyMon1Status
+	ld bc, PARTYMON_STRUCT_LENGTH
+.loop
+	sub 1
+	ret c
+	res TOX, [hl]
+	add hl, bc
+	jr .loop
 	ret
 
 SpikesDamage:
@@ -4570,10 +4598,6 @@ UseHeldStatusHealingItem:
 	push bc
 	call UpdateOpponentInParty
 	pop bc
-	ld a, BATTLE_VARS_SUBSTATUS5_OPP
-	call GetBattleVarAddr
-	and [hl]
-	res SUBSTATUS_TOXIC, [hl]
 	ld a, BATTLE_VARS_SUBSTATUS1_OPP
 	call GetBattleVarAddr
 	and [hl]

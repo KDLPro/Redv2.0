@@ -158,8 +158,9 @@ SLP EQU %111 ; 0-4 turns
 	const BRN
 	const FRZ
 	const PAR
+	const TOX
 
-ALL_STATUS EQU (1 << PSN) | (1 << BRN) | (1 << FRZ) | (1 << PAR) | SLP
+ALL_STATUS EQU (1 << PSN) | (1 << BRN) | (1 << FRZ) | (1 << PAR) | (1 << TOX) | SLP
 
 ; wPlayerSubStatus1 or wEnemySubStatus1 bit flags
 	const_def
@@ -200,7 +201,7 @@ ALL_STATUS EQU (1 << PSN) | (1 << BRN) | (1 << FRZ) | (1 << PAR) | SLP
 
 ; wPlayerSubStatus5 or wEnemySubStatus5 bit flags
 	const_def
-	const SUBSTATUS_TOXIC
+	const_skip
 	const_skip
 	const_skip
 	const SUBSTATUS_TRANSFORMED

@@ -75,6 +75,7 @@ BattleCommand_Teleport:
 	ld [wForcedSwitch], a
 	ld [wBattleAnimParam], a
 	call SetBattleDraw
+	callfar RemoveToxicAfterBattle
 	call BattleCommand_LowerSub
 	call LoadMoveAnim
 	ld c, 20

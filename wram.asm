@@ -479,7 +479,7 @@ wBattleScriptBufferAddress:: dw
 
 wTurnEnded:: db
 
-	ds 1
+wEnemyConsecutiveSwitches:: db
 
 wPlayerStats::
 wPlayerAttack::  dw

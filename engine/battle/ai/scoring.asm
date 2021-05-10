@@ -604,8 +604,8 @@ AI_Smart_EvasionUp:
 	jr nc, .hp_mismatch_1
 
 ; ...greatly encourage this move if player is badly poisoned.
-	ld a, [wPlayerSubStatus5]
-	bit SUBSTATUS_TOXIC, a
+	ld a, [wBattleMonStatus]
+	bit TOX, a
 	jr nz, .greatly_encourage
 
 ; ...70% chance to greatly encourage this move if player is not badly poisoned.
@@ -653,8 +653,8 @@ AI_Smart_EvasionUp:
 ; 100% chance to end up here if enemy's HP is below 25%.
 ; In other words, we only end up here if the move has not been encouraged or dismissed.
 .not_encouraged
-	ld a, [wPlayerSubStatus5]
-	bit SUBSTATUS_TOXIC, a
+	ld a, [wBattleMonStatus]
+	bit TOX, a
 	jr nz, .maybe_greatly_encourage
 
 	ld a, [wPlayerSubStatus4]
@@ -775,8 +775,8 @@ AI_Smart_AccuracyDown:
 	jr nc, .hp_mismatch_1
 
 ; ...greatly encourage this move if player is badly poisoned.
-	ld a, [wPlayerSubStatus5]
-	bit SUBSTATUS_TOXIC, a
+	ld a, [wBattleMonStatus]
+	bit TOX, a
 	jr nz, .greatly_encourage
 
 ; ...70% chance to greatly encourage this move if player is not badly poisoned.
@@ -820,8 +820,8 @@ AI_Smart_AccuracyDown:
 
 ; We only end up here if the move has not been already encouraged.
 .not_encouraged
-	ld a, [wPlayerSubStatus5]
-	bit SUBSTATUS_TOXIC, a
+	ld a, [wBattleMonStatus]
+	bit TOX, a
 	jr nz, .maybe_greatly_encourage
 
 	ld a, [wPlayerSubStatus4]
@@ -1005,8 +1005,8 @@ AI_Smart_TrapTarget:
 
 ; 50% chance to greatly encourage this move if player is either
 ; badly poisoned, in love, identified, stuck in Rollout, or has a Nightmare.
-	ld a, [wPlayerSubStatus5]
-	bit SUBSTATUS_TOXIC, a
+	ld a, [wBattleMonStatus]
+	bit TOX, a
 	jr nz, .encourage
 
 	ld a, [wPlayerSubStatus1]
@@ -1742,8 +1742,8 @@ AI_Smart_MeanLook:
 	jp z, AIDiscourageMove
 
 ; 80% chance to greatly encourage this move if the player is badly poisoned
-	ld a, [wPlayerSubStatus5]
-	bit SUBSTATUS_TOXIC, a
+	ld a, [wBattleMonStatus]
+	bit TOX, a
 	jr nz, .encourage
 
 ; 80% chance to greatly encourage this move if the player is either
@@ -1925,8 +1925,8 @@ AI_Smart_Protect:
 	jr nz, .encourage
 
 ; Encourage this move if the player is affected by Toxic, Leech Seed, or Curse.
-	ld a, [wPlayerSubStatus5]
-	bit SUBSTATUS_TOXIC, a
+	ld a, [wBattleMonStatus]
+	bit TOX, a
 	jr nz, .encourage
 	ld a, [wPlayerSubStatus4]
 	bit SUBSTATUS_LEECH_SEED, a
