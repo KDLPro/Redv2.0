@@ -174,6 +174,17 @@ BattleTurn:
 	ld [hli], a
 	ld [hl], a
 .cont
+	ld a, [wEnemyIsSwitching]
+	and a
+	jr z, .enemy_didnt_switch
+	ld a, [wEnemyConsecutiveSwitches]
+	inc a
+	ld [wEnemyConsecutiveSwitches], a
+	jr .switch_check_done
+.enemy_didnt_switch
+	xor a
+	ld [wEnemyConsecutiveSwitches], a
+.switch_check_done
 	xor a
 	ld [wPlayerIsSwitching], a
 	ld [wEnemyIsSwitching], a

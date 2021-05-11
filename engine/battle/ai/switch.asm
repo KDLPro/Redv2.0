@@ -139,15 +139,16 @@ CheckAbleToSwitch:
     ld a, BANK(TrainerClassAttributes)
     call GetFarByte
     bit SWITCH_OFTEN_F, a
-    jr nz, .checkstat
+    jr nz, .startsmartcheck
     bit SWITCH_SOMETIMES_F, a
-    jr nz, .checkstat
+    jr nz, .startsmartcheck
     jp	 .checkperish
-.checkstat
+.startsmartcheck
 	 ; Checks if Toxic Count is at least 3
-	 
-	 ; Checks if Encore Count is at least 3
-	 
+	ld a, [wEnemyToxicCount]
+	cp 3
+	jp nc, .rollswitch
+	 ; Checks if Encore Count is at least 2
 	 ; Checks if Evasion is greater than 0
 	ld a, [wEnemyEvaLevel]
     cp BASE_STAT_LEVEL + 1
@@ -197,13 +198,17 @@ CheckAbleToSwitch:
 	 ; Check if player has at least 2 stat buffs
 	ld a, b
 	cp 2
-	jr nc, .switch
+	ret nc
 	 ; Otherwise, roll to check other clauses or not
     call Random
-    cp 35 percent
+    cp 70 percent
     ret c
     jr .checkperish
 .cont_check_2 
+	 ; Check if player has at least 2 stat buffs
+	ld a, b
+	cp 2
+	jr nc, .switch
 	 ; Check if AI has quarter HP or less
 	callfar AICheckEnemyQuarterHP
 	jr c, .check_other_stats
@@ -225,6 +230,9 @@ CheckAbleToSwitch:
     jr .checkperish
 	
 .rollswitch
+	ld a, [wEnemyConsecutiveSwitches]
+	cp 2
+	ret nc
     call Random
     cp 65 percent
     jr c, .switch
@@ -337,6 +345,9 @@ CheckAbleToSwitch:
 	ret	
  ; Switch check only for SWITCH_OFTEN AI
 .smartcheck:
+	ld a, [wEnemyIsSwitching]
+	cp 2
+	ret nz
 	call Random
 	cp 70 percent
 	ret c
