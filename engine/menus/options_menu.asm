@@ -194,14 +194,11 @@ Options_BattleScene:
 	ld hl, wOptions
 	ldh a, [hJoyPressed]
 	bit D_LEFT_F, a
-	jr nz, .LeftPressed
+	jr nz, .LeftRightPressed
 	bit D_RIGHT_F, a
 	jr z, .NonePressed
-	bit BATTLE_SCENE, [hl]
-	jr nz, .ToggleOn
-	jr .ToggleOff
 
-.LeftPressed:
+.LeftRightPressed:
 	bit BATTLE_SCENE, [hl]
 	jr z, .ToggleOff
 	jr .ToggleOn
@@ -244,14 +241,11 @@ Options_Sound:
 	ld hl, wOptions
 	ldh a, [hJoyPressed]
 	bit D_LEFT_F, a
-	jr nz, .LeftPressed
+	jr nz, .LeftRightPressed
 	bit D_RIGHT_F, a
 	jr z, .NonePressed
-	bit STEREO, [hl]
-	jr nz, .SetMono
-	jr .SetStereo
 
-.LeftPressed:
+.LeftRightPressed:
 	bit STEREO, [hl]
 	jr z, .SetStereo
 	jr .SetMono
@@ -391,14 +385,11 @@ Options_MenuAccount:
 	ld hl, wOptions2
 	ldh a, [hJoyPressed]
 	bit D_LEFT_F, a
-	jr nz, .LeftPressed
+	jr nz, .LeftRightPressed
 	bit D_RIGHT_F, a
 	jr z, .NonePressed
-	bit MENU_ACCOUNT, [hl]
-	jr nz, .ToggleOff
-	jr .ToggleOn
 
-.LeftPressed:
+.LeftRightPressed:
 	bit MENU_ACCOUNT, [hl]
 	jr z, .ToggleOn
 	jr .ToggleOff

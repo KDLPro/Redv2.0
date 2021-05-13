@@ -70,13 +70,15 @@ BattleCommand_Curse:
 
 	set SUBSTATUS_CURSE, [hl]
 	call AnimateCurrentMove
-	ld hl, GetHalfMaxHP
+	ld hl, GetQuarterMaxHP
 	call CallBattleCore
 	ld hl, SubtractHPFromUser
 	call CallBattleCore
 	call UpdateUserInParty
 	ld hl, PutACurseText
-	jp StdBattleTextbox
+	call StdBattleTextbox
+	ld hl, ApplyCrsEffectOnSpclAttack
+	jp CallBattleCore
 
 .failed
 	call AnimateFailedMove

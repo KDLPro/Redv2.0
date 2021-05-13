@@ -34,6 +34,8 @@ DoBattle:
 	ld a, [wBattleMode]
 	dec a
 	jr z, .wild
+	ld a, [wOTPartyCount]
+	ld [wEnemyMonsLeft], a
 	xor a
 	ld [wEnemySwitchMonIndex], a
 	call NewEnemyMonStatus
@@ -174,17 +176,7 @@ BattleTurn:
 	ld [hli], a
 	ld [hl], a
 .cont
-	ld a, [wEnemyIsSwitching]
-	and a
-	jr z, .enemy_didnt_switch
-	ld a, [wEnemyConsecutiveSwitches]
-	inc a
-	ld [wEnemyConsecutiveSwitches], a
-	jr .switch_check_done
-.enemy_didnt_switch
-	xor a
-	ld [wEnemyConsecutiveSwitches], a
-.switch_check_done
+	callfar DidEnemySwitch
 	xor a
 	ld [wPlayerIsSwitching], a
 	ld [wEnemyIsSwitching], a
@@ -2192,13 +2184,6 @@ HandleEnemyMonFaint:
 	jr z, .faint_done
 	call CheckEnemyTrainerDefeated
 	jr z, .faint_done
-	; Deal residual damage to opponent's mon if it's a trainer battle 
-	; and the opponent is not winning yet
-	call ResidualDamage
-	call HasPlayerFainted
-	call z, FaintYourPokemon
-	call HasPlayerFainted
-	jr z, .faint_done
 	call HandleHealingItems
 .faint_done
 	xor a
@@ -2438,6 +2423,7 @@ FaintYourPokemon:
 	jp StdBattleTextbox
 
 FaintEnemyPokemon:
+	callfar SetEnemyMonJustFainted
 	call WaitSFX
 	ld de, SFX_KINESIS
 	call PlaySFX
@@ -2786,13 +2772,6 @@ HandlePlayerMonFaint:
 	call CheckPlayerPartyForFitMon
 	ld a, d
 	and a
-	jr z, .faint_done
-	; Deal residual damage to player's ,pm if it's a trainer battle 
-	; and the opponent is not winning yet
-	call ResidualDamage
-	call HasEnemyFainted
-	call z, FaintEnemyPokemon
-	call HasEnemyFainted
 	jr z, .faint_done
 	call HandleHealingItems
 .faint_done
@@ -3331,32 +3310,7 @@ ForceEnemySwitch:
 	ret
 
 EnemySwitch:
-	call CheckWhetherToAskSwitch
-	jr nc, EnemySwitch_SetMode
-	; Shift Mode
-	call ResetEnemyBattleVars
-	call CheckWhetherSwitchmonIsPredetermined
-	jr c, .skip
-	call FindMonInOTPartyToSwitchIntoBattle
-.skip
-	; 'b' contains the PartyNr of the mon the AI will switch to
-	call LoadEnemyMonToSwitchTo
-	call OfferSwitch
-	push af
-	call ClearEnemyMonBox
-	call ShowBattleTextEnemySentOut
-	call ShowSetEnemyMonAndSendOutAnimation
-	pop af
-	ret c
-	; If we're here, then we're switching too
-	xor a
-	ld [wBattleParticipantsNotFainted], a
-	ld [wBattleParticipantsIncludingFainted], a
-	ld [wBattlePlayerAction], a
-	inc a
-	ld [wEnemyIsSwitching], a
-	call LoadTilemapToTempTilemap
-	jp PlayerSwitch
+	jp EnemySwitch_SetMode
 
 EnemySwitch_SetMode:
 	call ResetEnemyBattleVars
@@ -3411,7 +3365,6 @@ CheckWhetherSwitchmonIsPredetermined:
 ResetEnemyBattleVars:
 ; and draw empty Textbox
 	xor a
-	ld [wLastPlayerCounterMove], a
 	ld [wLastEnemyCounterMove], a
 	ld [wLastEnemyMove], a
 	ld [wCurEnemyMove], a
@@ -3467,8 +3420,8 @@ FindMonInOTPartyToSwitchIntoBattle:
 	or c
 	pop bc
 	jr z, .discourage
-	call LookUpTheEffectivenessOfEveryMove
 	call IsThePlayerMonTypesEffectiveAgainstOTMon
+	call LookUpTheEffectivenessOfEveryMove
 	jr .loop
 
 .discourage
@@ -3801,8 +3754,8 @@ ShowSetEnemyMonAndSendOutAnimation:
 	ret
 
 NewEnemyMonStatus:
+	callfar ResetEnemyDamageTakenThisTurn
 	xor a
-	ld [wLastPlayerCounterMove], a
 	ld [wLastEnemyCounterMove], a
 	ld [wLastEnemyMove], a
 	ld hl, wEnemySubStatus1
@@ -4243,7 +4196,6 @@ SendOutPlayerMon:
 	ld [wTypeModifier], a
 	ld [wPlayerMoveStruct + MOVE_ANIM], a
 	ld [wLastPlayerCounterMove], a
-	ld [wLastEnemyCounterMove], a
 	ld [wLastPlayerMove], a
 	call CheckAmuletCoin
 	call FinishBattleAnim
@@ -4281,9 +4233,9 @@ SendOutPlayerMon:
 	ret
 
 NewBattleMonStatus:
+	callfar ResetPlayerDamageTakenThisTurn
 	xor a
 	ld [wLastPlayerCounterMove], a
-	ld [wLastEnemyCounterMove], a
 	ld [wLastPlayerMove], a
 	ld hl, wPlayerSubStatus1
 rept 4
@@ -6793,89 +6745,15 @@ ApplyStatusEffectOnStats:
 	jp ApplyBrnEffectOnAttack
 
 ApplyPrzEffectOnSpeed:
-	ldh a, [hBattleTurn]
-	and a
-	jr z, .enemy
-	ld a, [wBattleMonStatus]
-	and 1 << PAR
-	ret z
-	ld hl, wBattleMonSpeed + 1
-	ld a, [hld]
-	ld b, a
-	ld a, [hl]
-	srl a
-	rr b
-	srl a
-	rr b
-	ld [hli], a
-	or b
-	jr nz, .player_ok
-	ld b, $1 ; min speed
-
-.player_ok
-	ld [hl], b
-	ret
-
-.enemy
-	ld a, [wEnemyMonStatus]
-	and 1 << PAR
-	ret z
-	ld hl, wEnemyMonSpeed + 1
-	ld a, [hld]
-	ld b, a
-	ld a, [hl]
-	srl a
-	rr b
-	srl a
-	rr b
-	ld [hli], a
-	or b
-	jr nz, .enemy_ok
-	ld b, $1 ; min speed
-
-.enemy_ok
-	ld [hl], b
+	callfar _ApplyPrzEffectOnSpeed
 	ret
 
 ApplyBrnEffectOnAttack:
-	ldh a, [hBattleTurn]
-	and a
-	jr z, .enemy
-	ld a, [wBattleMonStatus]
-	and 1 << BRN
-	ret z
-	ld hl, wBattleMonAttack + 1
-	ld a, [hld]
-	ld b, a
-	ld a, [hl]
-	srl a
-	rr b
-	ld [hli], a
-	or b
-	jr nz, .player_ok
-	ld b, $1 ; min attack
-
-.player_ok
-	ld [hl], b
+	callfar _ApplyBrnEffectOnAttack
 	ret
 
-.enemy
-	ld a, [wEnemyMonStatus]
-	and 1 << BRN
-	ret z
-	ld hl, wEnemyMonAttack + 1
-	ld a, [hld]
-	ld b, a
-	ld a, [hl]
-	srl a
-	rr b
-	ld [hli], a
-	or b
-	jr nz, .enemy_ok
-	ld b, $1 ; min attack
-
-.enemy_ok
-	ld [hl], b
+ApplyCrsEffectOnSpclAttack:
+	callfar _ApplyCrsEffectOnSpclAttack
 	ret
 
 ApplyStatLevelMultiplierOnAllStats:

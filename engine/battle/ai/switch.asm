@@ -1,13 +1,3 @@
-CheckPlayerHasSEMove:
-; Check if Player has super-effective move
-	ld a, [wPlayerHasSEMove]
-	and 1 ; 1 = Player has SE move
-	ret z
-	ld a, [wEnemyAISwitchScore]
-	sub 5
-	ld [wEnemyAISwitchScore], a
-	ret
-
 CheckPlayerMoveTypeMatchups:
 ; Check how well the moves you've already used
 ; fare against the enemy's Pokemon.  Used to
@@ -84,15 +74,11 @@ CheckPlayerMoveTypeMatchups:
 .unknown_moves
 	ld a, [wBattleMonType1]
 	ld b, a
-	ld hl, wEnemyMonType
+	ld hl, wEnemyMonType1
 	call CheckTypeMatchup
 	ld a, [wTypeMatchup]
-	cp EFFECTIVE
-	jr z, .ok
-	jr c, .se
-	call .IncreaseScore
-	jr .ok
-.se
+	cp EFFECTIVE + 1 ; 1.0 + 0.1
+	jr c, .ok
 	call .DecreaseScore
 .ok
 	ld a, [wBattleMonType2]
@@ -100,12 +86,8 @@ CheckPlayerMoveTypeMatchups:
 	jr z, .done
 	call CheckTypeMatchup
 	ld a, [wTypeMatchup]
-	cp EFFECTIVE
-	jr z, .done
-	jr c, .se2
-	call .IncreaseScore
-	jr .done
-.se2
+	cp EFFECTIVE + 1 ; 1.0 + 0.1
+	jr c, .done
 	call .DecreaseScore
 	jr .done
 
@@ -126,29 +108,18 @@ CheckPlayerMoveTypeMatchups:
 CheckAbleToSwitch:
     xor a
     ld [wEnemySwitchMonParam], a
+	callfar CountConsecutiveTurnsDealLowDmg
     call FindAliveEnemyMons
     ret c
 
-    ld hl, TrainerClassAttributes + TRNATTR_AI_ITEM_SWITCH
-    
-    ld a, [wTrainerClass]
-    dec a
-    ld bc, NUM_TRAINER_ATTRIBUTES
-    call AddNTimes
-    
-    ld a, BANK(TrainerClassAttributes)
-    call GetFarByte
-    bit SWITCH_OFTEN_F, a
+    callfar CheckSwitchOftenOrSometimes
     jr nz, .startsmartcheck
-    bit SWITCH_SOMETIMES_F, a
-    jr nz, .startsmartcheck
-    jp	 .checkperish
+    jp	 .checklockedon
 .startsmartcheck
 	 ; Checks if Toxic Count is at least 3
-	ld a, [wEnemyToxicCount]
-	cp 3
-	jp nc, .rollswitch
 	 ; Checks if Encore Count is at least 2
+	callfar CheckToxicEncoreCount
+	jp nc, .rollswitch
 	 ; Checks if Evasion is greater than 0
 	ld a, [wEnemyEvaLevel]
     cp BASE_STAT_LEVEL + 1
@@ -157,38 +128,7 @@ CheckAbleToSwitch:
     ld a, [wEnemyAccLevel]
     cp BASE_STAT_LEVEL - 1
     jr c, .rollswitch
-    ld hl, wPlayerStatLevels
-    ld c, NUM_LEVEL_STATS - 1
-    ld b, 0
-	ld e, 0
-.checkplayerbuff  ; Check player's stat buffs
-	dec c
-	jr z, .checkpt2
-	ld a, [hli]
-	cp BASE_STAT_LEVEL
-	jr nc, .checkplayerbuff2
-	jr .checkplayerbuff
-.checkplayerbuff2
-	sub a, BASE_STAT_LEVEL
-	add b	 ; b holds the stat buffs
-	ld b, a
-	jr .checkplayerbuff
-
-.checkpt2
-	ld hl, wEnemyStatLevels
-	ld c, 7
-.checkenemybuff	 ; Check AI's stat buffs
-	dec c
-	jr z, .cont_check
-	ld a, [hli]
-	cp BASE_STAT_LEVEL
-	jr nc, .checkenemybuff2
-	jr .checkenemybuff
-.checkenemybuff2
-	sub a, BASE_STAT_LEVEL
-	add e	 ; e holds the stat buffs
-	ld e, a
-	jr .checkenemybuff
+	callfar CheckStatBoosts
 .cont_check
 	 ; Checks if AI has no boosts
 	ld a, e
@@ -203,31 +143,16 @@ CheckAbleToSwitch:
     call Random
     cp 70 percent
     ret c
-    jr .checkperish
+    jr .checklockedon
 .cont_check_2 
 	 ; Check if player has at least 2 stat buffs
 	ld a, b
 	cp 2
-	jr nc, .switch
-	 ; Check if AI has quarter HP or less
-	callfar AICheckEnemyQuarterHP
-	jr c, .check_other_stats
-	jp .smartcheck
-.check_other_stats
+	jr nc, .rollswitch
 	 ; Checks if non-spd stat (because of Curse) is below -2
-    ld a, [wEnemyAtkLevel]
-    cp BASE_STAT_LEVEL - 2
+    callfar CheckLoweredStatsExceptSpd
     jr c, .rollswitch
-    ld a, [wEnemyDefLevel]
-    cp BASE_STAT_LEVEL - 2
-    jr c, .rollswitch
-    ld a, [wEnemySAtkLevel]
-    cp BASE_STAT_LEVEL - 2
-    jr c, .rollswitch
-    ld a, [wEnemySDefLevel]
-    cp BASE_STAT_LEVEL - 2
-    jr c, .rollswitch
-    jr .checkperish
+    jr .checklockedon
 	
 .rollswitch
 	ld a, [wEnemyConsecutiveSwitches]
@@ -237,6 +162,12 @@ CheckAbleToSwitch:
     cp 65 percent
     jr c, .switch
     
+.checklockedon
+	 ; AI may switch if player is recharging
+	 ; or locked on to a move
+	callfar CheckPlayerRechageOrLockedOn
+	jp nz, .switch
+
 .checkperish
     ld a, [wEnemySubStatus1]
     bit SUBSTATUS_PERISH, a
@@ -244,12 +175,36 @@ CheckAbleToSwitch:
 
     ld a, [wEnemyPerishCount]
     cp 1
-    jr nz, .no_perish
+    jr z, .switch
+	
+.no_perish
+	 ; Check if AI deals low damage for at least
+	 ; 2 consecutive turns
+	callfar CheckConsecutiveTurnsDealLowDmg
+	jp nc, .smartcheck
+	jr .checkmatchups
 
 .switch ; Try to switch
     call FindAliveEnemyMons
     call FindEnemyMonsWithAtLeastQuarterMaxHP
+	
+	ld a, [wLastPlayerCounterMove]
+	and a
+	jr z, .find_resist
+	
+	call Random
+	cp 50 percent + 1
+	jr c, .find_se
+
+	call FindEnemyMonsImmuneToLastCounterMove
+	ld a, [wEnemyAISwitchScore]
+	and a
+	jr z, .find_resist
+	jr .cont_find_immune
+	
+.find_resist
     call FindEnemyMonsThatResistPlayer
+.find_se
     call FindAliveEnemyMonsWithASuperEffectiveMove
     ld a, e
     cp 2
@@ -275,9 +230,14 @@ CheckAbleToSwitch:
 	ld [wEnemySwitchMonParam], a
 	ret
 
-.no_perish
+.checkmatchups
+	 ; Check if AI's Pokémon gets knocked out
+	 ; for a maximum of 2 turns (OHKO or 2HKO)
+	callfar CheckTurnsToKOAI
+	jr c, .smartcheck
+	
 	call CheckPlayerMoveTypeMatchups
-	call CheckPlayerHasSEMove
+	callfar CheckPlayerHasSEMove
 	ld a, [wEnemyAISwitchScore]
 	cp 10
 	ret nc
@@ -289,8 +249,13 @@ CheckAbleToSwitch:
 	call FindEnemyMonsImmuneToLastCounterMove
 	ld a, [wEnemyAISwitchScore]
 	and a
-	jr z, .no_last_counter_move
-
+	ret z
+	
+	ld a, [wEnemyConsecutiveSwitches]
+	and a
+	ret nz
+	
+.cont_find_immune
 	ld c, a
 	call FindEnemyMonsWithASuperEffectiveMove
 	ld a, [wEnemyAISwitchScore]
@@ -305,7 +270,11 @@ CheckAbleToSwitch:
 	call CheckPlayerMoveTypeMatchups
 	ld a, [wEnemyAISwitchScore]
 	cp 10
-	ret nc
+	ret c
+	
+	call Random
+	cp 70 percent
+	ret c
 
 	ld a, b
 	add $20
@@ -328,28 +297,28 @@ CheckAbleToSwitch:
 	
 .no_last_counter_move
 	call CheckPlayerMoveTypeMatchups
-	call CheckPlayerHasSEMove
+	callfar CheckPlayerHasSEMove
 	ld a, [wEnemyAISwitchScore]
 	cp 10
 	ret nc
 
-	ld hl, TrainerClassAttributes + TRNATTR_AI_ITEM_SWITCH
-	ld a, [wTrainerClass]
-	dec a
-	ld bc, NUM_TRAINER_ATTRIBUTES
-	call AddNTimes
-	ld a, BANK(TrainerClassAttributes)
-	call GetFarByte
-	bit SWITCH_OFTEN_F, a
+	callfar CheckSwitchOften
 	jr nz, .smartcheck
 	ret	
+	
  ; Switch check only for SWITCH_OFTEN AI
 .smartcheck:
-	ld a, [wEnemyIsSwitching]
+	ld a, [wEnemyConsecutiveSwitches]
 	cp 2
-	ret nz
+	ret nc
+	callfar CheckNumberOfEnemyMons
 	call Random
+	jr c, .less_than_three
 	cp 70 percent
+	ret c
+	jp .switch
+.less_than_three
+	cp 30 percent
 	ret c
 	jp .switch
 

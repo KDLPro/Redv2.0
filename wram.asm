@@ -398,7 +398,8 @@ wBattleMonNick:: ds MON_NAME_LENGTH
 
 wBattleMon:: battle_struct wBattleMon
 
-	ds 2
+wEnemyDamageTakenThisTurn:: dw
+wPlayerDamageTakenThisTurn:: dw
 
 wWildMon:: db
 wPlayerHasSEMove:: db
@@ -487,7 +488,6 @@ wPlayerDefense:: dw
 wPlayerSpeed::   dw
 wPlayerSpAtk::   dw
 wPlayerSpDef::   dw
-	ds 1
 
 wEnemyStats::
 wEnemyAttack::  dw
@@ -505,7 +505,6 @@ wPlayerSAtkLevel:: db
 wPlayerSDefLevel:: db
 wPlayerAccLevel::  db
 wPlayerEvaLevel::  db
-	ds 1
 
 wEnemyStatLevels::
 wEnemyAtkLevel::  db
@@ -516,16 +515,19 @@ wEnemySDefLevel:: db
 wEnemyAccLevel::  db
 wEnemyEvaLevel::  db
 	ds 1
+	
+wEnemyMonsLeft:: db
 
 wEnemyTurnsTaken::  db
 wPlayerTurnsTaken:: db
-	ds 1
+	
+wEnemyCantDealDmgTurnsCnsctvly:: db
+wEnemyMonJustFainted:: db
 
 wPlayerSubstituteHP:: db
 wEnemySubstituteHP::  db
 
 wUnusedPlayerLockedMove:: db
-	ds 1
 
 wCurPlayerMove:: db
 wCurEnemyMove::  db
@@ -546,7 +548,7 @@ wPayDayMoney:: ds 3
 
 wSafariMonAngerCount:: db ; unreferenced
 wSafariMonEating:: db
-	ds 1
+
 wEnemyBackupDVs:: dw ; used when enemy is transformed
 wAlreadyDisobeyed:: db
 

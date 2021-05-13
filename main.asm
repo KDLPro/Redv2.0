@@ -158,6 +158,12 @@ SECTION "Effect Commands", ROMX
 INCLUDE "engine/battle/effect_commands.asm"
 
 
+SECTION "Switch Clauses", ROMX
+
+INCLUDE "engine/battle/ai/switch_clauses.asm"
+INCLUDE "engine/battle/apply_status_on_stats.asm"
+
+
 SECTION "Enemy Trainers", ROMX
 
 INCLUDE "engine/battle/ai/items.asm"

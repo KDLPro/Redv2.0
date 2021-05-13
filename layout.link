@@ -57,13 +57,15 @@ ROMX $0b
 	"bankB"
 ROMX $0c
 	"bankC"
-ROMX $0f
+ROMX $0d
 	"Tileset Data 4"
-ROMX $10
+ROMX $0e
 	"Effect Commands"
-ROMX $11
+ROMX $0f
+	"Switch Clauses"
+ROMX $10
 	"Enemy Trainers"
-ROMX $12
+ROMX $11
 	"Battle Core"
 ROMX $13
 	"bank13"
