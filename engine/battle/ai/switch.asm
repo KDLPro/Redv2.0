@@ -47,6 +47,8 @@ CheckPlayerMoveTypeMatchups:
 
 .super_effective
 	call .doubledown
+	call .doubledown
+	call .doubledown
 	pop hl
 	jr .done
 
@@ -157,7 +159,7 @@ CheckAbleToSwitch:
 .rollswitch
 	ld a, [wEnemyConsecutiveSwitches]
 	cp 2
-	ret nc
+	jp nc, .rare_switch
     call Random
     cp 65 percent
     jr c, .switch
@@ -187,14 +189,19 @@ CheckAbleToSwitch:
 .switch ; Try to switch
     call FindAliveEnemyMons
     call FindEnemyMonsWithAtLeastQuarterMaxHP
+	 ; to minimize AI cheating
+	ld a, [wPlayerIsSwitching]
+	and a
+	jr nz, .randomize
 	
 	ld a, [wLastPlayerCounterMove]
 	and a
 	jr z, .find_resist
 	
+.randomize_se_or_immune
 	call Random
 	cp 50 percent + 1
-	jr c, .find_se
+	jr c, .find_resist
 
 	call FindEnemyMonsImmuneToLastCounterMove
 	ld a, [wEnemyAISwitchScore]
@@ -206,15 +213,23 @@ CheckAbleToSwitch:
     call FindEnemyMonsThatResistPlayer
 .find_se
     call FindAliveEnemyMonsWithASuperEffectiveMove
+	
+.do_switch_1
     ld a, e
     cp 2
     jr nz, .not_2
-
+	
     ld a, [wEnemyAISwitchScore]
     add $30 ; maximum chance
     ld [wEnemySwitchMonParam], a
     ret
 
+.randomize
+	call Random
+	cp 50 percent + 1
+	jr c, .randomize_se_or_immune
+	jr .do_switch_1
+	
 .not_2
 	call FindAliveEnemyMons
 	sla c
@@ -237,7 +252,6 @@ CheckAbleToSwitch:
 	jr c, .smartcheck
 	
 	call CheckPlayerMoveTypeMatchups
-	callfar CheckPlayerHasSEMove
 	ld a, [wEnemyAISwitchScore]
 	cp 10
 	ret nc
@@ -254,6 +268,14 @@ CheckAbleToSwitch:
 	ld a, [wEnemyConsecutiveSwitches]
 	and a
 	ret nz
+	 ; to minimize AI cheating
+	ld a, [wPlayerIsSwitching]
+	and a
+	jr nz, .randomize
+	
+	call Random
+	cp 50 percent + 1
+	jr c, .do_switch_1
 	
 .cont_find_immune
 	ld c, a
@@ -297,7 +319,6 @@ CheckAbleToSwitch:
 	
 .no_last_counter_move
 	call CheckPlayerMoveTypeMatchups
-	callfar CheckPlayerHasSEMove
 	ld a, [wEnemyAISwitchScore]
 	cp 10
 	ret nc
@@ -310,15 +331,22 @@ CheckAbleToSwitch:
 .smartcheck:
 	ld a, [wEnemyConsecutiveSwitches]
 	cp 2
-	ret nc
+	jr nc, .rare_switch
 	callfar CheckNumberOfEnemyMons
-	call Random
 	jr c, .less_than_three
-	cp 70 percent
+	call Random
+	cp 25 percent
 	ret c
 	jp .switch
 .less_than_three
-	cp 30 percent
+	call Random
+	cp 60 percent
+	ret c
+	jp .switch
+	
+.rare_switch
+	call Random
+	cp 75 percent + 1
 	ret c
 	jp .switch
 

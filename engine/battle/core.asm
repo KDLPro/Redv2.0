@@ -169,7 +169,6 @@ BattleTurn:
 	and a
 	jr z, .cont
 	xor a
-	ld [wPlayerHasSEMove], a
 	ld hl, wPlayerUsedMoves
 	ld [hli], a
 	ld [hli], a
@@ -3320,8 +3319,6 @@ EnemySwitch_SetMode:
 .skip
 	; 'b' contains the PartyNr of the mon the AI will switch to
 	call LoadEnemyMonToSwitchTo
-	xor a
-	ld [wPlayerHasSEMove], a
 	ld a, 1
 	ld [wEnemyIsSwitching], a
 	call ClearEnemyMonBox

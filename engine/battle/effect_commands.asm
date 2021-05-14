@@ -2414,27 +2414,12 @@ BattleCommand_SuperEffectiveText:
 	and $7f
 	cp 10 ; 1.0
 	ret z
-.se
+	
 	ld hl, SuperEffectiveText
-	jr nc, .se_2
-.nve
+	jr nc, .print
 	ld hl, NotVeryEffectiveText
-	jr .print
-.se_2
-	call SEMoveFound
 .print
 	jp StdBattleTextbox
-	
-SEMoveFound:
-	ldh a, [hBattleTurn]
-	and a
-	ret nz
-	ld a, [wPlayerHasSEMove]
-	and 1
-	ret nz
-	inc a
-	ld [wPlayerHasSEMove], a
-	ret
 
 BattleCommand_CheckFaint:
 ; checkfaint
