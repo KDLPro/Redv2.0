@@ -45,7 +45,11 @@ DontSwitch:
 	ret
 
 SwitchOften:
+	call Random
+	cp 40 percent + 1
+	jr c, .check_switch_param
 	callfar CheckAbleToSwitch
+.check_switch_param
 	ld a, [wEnemySwitchMonParam]
 	and $f0
 	jp z, DontSwitch
@@ -80,7 +84,6 @@ SwitchOften:
 	jp AI_TrySwitch
 
 SwitchRarely:
-	callfar CheckAbleToSwitch
 	ld a, [wEnemySwitchMonParam]
 	and $f0
 	jp z, DontSwitch
@@ -114,7 +117,11 @@ SwitchRarely:
 	jp AI_TrySwitch
 
 SwitchSometimes:
+	call Random
+	cp 50 percent + 1
+	jr c, .check_switch_param
 	callfar CheckAbleToSwitch
+.check_switch_param
 	ld a, [wEnemySwitchMonParam]
 	and $f0
 	jp z, DontSwitch
@@ -650,6 +657,12 @@ EnemyPotionFinish:
 	jp AIUpdateHUD
 
 AI_TrySwitch:
+	ld a, [wEnemySwitchMonIndex]
+	ld b, a
+	ld a, [wCurOTMon]
+	inc a
+	cp b
+	ret z
 ; Determine whether the AI can switch based on how many Pokemon are still alive.
 ; If it can switch, it will.
 	ld a, [wOTPartyCount]
@@ -674,7 +687,6 @@ AI_TrySwitch:
 	ld a, d
 	cp 2
 	jp nc, AI_Switch
-	and a
 	ret
 
 AI_Switch:

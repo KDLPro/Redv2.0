@@ -437,12 +437,12 @@ PlacePartyMonGenderStats:
 .loop
 	push bc
 	push hl
-	ld a, b
-	ld [wCurPartyMon], a
 	call PartyMenuCheckEgg
 	jr z, .next
 	ld [wCurPartySpecies], a
 	push hl
+	ld a, b
+	ld [wCurPartyMon], a
 	xor a
 	ld [wMonType], a
 	call GetGender
@@ -485,8 +485,6 @@ PlacePartyMonGender:
 .loop
 	push bc
 	push hl
-	ld a, b
-	ld [wCurPartyMon], a
 	call PartyMenuCheckEgg
 	jr z, .next
 	ld [wCurPartySpecies], a

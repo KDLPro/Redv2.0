@@ -110,9 +110,9 @@ CheckPlayerMoveTypeMatchups:
 CheckAbleToSwitch:
     xor a
     ld [wEnemySwitchMonParam], a
-	callfar CountConsecutiveTurnsDealLowDmg
     call FindAliveEnemyMons
     ret c
+	callfar CountConsecutiveTurnsDealLowDmg
 
     callfar CheckSwitchOftenOrSometimes
     jr nz, .startsmartcheck
@@ -161,7 +161,7 @@ CheckAbleToSwitch:
 	cp 2
 	jp nc, .rare_switch
     call Random
-    cp 65 percent
+    cp 60 percent
     jr c, .switch
     
 .checklockedon
@@ -189,10 +189,6 @@ CheckAbleToSwitch:
 .switch ; Try to switch
     call FindAliveEnemyMons
     call FindEnemyMonsWithAtLeastQuarterMaxHP
-	 ; to minimize AI cheating
-	ld a, [wPlayerIsSwitching]
-	and a
-	jr nz, .randomize
 	
 	ld a, [wLastPlayerCounterMove]
 	and a
@@ -223,12 +219,6 @@ CheckAbleToSwitch:
     add $30 ; maximum chance
     ld [wEnemySwitchMonParam], a
     ret
-
-.randomize
-	call Random
-	cp 50 percent + 1
-	jr c, .randomize_se_or_immune
-	jr .do_switch_1
 	
 .not_2
 	call FindAliveEnemyMons
@@ -250,8 +240,14 @@ CheckAbleToSwitch:
 	 ; for a maximum of 2 turns (OHKO or 2HKO)
 	callfar CheckTurnsToKOAI
 	jr c, .smartcheck
+	 ; Check if AI deals low damage for at least
+	 ; 2 consecutive turns
+	callfar CheckConsecutiveTurnsDealLowDmg
+	jp nc, .smartcheck
 	
-	call CheckPlayerMoveTypeMatchups
+	callfar AICheckEnemyQuarterHP
+	jp nc, .smartcheck
+	
 	ld a, [wEnemyAISwitchScore]
 	cp 10
 	ret nc
@@ -268,10 +264,6 @@ CheckAbleToSwitch:
 	ld a, [wEnemyConsecutiveSwitches]
 	and a
 	ret nz
-	 ; to minimize AI cheating
-	ld a, [wPlayerIsSwitching]
-	and a
-	jr nz, .randomize
 	
 	call Random
 	cp 50 percent + 1
@@ -288,8 +280,7 @@ CheckAbleToSwitch:
 	ld a, e
 	cp 2
 	jr z, .not_2_again
-
-	call CheckPlayerMoveTypeMatchups
+	
 	ld a, [wEnemyAISwitchScore]
 	cp 10
 	ret c
@@ -318,7 +309,6 @@ CheckAbleToSwitch:
 	ret
 	
 .no_last_counter_move
-	call CheckPlayerMoveTypeMatchups
 	ld a, [wEnemyAISwitchScore]
 	cp 10
 	ret nc
@@ -335,7 +325,7 @@ CheckAbleToSwitch:
 	callfar CheckNumberOfEnemyMons
 	jr c, .less_than_three
 	call Random
-	cp 25 percent
+	cp 35 percent
 	ret c
 	jp .switch
 .less_than_three

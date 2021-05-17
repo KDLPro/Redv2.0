@@ -4937,14 +4937,9 @@ DrawEnemyHUD:
 	pop bc
 	hlcoord 6, 1
 	ld a, b
-	cp " "
-	jr nz, .print_level
-	dec hl
-.print_level
 	ld a, [wEnemyMonLevel]
 	ld [wTempMonLevel], a
 	call PrintLevel
-.skip_level
 
 	ld hl, wEnemyMonHP
 	ld a, [hli]
@@ -5063,6 +5058,7 @@ BattleMenu:
 	ret c
 
 .next
+	callfar CheckAbleToSwitch
 	ld a, $1
 	ldh [hBGMapMode], a
 	ld a, [wBattleMenuCursorPosition]
