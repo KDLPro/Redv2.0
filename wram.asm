@@ -402,7 +402,7 @@ wEnemyDamageTakenThisTurn:: dw
 wPlayerDamageTakenThisTurn:: dw
 
 wWildMon:: db
-wPlayerHasSEMove:: db
+	ds 1
 
 wEnemyTrainerItem1:: db
 wEnemyTrainerItem2:: db

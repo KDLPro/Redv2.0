@@ -683,7 +683,6 @@ TeddiursaEggMoves:
 	db -1 ; end
 
 SlugmaEggMoves:
-	db ACID_ARMOR
 	db -1 ; end
 
 SwinubEggMoves:

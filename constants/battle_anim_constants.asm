@@ -123,8 +123,7 @@ BATTLEANIM_BASE_TILE EQU 7 * 7  ; Maximum size of a pokemon picture
 	const ANIM_OBJ_HAZE
 	const ANIM_OBJ_MIST
 	const ANIM_OBJ_SMOG
-	const ANIM_OBJ_POISON_GAS_R
-	const ANIM_OBJ_POISON_GAS_B
+	const ANIM_OBJ_POISON_GAS
 	const ANIM_OBJ_HORN
 	const ANIM_OBJ_NEEDLE
 	const ANIM_OBJ_PETAL_DANCE
@@ -223,6 +222,7 @@ BATTLEANIM_BASE_TILE EQU 7 * 7  ; Maximum size of a pokemon picture
 	const ANIM_OBJ_DRAGONBREATH_2
 	const ANIM_OBJ_SUNNY_DAY
 	const ANIM_OBJ_WATER_PULSE
+	const ANIM_OBJ_VOICE_HIT
 
 ; DoBattleAnimFrame arguments (see engine/battle_anims/functions.asm)
 	const_def

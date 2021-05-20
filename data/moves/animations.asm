@@ -151,7 +151,7 @@ BattleAnimations::
 	dw BattleAnim_Flash
 	dw BattleAnim_Psywave
 	dw BattleAnim_Splash
-	dw BattleAnim_AcidArmor
+	dw BattleAnim_HyperVoice
 	dw BattleAnim_Crabhammer
 	dw BattleAnim_Explosion
 	dw BattleAnim_FurySwipes
@@ -1995,14 +1995,16 @@ BattleAnim_Rest:
 	anim_wait 32
 	anim_ret
 
-BattleAnim_AcidArmor:
-	anim_1gfx ANIM_GFX_HIT
-	anim_call BattleAnim_TargetObj_2Row
-	anim_bgeffect ANIM_BG_ACID_ARMOR, $0, BG_EFFECT_USER, $8
-	anim_sound 0, 0, SFX_MEGA_PUNCH
-	anim_wait 64
-	anim_incbgeffect ANIM_BG_ACID_ARMOR
-	anim_call BattleAnim_ShowMon_0
+BattleAnim_HyperVoice:
+	anim_1gfx ANIM_GFX_PSYCHIC
+.loop
+	anim_sound 32, 2, SFX_WATER_GUN
+	anim_obj ANIM_OBJ_VOICE_HIT, 64, 88, $2
+	anim_wait 5
+	anim_sound 6, 2, SFX_SCREECH
+	anim_wait 10
+	anim_loop 2, .loop
+	anim_wait 32
 	anim_ret
 
 BattleAnim_Splash:
@@ -2239,8 +2241,7 @@ BattleAnim_PoisonGas:
 	anim_1gfx ANIM_GFX_HAZE
 .loop
 	anim_sound 16, 2, SFX_BUBBLEBEAM
-	anim_obj ANIM_OBJ_POISON_GAS_R, 44, 80, $2
-	anim_obj ANIM_OBJ_POISON_GAS_B, 44, 81, $2
+	anim_obj ANIM_OBJ_POISON_GAS, 44, 80, $2
 	anim_wait 8
 	anim_loop 10, .loop
 	anim_wait 128

@@ -1146,7 +1146,6 @@ VitaminEffect:
 
 	push de
 	ld d, 10
-	push af
 	push bc
 	push hl
 	ld e, 6
@@ -1169,30 +1168,26 @@ VitaminEffect:
 	ld e, d
 .decrease_evs_gained
 	callfar IsEvsGreaterThan510
-	jr z, .check_ev_overflow
-	jr c, .check_ev_overflow
+	jr nc, .check_ev_overflow
 	dec e
 	dec bc
 	jr .decrease_evs_gained
 .check_ev_overflow
 	pop hl 
 	pop bc 
-	pop af
 
-	add hl, bc
-	ld a, [hl]
-	cp 230
-	jr nc, NoEffectMessage
-	
-	ld a, e
-	cp 0
-	jr z, NoEffectMessage
-	
-	ld a, [hl]
-	add e
-	ld [hl], a
-	pop de
-	call UpdateStatsAfterItem
+    ld a, e
+    and a
+    jr z, NoEffectMessage
+
+    add hl, bc
+    ld a, [hl]
+    cp 100
+    jr nc, NoEffectMessage
+
+    add e
+    ld [hl], a
+    call UpdateStatsAfterItem
 
 	call GetEVRelativePointer
 

@@ -7040,9 +7040,7 @@ GiveExperiencePoints:
 	add a
 .no_pokerus_boost 
 ; Make sure total EVs never surpass 510
-	push de
 	ld d, a
-	push af
 	push bc
 	push hl
 	ld a, c
@@ -7073,17 +7071,14 @@ GiveExperiencePoints:
 	ld e, d
 .decrease_evs_gained
 	call IsEvsGreaterThan510
-	jr z, .check_ev_overflow
-	jr c, .check_ev_overflow
+	jr nc, .check_ev_overflow
 	dec e
 	dec bc
 	jr .decrease_evs_gained
 .check_ev_overflow
 	pop hl 
 	pop bc 
-	pop af
 	ld a, e
-	pop de
 	add [hl]
 	cp MAX_EV
 	jr nc, .ev_overflow
@@ -7455,14 +7450,13 @@ GiveExperiencePoints:
 	ret
 
 IsEvsGreaterThan510:
-   ; EV total in bc
-   ; Returns c if lower
-   ld a, b
-   cp HIGH(MAX_TOTAL_EV)
-   ret nz
-   ld a, c
-   cp LOW(MAX_TOTAL_EV)
-   ret
+; Total EVs in bc. Set Carry flag if bc > 510.
+    ld a, HIGH(MAX_TOTAL_EV)
+    cp b
+    ret nz
+    ld a, LOW(MAX_TOTAL_EV)
+    cp c
+    ret
   
 BoostExp:
 ; Multiply experience by 1.5x

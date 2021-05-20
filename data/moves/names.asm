@@ -149,7 +149,7 @@ MoveNames::
 	db "FLASH@"
 	db "PSYWAVE@"
 	db "SPLASH@"
-	db "ACID ARMOR@"
+	db "HYPER VOICE@"
 	db "CRABHAMMER@"
 	db "EXPLOSION@"
 	db "FURY SWIPES@"

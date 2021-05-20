@@ -41,16 +41,6 @@ CheckLoweredStatsExceptSpd:
     cp BASE_STAT_LEVEL - 2
 	ret
 	
-CheckPlayerHasSEMove:
-	 ; Check if Player has super-effective move
-	ld a, [wPlayerHasSEMove]
-	and 1 ; 1 = Player has SE move
-	ret z
-	ld a, [wEnemyAISwitchScore]
-	sub 5
-	ld [wEnemyAISwitchScore], a
-	ret
-	
 CheckToxicEncoreCount:
 	 ; Checks if Toxic Count is at least 3
 	ld a, [wEnemyToxicCount]

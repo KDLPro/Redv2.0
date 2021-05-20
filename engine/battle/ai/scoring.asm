@@ -3101,7 +3101,8 @@ AI_Status:
 .checkmove
 	dec b
 	ret z
-
+	
+	ld c, 0 ; Cleaning register c.
 	inc hl
 	ld a, [de]
 	and a
@@ -3109,8 +3110,8 @@ AI_Status:
 
 	inc de
 	call AIGetEnemyMove
-	
-	; Check if the opponent is immune to powder/spore moves.      
+
+; Check if the opponent is immune to powder/spore moves.      
 	ld a, [wEnemyMoveStruct + MOVE_ANIM]
 	push bc
 	push de
@@ -3124,7 +3125,7 @@ AI_Status:
 
 	ld a, [wBattleMonType1]
 	cp GRASS
-	jr z, .immune
+	jp z, .immune
 	ld a, [wBattleMonType2]
 	cp GRASS
 	jr z, .immune
@@ -3138,25 +3139,54 @@ AI_Status:
 	cp EFFECT_SLEEP
 	jr z, .typeimmunity
 	cp EFFECT_PARALYZE
-	jr z, .typeimmunity
+	jr z, .paralysisimmunity
 
+; Discourage moves that inflict status ailments, confuse or lower stats 
+; against a subtitute.
+; This check also applies for both Leech Seed and Swagger.
+	cp EFFECT_LEECH_SEED
+	jr z, .subs_check
+	cp EFFECT_SWAGGER
+	jr z, .subs_check
+	cp EFFECT_CONFUSE
+	jr z, .subs_check 
+
+; Stat-lowering moves
+	cp EFFECT_ATTACK_DOWN
+	jr c, .powercheck
+	cp EFFECT_EVASION_DOWN + 1
+	jr c, .subs_check
+
+	cp EFFECT_ATTACK_DOWN_2
+	jr c, .powercheck
+	cp EFFECT_EVASION_DOWN_2 + 1
+	jr c, .subs_check
+
+.powercheck
 	ld a, [wEnemyMoveStruct + MOVE_POWER]
+	ld c, a ; Store Move's Power in c.
 	and a
 	jr z, .checkmove
 
 	jr .typeimmunity
 
+.paralysisimmunity
+	ld a, [wBattleMonType1]
+	cp ELECTRIC
+	jr z, .immune
+	ld a, [wBattleMonType2]
+	cp ELECTRIC
+	jr z, .immune
+	jr .typeimmunity
+	
 .poisonimmunity
 	ld a, [wBattleMonType1]
 	cp POISON
 	jr z, .immune
-	cp STEEL
-	jr z, .immune
 	ld a, [wBattleMonType2]
 	cp POISON
 	jr z, .immune
-	cp STEEL
-	jr z, .immune
+	; fallthorugh
 
 .typeimmunity
 	push hl
@@ -3171,11 +3201,23 @@ AI_Status:
 
 	ld a, [wTypeMatchup]
 	and a
-	jr nz, .checkmove
+	jr z, .immune
+	; fallthrough
+
+; ** Substitute check starts here **
+.subs_check
+	ld a, BATTLE_VARS_SUBSTATUS4_OPP
+	call GetBattleVar
+	bit SUBSTATUS_SUBSTITUTE, a
+	jp z, .checkmove
+
+	ld a, c ; Load Move's Power back into a.
+	and a
+	jp nz, .checkmove
 
 .immune
 	call AIDiscourageMove
-	jr .checkmove
+	jp .checkmove
 
 
 AI_Risky:

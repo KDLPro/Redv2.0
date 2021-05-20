@@ -1187,7 +1187,6 @@ GrimerEvosAttacks:
 	db 16, SLUDGE
 	db 23, MINIMIZE
 	db 31, SCREECH
-	db 40, ACID_ARMOR
 	db 50, SLUDGE_BOMB
 	db 0 ; no more level-up moves
 
@@ -1202,7 +1201,6 @@ MukEvosAttacks:
 	db 45, SLUDGE
 	db 23, MINIMIZE
 	db 31, SCREECH
-	db 45, ACID_ARMOR
 	db 60, SLUDGE_BOMB
 	db 0 ; no more level-up moves
 
@@ -1813,7 +1811,6 @@ VaporeonEvosAttacks:
 	db 30, BITE
 	db 36, AURORA_BEAM
 	db 42, HAZE
-	db 47, ACID_ARMOR
 	db 52, HYDRO_PUMP
 	db 0 ; no more level-up moves
 
@@ -2375,6 +2372,7 @@ TogepiEvosAttacks:
 	db 25, ENCORE
 	db 31, SAFEGUARD
 	db 38, DOUBLE_EDGE
+	db 43, HYPER_VOICE
 	db 0 ; no more level-up moves
 
 TogeticEvosAttacks:
@@ -2386,6 +2384,7 @@ TogeticEvosAttacks:
 	db 25, ENCORE
 	db 31, SAFEGUARD
 	db 38, DOUBLE_EDGE
+	db 47, HYPER_VOICE
 	db 0 ; no more level-up moves
 
 NatuEvosAttacks:

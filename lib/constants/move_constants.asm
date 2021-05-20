@@ -156,7 +156,7 @@
 	const FLASH        ; 94
 	const PSYWAVE      ; 95
 	const SPLASH       ; 96
-	const ACID_ARMOR   ; 97
+	const HYPER_VOICE  ; 97
 	const CRABHAMMER   ; 98
 	const EXPLOSION    ; 99
 	const FURY_SWIPES  ; 9a

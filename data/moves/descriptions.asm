@@ -150,7 +150,7 @@ MoveDescriptions::
 	dw FlashDescription
 	dw PsywaveDescription
 	dw SplashDescription
-	dw AcidArmorDescription
+	dw HyperVoiceDescription
 	dw CrabhammerDescription
 	dw ExplosionDescription
 	dw FurySwipesDescription
@@ -864,9 +864,9 @@ SplashDescription:
 	db   "Has no effect"
 	next "whatsoever.@"
 
-AcidArmorDescription:
-	db   "Sharply raises the"
-	next "user's DEFENSE.@"
+HyperVoiceDescription:
+	db   "A loud attack "
+	next "that can injure.@"
 
 CrabhammerDescription:
 	db   "Has a high criti-"
