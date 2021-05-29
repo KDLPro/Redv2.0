@@ -880,7 +880,7 @@ LightScreenEffectText:
 	prompt
 
 ReflectEffectText:
-	text "Light Screen"
+	text "Reflect"
 	line "boost the team's"
 	cont "Def!"
 	prompt

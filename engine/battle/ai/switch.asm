@@ -112,15 +112,15 @@ CheckAbleToSwitch:
     ld [wEnemySwitchMonParam], a
     call FindAliveEnemyMons
     ret c
-	callfar CountConsecutiveTurnsDealLowDmg
+	farcall CountConsecutiveTurnsDealLowDmg
 
-    callfar CheckSwitchOftenOrSometimes
+    farcall CheckSwitchOftenOrSometimes
     jr nz, .startsmartcheck
     jp	 .checklockedon
 .startsmartcheck
 	 ; Checks if Toxic Count is at least 3
 	 ; Checks if Encore Count is at least 2
-	callfar CheckToxicEncoreCount
+	farcall CheckToxicEncoreCount
 	jp nc, .rollswitch
 	 ; Checks if Evasion is greater than 0
 	ld a, [wEnemyEvaLevel]
@@ -130,7 +130,7 @@ CheckAbleToSwitch:
     ld a, [wEnemyAccLevel]
     cp BASE_STAT_LEVEL - 1
     jr c, .rollswitch
-	callfar CheckStatBoosts
+	farcall CheckStatBoosts
 .cont_check
 	 ; Checks if AI has no boosts
 	ld a, e
@@ -152,7 +152,7 @@ CheckAbleToSwitch:
 	cp 2
 	jr nc, .rollswitch
 	 ; Checks if non-spd stat (because of Curse) is below -2
-    callfar CheckLoweredStatsExceptSpd
+    farcall CheckLoweredStatsExceptSpd
     jr c, .rollswitch
     jr .checklockedon
 	
@@ -167,7 +167,7 @@ CheckAbleToSwitch:
 .checklockedon
 	 ; AI may switch if player is recharging
 	 ; or locked on to a move
-	callfar CheckPlayerRechageOrLockedOn
+	farcall CheckPlayerRechageOrLockedOn
 	jp nz, .switch
 
 .checkperish
@@ -182,7 +182,7 @@ CheckAbleToSwitch:
 .no_perish
 	 ; Check if AI deals low damage for at least
 	 ; 2 consecutive turns
-	callfar CheckConsecutiveTurnsDealLowDmg
+	farcall CheckConsecutiveTurnsDealLowDmg
 	jp nc, .smartcheck
 	jr .checkmatchups
 
@@ -238,14 +238,14 @@ CheckAbleToSwitch:
 .checkmatchups
 	 ; Check if AI's Pokémon gets knocked out
 	 ; for a maximum of 2 turns (OHKO or 2HKO)
-	callfar CheckTurnsToKOAI
+	farcall CheckTurnsToKOAI
 	jr c, .smartcheck
 	 ; Check if AI deals low damage for at least
 	 ; 2 consecutive turns
-	callfar CheckConsecutiveTurnsDealLowDmg
+	farcall CheckConsecutiveTurnsDealLowDmg
 	jp nc, .smartcheck
 	
-	callfar AICheckEnemyQuarterHP
+	farcall AICheckEnemyQuarterHP
 	jp nc, .smartcheck
 	
 	ld a, [wEnemyAISwitchScore]
@@ -313,7 +313,7 @@ CheckAbleToSwitch:
 	cp 10
 	ret nc
 
-	callfar CheckSwitchOften
+	farcall CheckSwitchOften
 	jr nz, .smartcheck
 	ret	
 	
@@ -322,7 +322,7 @@ CheckAbleToSwitch:
 	ld a, [wEnemyConsecutiveSwitches]
 	cp 2
 	jr nc, .rare_switch
-	callfar CheckNumberOfEnemyMons
+	farcall CheckNumberOfEnemyMons
 	jr c, .less_than_three
 	call Random
 	cp 35 percent

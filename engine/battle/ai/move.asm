@@ -1,3 +1,19 @@
+AISwitchChooseMove:
+	ld hl, TrainerClassAttributes + TRNATTR_AI_MOVE_WEIGHTS
+    
+    ld a, [wTrainerClass]
+    dec a
+    ld bc, NUM_TRAINER_ATTRIBUTES
+    call AddNTimes
+    
+    ld a, BANK(TrainerClassAttributes)
+    call GetFarByte
+    and AI_SMART
+    ret z
+	call Random
+	cp 20 percent + 1
+	ret nc
+
 AIChooseMove:
 ; Score each move of wEnemyMonMoves in wEnemyAIMoveScores. Lower is better.
 ; Pick the move with the lowest score.

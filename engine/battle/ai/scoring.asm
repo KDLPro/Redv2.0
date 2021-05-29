@@ -403,9 +403,7 @@ AI_Smart_Sleep:
 .encourage
 	call AI_50_50
 	ret c
-	dec [hl]
-	dec [hl]
-	ret
+	jp AI_Encourage_Greatly
 
 AI_Smart_LeechHit:
 	push hl
@@ -430,16 +428,14 @@ AI_Smart_LeechHit:
 	call AI_80_20
 	ret c
 
-	dec [hl]
-	ret
+	jp AI_Encourage
 
 .discourage
 	call Random
 	cp 39 percent + 1
 	ret c
 
-	inc [hl]
-	ret
+	jp AI_Discourage
 
 AI_Smart_LockOn:
 	ld a, [wPlayerSubStatus5]
@@ -503,17 +499,14 @@ AI_Smart_LockOn:
 
 .discourage
 	pop hl
-	inc [hl]
-	ret
+	jp AI_Discourage
 
 .maybe_encourage
 	pop hl
 	call AI_50_50
 	ret c
 
-	dec [hl]
-	dec [hl]
-	ret
+	jp AI_Encourage_Greatly
 
 .player_locked_on
 	push hl
@@ -576,10 +569,8 @@ AI_Smart_Selfdestruct:
 	ret c
 
 .discourage
-	inc [hl]
-	inc [hl]
-	inc [hl]
-	ret
+	call AI_Discourage_Greatly
+	jp AI_Discourage
 
 AI_Smart_DreamEater:
 ; 90% chance to greatly encourage this move.
@@ -588,10 +579,8 @@ AI_Smart_DreamEater:
 	call Random
 	cp 10 percent
 	ret c
-	dec [hl]
-	dec [hl]
-	dec [hl]
-	ret
+	call AI_Encourage_Greatly
+	jp AI_Encourage
 
 AI_Smart_EvasionUp:
 ; Dismiss this move if enemy's evasion can't raise anymore.
@@ -614,9 +603,7 @@ AI_Smart_EvasionUp:
 	jr nc, .not_encouraged
 
 .greatly_encourage
-	dec [hl]
-	dec [hl]
-	ret
+	jp AI_Encourage_Greatly
 
 .hp_mismatch_1
 
@@ -678,8 +665,7 @@ AI_Smart_EvasionUp:
 	jr nz, .greatly_encourage
 
 .discourage
-	inc [hl]
-	ret
+	jp AI_Discourage
 
 ; Player is badly poisoned.
 ; 70% chance to greatly encourage this move.
@@ -689,9 +675,7 @@ AI_Smart_EvasionUp:
 	cp 31 percent + 1
 	ret c
 
-	dec [hl]
-	dec [hl]
-	ret
+	jp AI_Encourage_Greatly
 
 ; Player is seeded.
 ; 50% chance to encourage this move.
@@ -700,8 +684,7 @@ AI_Smart_EvasionUp:
 	call AI_50_50
 	ret c
 
-	dec [hl]
-	ret
+	jp AI_Encourage
 
 AI_Smart_AlwaysHit:
 ; 80% chance to greatly encourage this move if either...
@@ -720,9 +703,7 @@ AI_Smart_AlwaysHit:
 	call AI_80_20
 	ret c
 
-	dec [hl]
-	dec [hl]
-	ret
+	jp AI_Encourage_Greatly
 
 AI_Smart_MirrorMove:
 ; If the player did not use any move last turn...
@@ -845,8 +826,7 @@ AI_Smart_AccuracyDown:
 	jr nz, .greatly_encourage
 
 .discourage
-	inc [hl]
-	ret
+	jp AI_Discourage
 
 ; Player is badly poisoned.
 ; 70% chance to greatly encourage this move.
@@ -856,9 +836,7 @@ AI_Smart_AccuracyDown:
 	cp 31 percent + 1
 	ret c
 
-	dec [hl]
-	dec [hl]
-	ret
+	jp AI_Encourage_Greatly
 
 ; Player is seeded.
 ; 50% chance to encourage this move.
@@ -867,8 +845,7 @@ AI_Smart_AccuracyDown:
 	call AI_50_50
 	ret c
 
-	dec [hl]
-	ret
+	jp AI_Encourage
 
 AI_Smart_ResetStats:
 ; 85% chance to encourage this move if any of enemy's stat levels is lower than -2.
@@ -899,16 +876,14 @@ AI_Smart_ResetStats:
 	call Random
 	cp 16 percent
 	ret c
-	dec [hl]
-	ret
+	jp AI_Encourage
 
 ; Discourage this move if neither:
 ; Any of enemy's stat levels is	lower than -2.
 ; Any of player's stat levels is higher than +2.
 .discourage
 	pop hl
-	inc [hl]
-	ret
+	jp AI_Discourage
 
 AI_Smart_Bide:
 ; 90% chance to discourage this move unless enemy's HP is full.
@@ -918,8 +893,7 @@ AI_Smart_Bide:
 	call Random
 	cp 10 percent
 	ret c
-	inc [hl]
-	ret
+	jp AI_Discourage
 
 AI_Smart_ForceSwitch:
 ; Whirlwind, Roar.
@@ -949,16 +923,13 @@ AI_Smart_Moonlight:
 	jr nc, .encourage
 	call AICheckEnemyHalfHP
 	ret nc
-	inc [hl]
-	ret
+	jp AI_Discourage
 
 .encourage
 	call Random
 	cp 10 percent
 	ret c
-	dec [hl]
-	dec [hl]
-	ret
+	jp AI_Encourage_Greatly
 
 AI_Smart_Toxic:
 AI_Smart_LeechSeed:
@@ -966,22 +937,51 @@ AI_Smart_LeechSeed:
 
 	call AICheckPlayerHalfHP
 	ret c
-	inc [hl]
-	ret
+	jp AI_Discourage
 
 AI_Smart_LightScreen:
-AI_Smart_Reflect:
-; Over 90% chance to discourage this move unless enemy's HP is full.
+; Greatly encourage this move if enemy's HP is greater than half and 
+; enemy's Sp. Def is less than enemy's Def
 
-	call AICheckEnemyMaxHP
+	call AICheckEnemyHalfHP
 	ret c
-	call Random
-	cp 8 percent
+	ld a, [wEnemyDefense]
+	ld b, a
+	ld a, [wEnemySpDef]
+	cp b
+	jr c, .def_is_greater
+	jp AI_Encourage_Greatly
+	
+.def_is_greater
+; Otherwise, encourage this move if enemy's HP is greater than half and 
+; enemy's Def is equal to or less than enemy's Sp. Def
+	jp AI_Encourage
+
+AI_Smart_Reflect:
+; Greatly encourage this move if enemy's HP is greater than half and 
+; enemy's Def is less than enemy's Sp. Def
+
+	call AICheckEnemyHalfHP
 	ret c
-	inc [hl]
-	ret
+	ld a, [wEnemySpDef]
+	ld b, a
+	ld a, [wEnemyDefense]
+	cp b
+	jr c, .spdef_is_greater
+	jp AI_Encourage_Greatly
+	
+.spdef_is_greater
+; Otherwise, encourage this move if enemy's HP is greater than half and 
+; enemy's Sp. Def is equal to or less than enemy's Def
+	jp AI_Encourage
 
 AI_Smart_Ohko:
+; Greatly encourage this move if enemy has 1 Pokémon left. 
+	farcall FindAliveEnemyMons
+    jr nc, .level_check
+	jp AI_Encourage_Greatly
+
+.level_check
 ; Dismiss this move if player's level is higher than enemy's level.
 ; Else, discourage this move is player's HP is below 50%.
 
@@ -992,8 +992,7 @@ AI_Smart_Ohko:
 	jp c, AIDiscourageMove
 	call AICheckPlayerHalfHP
 	ret c
-	inc [hl]
-	ret
+	jp AI_Discourage
 
 AI_Smart_TrapTarget:
 ; Bind, Wrap, Fire Spin, Clamp
@@ -1022,17 +1021,14 @@ AI_Smart_TrapTarget:
 .discourage
 	call AI_50_50
 	ret c
-	inc [hl]
-	ret
+	jp AI_Discourage
 
 .encourage
 	call AICheckEnemyQuarterHP
 	ret nc
 	call AI_50_50
 	ret c
-	dec [hl]
-	dec [hl]
-	ret
+	jp AI_Encourage_Greatly
 
 AI_Smart_RazorWind:
 	ld a, [wEnemySubStatus1]
@@ -1099,8 +1095,7 @@ AI_Smart_Confuse:
 ; Discourage again if player's HP is below 25%.
 	call AICheckPlayerQuarterHP
 	ret c
-	inc [hl]
-	ret
+	jp AI_Discourage
 
 AI_Smart_SpDefenseUp2:
 ; Discourage this move if enemy's HP is lower than 50%.
@@ -1127,13 +1122,10 @@ AI_Smart_SpDefenseUp2:
 .encourage
 	call AI_80_20
 	ret c
-	dec [hl]
-	dec [hl]
-	ret
+	jp AI_Encourage_Greatly
 
 .discourage
-	inc [hl]
-	ret
+	jp AI_Discourage
 
 AI_Smart_Fly:
 ; Fly, Dig
@@ -1148,41 +1140,48 @@ AI_Smart_Fly:
 	call AICompareSpeed
 	ret nc
 
-	dec [hl]
-	dec [hl]
-	dec [hl]
-	ret
+	call AI_Encourage_Greatly
+	jp AI_Encourage
 
 AI_Smart_SuperFang:
 ; Discourage this move if player's HP is below 25%.
 
 	call AICheckPlayerQuarterHP
 	ret c
-	inc [hl]
-	ret
+	jp AI_Discourage
 
 AI_Smart_Paralyze:
 ; 50% chance to discourage this move if player's HP is below 25%.
 	call AICheckPlayerQuarterHP
 	jr nc, .discourage
+	
+	callfar CheckPlayerMoveTypeMatchups
+	ld a, [wEnemyAISwitchScore]
+	cp BASE_AI_SWITCH_SCORE
+	jr c, .encourage
 
 ; 80% chance to greatly encourage this move
 ; if enemy is slower than player and its HP is above 25%.
 	call AICompareSpeed
-	ret c
+	jr c, .encourage
 	call AICheckEnemyQuarterHP
 	ret nc
 	call AI_80_20
 	ret c
-	dec [hl]
-	dec [hl]
-	ret
+	jp AI_Encourage_Greatly
+	
+.encourage
+; 60% chance to encourage this move if its HP is above 25%
+; and if enemy is faster or speed ties with enemy
+; or if enemy has good matchup against player
+	call AI_60_40
+	ret c
+	jp AI_Encourage
 
 .discourage
 	call AI_50_50
 	ret c
-	inc [hl]
-	ret
+	jp AI_Discourage
 
 AI_Smart_SpeedDownHit:
 ; Icy Wind
@@ -1205,9 +1204,7 @@ AI_Smart_SpeedDownHit:
 	call Random
 	cp 12 percent
 	ret c
-	dec [hl]
-	dec [hl]
-	ret
+	jp AI_Encourage_Greatly
 
 AI_Smart_Substitute:
 ; Dismiss this move if enemy's HP is below 50%.
@@ -1225,8 +1222,7 @@ AI_Smart_HyperBeam:
 	ret c
 	call AI_50_50
 	ret c
-	dec [hl]
-	ret
+	jp AI_Encourage
 
 .discourage
 ; If enemy's HP is above 50%, discourage this move at random
@@ -1236,8 +1232,7 @@ AI_Smart_HyperBeam:
 	inc [hl]
 	call AI_50_50
 	ret c
-	inc [hl]
-	ret
+	jp AI_Discourage
 
 AI_Smart_Rage:
 	ld a, [wEnemySubStatus4]
@@ -1259,8 +1254,7 @@ AI_Smart_Rage:
 	ld a, [wEnemyRageCounter]
 	cp 3
 	ret c
-	dec [hl]
-	ret
+	jp AI_Encourage
 
 .notbuilding
 ; If enemy's Rage is not building, discourage this move if enemy's HP is below 50%.
@@ -1270,12 +1264,10 @@ AI_Smart_Rage:
 ; 50% chance to encourage this move otherwise.
 	call AI_80_20
 	ret nc
-	dec [hl]
-	ret
+	jp AI_Encourage
 
 .discourage
-	inc [hl]
-	ret
+	jp AI_Discourage
 
 AI_Smart_Mimic:
 ; Discourage this move if the player did not use any move last turn.
@@ -1316,8 +1308,7 @@ AI_Smart_Mimic:
 	ret nc
 	call AI_50_50
 	ret c
-	dec [hl]
-	ret
+	jp AI_Encourage
 
 .dismiss
 ; Dismiss this move if the enemy is faster than the player.
@@ -1325,8 +1316,7 @@ AI_Smart_Mimic:
 	jp c, AIDiscourageMove
 
 .discourage
-	inc [hl]
-	ret
+	jp AI_Discourage
 
 AI_Smart_Counter:
 	push hl
@@ -1388,8 +1378,7 @@ AI_Smart_Counter:
 	ret
 
 .discourage
-	inc [hl]
-	ret
+	jp AI_Discourage
 
 AI_Smart_Encore:
 	call AICompareSpeed
@@ -1432,15 +1421,11 @@ AI_Smart_Encore:
 	call Random
 	cp 28 percent - 1
 	ret c
-	dec [hl]
-	dec [hl]
-	ret
+	jp AI_Encourage_Greatly
 
 .discourage
-	inc [hl]
-	inc [hl]
-	inc [hl]
-	ret
+	call AI_Discourage_Greatly
+	jp AI_Discourage
 
 INCLUDE "data/battle/ai/encore_moves.asm"
 
@@ -1474,16 +1459,12 @@ AI_Smart_SleepTalk:
 	cp 1
 	jr z, .discourage
 
-	dec [hl]
-	dec [hl]
-	dec [hl]
-	ret
+	call AI_Encourage_Greatly
+	jp AI_Encourage
 
 .discourage
-	inc [hl]
-	inc [hl]
-	inc [hl]
-	ret
+	call AI_Discourage_Greatly
+	jp AI_Discourage
 
 AI_Smart_DefrostOpponent:
 ; Greatly encourage this move if enemy is frozen.
@@ -1507,8 +1488,7 @@ AI_Smart_Spite:
 
 	call AI_50_50
 	ret c
-	inc [hl]
-	ret
+	jp AI_Discourage
 
 .usedmove
 	push hl
@@ -1542,16 +1522,13 @@ AI_Smart_Spite:
 	ret nc
 
 .discourage
-	inc [hl]
-	ret
+	jp AI_Discourage
 
 .encourage
 	call Random
 	cp 39 percent + 1
 	ret c
-	dec [hl]
-	dec [hl]
-	ret
+	jp AI_Encourage_Greatly
 
 .dismiss ; unreferenced
 	jp AIDiscourageMove
@@ -1563,8 +1540,7 @@ AI_Smart_SkullBash:
 
 	call AICheckEnemyQuarterHP
 	ret nc
-	inc [hl]
-	ret
+	jp AI_Discourage
 
 AI_Smart_HealBell:
 ; Dismiss this move if none of the opponent's Pokemon is statused.
@@ -1612,9 +1588,7 @@ AI_Smart_HealBell:
 	ret z
 	call AI_50_50
 	ret c
-	dec [hl]
-	dec [hl]
-	ret
+	jp AI_Encourage_Greatly
 
 .no_status
 	ld a, [wEnemyMonStatus]
@@ -1649,10 +1623,8 @@ AI_Smart_PriorityHit:
 	ld a, [wBattleMonHP]
 	sbc b
 	ret nc
-	dec [hl]
-	dec [hl]
-	dec [hl]
-	ret
+	call AI_Encourage_Greatly
+	jp AI_Encourage
 
 AI_Smart_Thief:
 ; Don't use Thief unless it's the only move available.
@@ -1691,15 +1663,13 @@ AI_Smart_Conversion2:
 	call AI_50_50
 	ret c
 
-	dec [hl]
-	ret
+	jp AI_Encourage
 
 .discourage
 	call Random
 	cp 10 percent
 	ret c
-	inc [hl]
-	ret
+	jp AI_Discourage
 
 AI_Smart_Disable:
 	call AICompareSpeed
@@ -1717,8 +1687,7 @@ AI_Smart_Disable:
 	call Random
 	cp 39 percent + 1
 	ret c
-	dec [hl]
-	ret
+	jp AI_Encourage
 
 .notencourage
 	ld a, [wEnemyMoveStruct + MOVE_POWER]
@@ -1729,8 +1698,7 @@ AI_Smart_Disable:
 	call Random
 	cp 8 percent
 	ret c
-	inc [hl]
-	ret
+	jp AI_Discourage
 
 AI_Smart_MeanLook:
 	call AICheckEnemyHalfHP
@@ -1761,16 +1729,13 @@ AI_Smart_MeanLook:
 	ret nc
 
 .discourage
-	inc [hl]
-	ret
+	jp AI_Discourage
 
 .encourage
 	call AI_80_20
 	ret c
-	dec [hl]
-	dec [hl]
-	dec [hl]
-	ret
+	call AI_Encourage_Greatly
+	jp AI_Encourage
 
 AICheckLastPlayerMon:
 	ld a, [wPartyCount]
@@ -1804,8 +1769,7 @@ AI_Smart_Nightmare:
 
 	call AI_50_50
 	ret c
-	dec [hl]
-	ret
+	jp AI_Encourage
 
 AI_Smart_FlameWheel:
 ; Use this move if the enemy is frozen.
@@ -1845,9 +1809,7 @@ AI_Smart_Curse:
 	ret nc
 	call AI_80_20
 	ret c
-	dec [hl]
-	dec [hl]
-	ret
+	jp AI_Encourage
 
 .approve
 	inc [hl]
@@ -1899,9 +1861,7 @@ AI_Smart_Curse:
 	call AI_50_50
 	ret c
 
-	dec [hl]
-	dec [hl]
-	ret
+	jp AI_Encourage_Greatly
 
 AI_Smart_Protect:
 ; Greatly discourage this move if the enemy already used Protect.
@@ -1947,8 +1907,7 @@ AI_Smart_Protect:
 	call AI_80_20
 	ret c
 
-	dec [hl]
-	ret
+	jp AI_Encourage
 
 .greatly_discourage
 	inc [hl]
@@ -1958,9 +1917,7 @@ AI_Smart_Protect:
 	cp 8 percent
 	ret c
 
-	inc [hl]
-	inc [hl]
-	ret
+	jp AI_Discourage_Greatly
 
 AI_Smart_Foresight:
 ; 60% chance to encourage this move if the enemy's accuracy is sharply lowered.
@@ -1994,9 +1951,7 @@ AI_Smart_Foresight:
 	cp 39 percent + 1
 	ret c
 
-	dec [hl]
-	dec [hl]
-	ret
+	jp AI_Encourage_Greatly
 
 AI_Smart_PerishSong:
 	push hl
@@ -2018,15 +1973,13 @@ AI_Smart_PerishSong:
 	call AI_50_50
 	ret c
 
-	inc [hl]
-	ret
+	jp AI_Discourage
 
 .yes
 	call AI_50_50
 	ret c
 
-	dec [hl]
-	ret
+	jp AI_Encourage
 
 .no
 	ld a, [hl]
@@ -2066,8 +2019,7 @@ AI_Smart_Sandstorm:
 .greatly_discourage
 	inc [hl]
 .discourage
-	inc [hl]
-	ret
+	jp AI_Discourage
 
 .SandstormImmuneTypes:
 	db ROCK
@@ -2098,10 +2050,8 @@ AI_Smart_Endure:
 	call AI_80_20
 	ret c
 
-	dec [hl]
-	dec [hl]
-	dec [hl]
-	ret
+	call AI_Encourage_Greatly
+	jp AI_Encourage
 
 .no_reversal
 ; If the enemy is not locked on, do nothing.
@@ -2113,15 +2063,12 @@ AI_Smart_Endure:
 	call AI_50_50
 	ret c
 
-	dec [hl]
-	dec [hl]
-	ret
+	jp AI_Encourage_Greatly
 
 .greatly_discourage
 	inc [hl]
 .discourage
-	inc [hl]
-	ret
+	jp AI_Discourage
 
 AI_Smart_FuryCutter:
 ; Encourage this move based on Fury Cutter's count.
@@ -2176,15 +2123,12 @@ AI_Smart_Rollout:
 	call Random
 	cp 79 percent - 1
 	ret nc
-	dec [hl]
-	dec [hl]
-	ret
+	jp AI_Encourage_Greatly
 
 .maybe_discourage
 	call AI_80_20
 	ret c
-	inc [hl]
-	ret
+	jp AI_Discourage
 
 AI_Smart_Swagger:
 AI_Smart_Attract:
@@ -2197,15 +2141,13 @@ AI_Smart_Attract:
 
 	call AI_80_20
 	ret c
-	inc [hl]
-	ret
+	jp AI_Discourage
 
 .first_turn
 	call Random
 	cp 79 percent - 1
 	ret nc
-	dec [hl]
-	ret
+	jp AI_Encourage
 
 AI_Smart_Safeguard:
 ; 80% chance to discourage this move if player's HP is below 50%.
@@ -2214,8 +2156,7 @@ AI_Smart_Safeguard:
 	ret c
 	call AI_80_20
 	ret c
-	inc [hl]
-	ret
+	jp AI_Discourage
 
 AI_Smart_Magnitude:
 AI_Smart_Earthquake:
@@ -2230,9 +2171,7 @@ AI_Smart_Earthquake:
 
 	call AICompareSpeed
 	ret nc
-	dec [hl]
-	dec [hl]
-	ret
+	jp AI_Encourage_Greatly
 
 .could_dig
 	; Try to predict if the player will use Dig this turn.
@@ -2244,8 +2183,7 @@ AI_Smart_Earthquake:
 	call AI_50_50
 	ret c
 
-	dec [hl]
-	ret
+	jp AI_Encourage
 
 AI_Smart_BatonPass:
 ; Discourage this move if the player hasn't shown super-effective moves against the enemy.
@@ -2257,8 +2195,7 @@ AI_Smart_BatonPass:
 	cp BASE_AI_SWITCH_SCORE
 	pop hl
 	ret c
-	inc [hl]
-	ret
+	jp AI_Encourage
 
 AI_Smart_Pursuit:
 ; 50% chance to greatly encourage this move if player's HP is below 25%.
@@ -2268,15 +2205,12 @@ AI_Smart_Pursuit:
 	jr nc, .encourage
 	call AI_80_20
 	ret c
-	inc [hl]
-	ret
+	jp AI_Discourage
 
 .encourage
 	call AI_50_50
 	ret c
-	dec [hl]
-	dec [hl]
-	ret
+	jp AI_Encourage_Greatly
 
 AI_Smart_RapidSpin:
 ; 80% chance to greatly encourage this move if the enemy is
@@ -2298,9 +2232,7 @@ AI_Smart_RapidSpin:
 	call AI_80_20
 	ret c
 
-	dec [hl]
-	dec [hl]
-	ret
+	jp AI_Encourage_Greatly
 
 AI_Smart_HiddenPower:
 	push hl
@@ -2333,12 +2265,10 @@ AI_Smart_HiddenPower:
 	ret c
 
 .good
-	dec [hl]
-	ret
+	jp AI_Encourage
 
 .bad
-	inc [hl]
-	ret
+	jp AI_Discourage
 
 AI_Smart_RainDance:
 ; Greatly discourage this move if it would favour the player type-wise.
@@ -2398,14 +2328,11 @@ AI_Smart_WeatherMove:
 	call AI_50_50
 	ret c
 
-	dec [hl]
-	ret
+	jp AI_Encourage
 
 AIBadWeatherType:
-	inc [hl]
-	inc [hl]
-	inc [hl]
-	ret
+	call AI_Discourage_Greatly
+	jp AI_Discourage
 
 AIGoodWeatherType:
 ; Rain Dance, Sunny Day
@@ -2426,9 +2353,7 @@ AIGoodWeatherType:
 	ret nz
 
 .good
-	dec [hl]
-	dec [hl]
-	ret
+	jp AI_Encourage_Greatly
 
 INCLUDE "data/battle/ai/sunny_day_moves.asm"
 
@@ -2503,13 +2428,10 @@ AI_Smart_PsychUp:
 	call AI_80_20
 	ret c
 
-	dec [hl]
-	ret
+	jp AI_Encourage
 
 .discourage
-	inc [hl]
-	inc [hl]
-	ret
+	jp AI_Discourage_Greatly
 
 AI_Smart_MirrorCoat:
 	push hl
@@ -2570,8 +2492,7 @@ AI_Smart_MirrorCoat:
 	ret
 
 .discourage
-	inc [hl]
-	ret
+	jp AI_Discourage
 
 AI_Smart_Twister:
 AI_Smart_Gust:
@@ -2587,9 +2508,7 @@ AI_Smart_Gust:
 	call AICompareSpeed
 	ret nc
 
-	dec [hl]
-	dec [hl]
-	ret
+	jp AI_Encourage_Greatly
 
 ; Try to predict if the player will use Fly this turn.
 .couldFly
@@ -2599,8 +2518,7 @@ AI_Smart_Gust:
 	ret c
 	call AI_50_50
 	ret c
-	dec [hl]
-	ret
+	jp AI_Encourage
 
 AI_Smart_FutureSight:
 ; Greatly encourage this move if the player is
@@ -2613,9 +2531,7 @@ AI_Smart_FutureSight:
 	and 1 << SUBSTATUS_FLYING | 1 << SUBSTATUS_UNDERGROUND
 	ret z
 
-	dec [hl]
-	dec [hl]
-	ret
+	jp AI_Encourage_Greatly
 
 AI_Smart_Stomp:
 ; 80% chance to encourage this move if the player has used Minimize.
@@ -2627,8 +2543,7 @@ AI_Smart_Stomp:
 	call AI_80_20
 	ret c
 
-	dec [hl]
-	ret
+	jp AI_Encourage
 
 AI_Smart_Solarbeam:
 ; 80% chance to encourage this move when it's sunny.
@@ -2645,17 +2560,13 @@ AI_Smart_Solarbeam:
 	cp 10 percent
 	ret c
 
-	inc [hl]
-	inc [hl]
-	ret
+	jp AI_Discourage_Greatly
 
 .encourage
 	call AI_80_20
 	ret c
 
-	dec [hl]
-	dec [hl]
-	ret
+	jp AI_Encourage_Greatly
 
 AI_Smart_Thunder:
 ; 90% chance to discourage this move when it's sunny.
@@ -2668,8 +2579,7 @@ AI_Smart_Thunder:
 	cp 10 percent
 	ret c
 
-	inc [hl]
-	ret
+	jp AI_Discourage
 
 AICompareSpeed:
 ; Return carry if enemy is faster than player.
@@ -3327,3 +3237,27 @@ AI_50_50:
 	call Random
 	cp 50 percent + 1
 	ret
+	
+AI_60_40:
+	call Random
+	cp 60 percent + 1
+	ret
+	
+AI_Discourage:
+	inc [hl]
+	ret
+	
+AI_Discourage_Greatly:
+	inc [hl]
+	inc [hl]
+	ret
+	
+AI_Encourage:
+	dec [hl]
+	ret
+	
+AI_Encourage_Greatly:
+	dec [hl]
+	dec [hl]
+	ret
+	

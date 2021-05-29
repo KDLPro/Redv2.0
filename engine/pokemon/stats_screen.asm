@@ -854,9 +854,9 @@ LoadBluePage:
 	call PlaceString
 	ld a, [wTempMonCaughtGender]
 	and a
-	jr z, .done
+	ret z
 	cp $7f
-	jr z, .done
+	ret z
 	and CAUGHT_GENDER_MASK
 	ld a, "♂"
 	jr z, .got_gender
@@ -864,7 +864,6 @@ LoadBluePage:
 .got_gender
 	hlcoord 8, 13
 	ld [hl], a
-.done
 	ret
 
 .OTNamePointers:

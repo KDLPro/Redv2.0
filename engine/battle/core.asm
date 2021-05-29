@@ -926,6 +926,7 @@ Battle_EnemyFirst:
 	ld [wEnemyGoesFirst], a
 	callfar AI_SwitchOrTryItem
 	jr c, .switch_item
+	callfar AISwitchChooseMove
 	call EnemyTurn_EndOpponentProtectEndureDestinyBond
 	call CheckMobileBattleError
 	ret c
@@ -986,6 +987,7 @@ Battle_PlayerFirst:
 	call LoadTilemapToTempTilemap
 	call TryEnemyFlee
 	jp c, WildFled_EnemyFled_LinkBattleCanceled
+	callfar AISwitchChooseMove
 	call EnemyTurn_EndOpponentProtectEndureDestinyBond
 	call CheckMobileBattleError
 	ret c
