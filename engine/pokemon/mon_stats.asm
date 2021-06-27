@@ -344,8 +344,6 @@ GetGender:
 	ld a, [wCurPartySpecies]
 	dec a
 	ld hl, BaseData + BASE_GENDER
-	inc hl
-	inc hl
 	ld bc, BASE_DATA_SIZE
 	call AddNTimes
 	pop bc

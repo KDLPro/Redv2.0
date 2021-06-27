@@ -915,20 +915,25 @@ AI_Smart_Heal:
 AI_Smart_MorningSun:
 AI_Smart_Synthesis:
 AI_Smart_Moonlight:
-; 90% chance to greatly encourage this move if enemy's HP is below 25%.
-; Discourage this move if enemy's HP is higher than 50%.
-; Do nothing otherwise.
+; 80% chance to greatly encourage this move if enemy's HP is below 25%.
+; 50% chance to encourage this move if enemy's HP is between 25% and 50%.
+; Discourage otherwise.
 
 	call AICheckEnemyQuarterHP
 	jr nc, .encourage
 	call AICheckEnemyHalfHP
-	ret nc
+	jr nc, .low_hp
 	jp AI_Discourage
 
-.encourage
-	call Random
-	cp 10 percent
+.low_hp
+	call AI_50_50
 	ret c
+	jp AI_Encourage
+	
+.very_low_hp
+	call AI_80_20
+	ret c
+.encourage
 	jp AI_Encourage_Greatly
 
 AI_Smart_Toxic:
@@ -940,39 +945,39 @@ AI_Smart_LeechSeed:
 	jp AI_Discourage
 
 AI_Smart_LightScreen:
-; Greatly encourage this move if enemy's HP is greater than half and 
-; enemy's Sp. Def is less than enemy's Def
+; Greatly encourage this move if enemy's HP is greater than 50% and 
+; enemy's Sp. Def < Def.
 
-	call AICheckEnemyHalfHP
-	ret c
-	ld a, [wEnemyDefense]
-	ld b, a
-	ld a, [wEnemySpDef]
-	cp b
-	jr c, .def_is_greater
+    call AICheckEnemyHalfHP
+    ret nc
+    ld a, [wEnemyDefense]
+    ld b, a
+    ld a, [wEnemySpDef]
+    cp b
+    jr nc, .spdef_is_greater_or_equal
 	jp AI_Encourage_Greatly
 	
-.def_is_greater
-; Otherwise, encourage this move if enemy's HP is greater than half and 
-; enemy's Def is equal to or less than enemy's Sp. Def
+.spdef_is_greater_or_equal
+; Otherwise, encourage if enemy's HP is greater than 50% and 
+; enemy's Sp. Def >= Def.
 	jp AI_Encourage
 
 AI_Smart_Reflect:
-; Greatly encourage this move if enemy's HP is greater than half and 
-; enemy's Def is less than enemy's Sp. Def
+; Greatly encourage this move if enemy's HP is greater than 50% and 
+; enemy's Def < Sp. Def.
 
-	call AICheckEnemyHalfHP
-	ret c
-	ld a, [wEnemySpDef]
-	ld b, a
-	ld a, [wEnemyDefense]
-	cp b
-	jr c, .spdef_is_greater
+    call AICheckEnemyHalfHP
+    ret nc
+    ld a, [wEnemySpDef]
+    ld b, a
+    ld a, [wEnemyDefense]
+    cp b
+    jr nc, .def_is_greater_or_equal
 	jp AI_Encourage_Greatly
 	
-.spdef_is_greater
-; Otherwise, encourage this move if enemy's HP is greater than half and 
-; enemy's Sp. Def is equal to or less than enemy's Def
+.def_is_greater_or_equal
+; Otherwise, encourage if enemy's HP is greater than 50% and 
+; enemy's Def >= Sp. Def.
 	jp AI_Encourage
 
 AI_Smart_Ohko:
@@ -1467,15 +1472,7 @@ AI_Smart_SleepTalk:
 	jp AI_Discourage
 
 AI_Smart_DefrostOpponent:
-; Greatly encourage this move if enemy is frozen.
 ; No move has EFFECT_DEFROST_OPPONENT, so this layer is unused.
-
-	ld a, [wEnemyMonStatus]
-	and 1 << FRZ
-	ret z
-	dec [hl]
-	dec [hl]
-	dec [hl]
 	ret
 
 AI_Smart_Spite:
@@ -2546,8 +2543,8 @@ AI_Smart_Stomp:
 	jp AI_Encourage
 
 AI_Smart_Solarbeam:
-; 80% chance to encourage this move when it's sunny.
-; 90% chance to discourage this move when it's raining.
+; 60% chance to encourage this move when it's sunny.
+; 60% chance to discourage this move otherwise.
 
 	ld a, [wBattleWeather]
 	cp WEATHER_SUN
@@ -2556,14 +2553,13 @@ AI_Smart_Solarbeam:
 	cp WEATHER_RAIN
 	ret nz
 
-	call Random
-	cp 10 percent
+	call AI_60_40
 	ret c
 
 	jp AI_Discourage_Greatly
 
 .encourage
-	call AI_80_20
+	call AI_60_40
 	ret c
 
 	jp AI_Encourage_Greatly

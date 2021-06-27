@@ -4861,10 +4861,6 @@ PrintPlayerHUD:
 	pop hl
 	pop bc
 	hlcoord 14, 8
-	ld a, b
-	cp " "
-	jr nz, .copy_level ; male or female
-	dec hl ; genderless
 
 .copy_level
 	ld a, [wBattleMonLevel]

@@ -6031,6 +6031,8 @@ BattleCommand_Paralyze:
 	ld a, [wTypeModifier]
 	and $7f
 	jr z, .didnt_affect
+	call CheckIfTargetIsImmuneToParalysis
+	jr z, .didnt_affect
 	call GetOpponentItem
 	ld a, b
 	cp HELD_PREVENT_PARALYZE
@@ -6539,8 +6541,6 @@ INCLUDE "engine/battle/move_effects/foresight.asm"
 
 INCLUDE "engine/battle/move_effects/perish_song.asm"
 
-INCLUDE "engine/battle/move_effects/sandstorm.asm"
-
 INCLUDE "engine/battle/move_effects/rollout.asm"
 
 BattleCommand_Unused5D:
@@ -6673,9 +6673,7 @@ BattleCommand_TimeBasedHealContinue:
 
 INCLUDE "engine/battle/move_effects/hidden_power.asm"
 
-INCLUDE "engine/battle/move_effects/rain_dance.asm"
-
-INCLUDE "engine/battle/move_effects/sunny_day.asm"
+INCLUDE "engine/battle/move_effects/weather_moves.asm"
 
 INCLUDE "engine/battle/move_effects/belly_drum.asm"
 
