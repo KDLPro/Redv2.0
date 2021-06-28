@@ -2184,6 +2184,7 @@ AI_Smart_Earthquake:
 
 AI_Smart_BatonPass:
 ; Discourage this move if the player hasn't shown super-effective moves against the enemy.
+; Also discourage this move if the player's stat buffs are zero or lower.
 ; Consider player's type(s) if its moves are unknown.
 
 	push hl
@@ -2192,7 +2193,16 @@ AI_Smart_BatonPass:
 	cp BASE_AI_SWITCH_SCORE
 	pop hl
 	ret c
+	
+	farcall CheckEnemyStatBoosts
+	 ; Checks if AI has no boosts
+	ld a, e
+	and a
+	jr z, .discourage
 	jp AI_Encourage
+	
+.discourage
+	jp AI_Discourage_Greatly
 
 AI_Smart_Pursuit:
 ; 50% chance to greatly encourage this move if player's HP is below 25%.
@@ -2543,7 +2553,7 @@ AI_Smart_Stomp:
 	jp AI_Encourage
 
 AI_Smart_Solarbeam:
-; 60% chance to encourage this move when it's sunny.
+; 40% chance to encourage this move when it's sunny.
 ; 60% chance to discourage this move otherwise.
 
 	ld a, [wBattleWeather]
@@ -2554,7 +2564,7 @@ AI_Smart_Solarbeam:
 	ret nz
 
 	call AI_60_40
-	ret c
+	ret nc
 
 	jp AI_Discourage_Greatly
 
@@ -2568,8 +2578,8 @@ AI_Smart_Thunder:
 ; 90% chance to discourage this move when it's sunny.
 
 	ld a, [wBattleWeather]
-	cp WEATHER_SUN
-	ret nz
+	cp WEATHER_RAIN
+	ret z
 
 	call Random
 	cp 10 percent

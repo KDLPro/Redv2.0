@@ -134,8 +134,7 @@ CheckAbleToSwitch:
 .cont_check
 	 ; Checks if AI has no boosts
 	ld a, e
-	cp 0
-	jr c, .cont_check_2
+	and a
 	jr z, .cont_check_2
 	 ; Check if player has at least 2 stat buffs
 	ld a, b
