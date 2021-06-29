@@ -386,6 +386,7 @@ AI_Smart_EffectHandlers:
 	dbw EFFECT_SOLARBEAM,        AI_Smart_Solarbeam
 	dbw EFFECT_THUNDER,          AI_Smart_Thunder
 	dbw EFFECT_FLY,              AI_Smart_Fly
+	dbw EFFECT_FLINCH_HIT,		 AI_Smart_Flinch
 	db -1 ; end
 
 AI_Smart_Sleep:
@@ -419,10 +420,6 @@ AI_Smart_LeechHit:
 
 ; Do nothing if effectiveness is neutral.
 	ret z
-
-; Do nothing if enemy's HP is full.
-	call AICheckEnemyMaxHP
-	ret c
 
 ; 80% chance to encourage this move otherwise.
 	call AI_80_20
@@ -2552,8 +2549,17 @@ AI_Smart_Stomp:
 	ret z
 
 	call AI_80_20
+	call nc, AI_Encourage
+	
+	; fallthrough
+	
+AI_Smart_Flinch:
+; 60% chance to encourage this move if the enemy is faster than player.
+	call AICompareSpeed
+	ret nc
+	
+	call AI_60_40
 	ret c
-
 	jp AI_Encourage
 
 AI_Smart_Solarbeam:
@@ -3106,7 +3112,7 @@ AI_Status:
 	ld a, [wBattleMonType2]
 	cp POISON
 	jr z, .immune
-	; fallthorugh
+	; fallthrough
 
 .typeimmunity
 	push hl
