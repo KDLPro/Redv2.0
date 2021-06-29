@@ -2184,7 +2184,8 @@ AI_Smart_Earthquake:
 
 AI_Smart_BatonPass:
 ; Discourage this move if the player hasn't shown super-effective moves against the enemy.
-; Also discourage this move if the player's stat buffs are zero or lower.
+; Also discourage this move if the enemy's stat buffs are zero or lower.
+; Also discourage this move if the enemy has only one Pokémon left.
 ; Consider player's type(s) if its moves are unknown.
 
 	push hl
@@ -2194,12 +2195,15 @@ AI_Smart_BatonPass:
 	pop hl
 	ret c
 	
+	farcall FindAliveEnemyMons
+    jr c, .discourage
+	
 	farcall CheckEnemyStatBoosts
 	 ; Checks if AI has no boosts
 	ld a, e
 	and a
-	jr z, .discourage
-	jp AI_Encourage
+    jp nz, AI_Encourage
+    ; fallthrough
 	
 .discourage
 	jp AI_Discourage_Greatly

@@ -90,7 +90,8 @@ CheckPlayerStatBoosts:
 	add b	 ; b holds the stat buffs
 	ld b, a
 	jr .checkplayerbuff
-
+	; fallthrough
+	
 CheckEnemyStatBoosts:
 	ld hl, wEnemyStatLevels
 	ld c, NUM_LEVEL_STATS - 1
@@ -106,7 +107,6 @@ CheckEnemyStatBoosts:
 	add e	 ; e holds the stat buffs
 	ld e, a
 	jr .checkenemybuff
-	ret
 	
 CheckTurnsToKOAI:
 	ld a, [wEnemyMonJustFainted]
