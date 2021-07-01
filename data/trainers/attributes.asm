@@ -172,7 +172,7 @@ TrainerClassAttributes:
 ; Beauty
 	db NO_ITEM, NO_ITEM ; items
 	db 22 ; base reward
-	dw AI_BASIC | AI_TYPES | AI_OPPORTUNIST | AI_CAUTIOUS | AI_STATUS
+	dw AI_BASIC | AI_TYPES | AI_SMART | AI_STATUS
 	dw CONTEXT_USE | SWITCH_SOMETIMES
 
 ; Pokemaniac

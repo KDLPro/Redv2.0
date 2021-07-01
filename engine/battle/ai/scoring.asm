@@ -407,32 +407,52 @@ AI_Smart_Sleep:
 	jp AI_Encourage_Greatly
 
 AI_Smart_LeechHit:
-	push hl
-	ld a, 1
-	ldh [hBattleTurn], a
-	callfar BattleCheckTypeMatchup
-	pop hl
+    push hl
+    ld a, 1
+    ldh [hBattleTurn], a
+    callfar BattleCheckTypeMatchup
+    pop hl
 
 ; 60% chance to discourage this move if not very effective.
-	ld a, [wTypeMatchup]
-	cp EFFECTIVE
-	jr c, .discourage
+    ld a, [wTypeMatchup]
+    cp EFFECTIVE
+    jr c, .discourage
 
-; Do nothing if effectiveness is neutral.
-	ret z
+; Check for STAB if neutral
+    jr z, .neutral
 
-; 80% chance to encourage this move otherwise.
-	call AI_80_20
+.checkhp
+; Do nothing if enemy's HP is full and if the enemy is faster than player.
+    call AICheckEnemyMaxHP
+    jr nc, .encourage
+	call AICompareSpeed
 	ret c
 
-	jp AI_Encourage
+.encourage
+; 60% chance to encourage this move otherwise.
+    call AI_60_40
+    ret c
+
+    jp AI_Encourage
 
 .discourage
-	call Random
-	cp 39 percent + 1
-	ret c
+    call AI_60_40
+    ret nc
 
-	jp AI_Discourage
+    jp AI_Discourage
+	
+.neutral
+; Encourage this move if it deals STAB damage.
+	ld a, [wEnemyMoveStruct + MOVE_TYPE]
+	ld b, a
+	ld a, [wEnemyMonType1]
+	cp b
+	jr z, .encourage
+
+	ld a, [wEnemyMonType2]
+	cp b
+	jr z, .encourage
+	jr .checkhp
 
 AI_Smart_LockOn:
 	ld a, [wPlayerSubStatus5]
@@ -928,7 +948,7 @@ AI_Smart_Moonlight:
 	jp AI_Encourage
 	
 .very_low_hp
-	call AI_80_20
+	call AI_60_40
 	ret c
 .encourage
 	jp AI_Encourage_Greatly
@@ -1174,7 +1194,7 @@ AI_Smart_Paralyze:
 	
 .encourage
 ; 60% chance to encourage this move if its HP is above 25%
-; and if enemy is faster or speed ties with enemy
+; and if enemy is faster or speed ties with player
 ; or if enemy has good matchup against player
 	call AI_60_40
 	ret c
@@ -3256,7 +3276,7 @@ AI_50_50:
 	
 AI_60_40:
 	call Random
-	cp 60 percent + 1
+	cp 40 percent - 1
 	ret
 	
 AI_Discourage:
