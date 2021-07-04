@@ -12,9 +12,9 @@ MonMenuOptionStrings:
 ; entries correspond to MONMENUVALUE_* constants
 	db "STATS@"
 	db "SWITCH@"
-	db "ITEM@"
+	db "HELD ITEM@"
 	db "CANCEL@"
-	db "MOVE@"
+	db "CHECK MOVES@"
 	db "MAIL@"
 	db "ERROR!@"
 

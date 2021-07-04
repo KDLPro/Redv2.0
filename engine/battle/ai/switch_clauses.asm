@@ -73,6 +73,10 @@ CheckConsecutiveTurnsDealLowDmg:
 	ret
 	
 CheckStatBoosts:
+	call CheckPlayerStatBoosts
+	call CheckEnemyStatBoosts
+	ret
+	
 CheckPlayerStatBoosts:
     ld hl, wPlayerStatLevels
     ld c, NUM_LEVEL_STATS - 1
@@ -80,7 +84,7 @@ CheckPlayerStatBoosts:
 	ld e, 0
 .checkplayerbuff  ; Check player's stat buffs
 	dec c
-	jr z, CheckEnemyStatBoosts
+	ret z
 	ld a, [hli]
 	cp BASE_STAT_LEVEL
 	jr nc, .checkplayerbuff2
@@ -90,7 +94,6 @@ CheckPlayerStatBoosts:
 	add b	 ; b holds the stat buffs
 	ld b, a
 	jr .checkplayerbuff
-	; fallthrough
 	
 CheckEnemyStatBoosts:
 	ld hl, wEnemyStatLevels

@@ -1,6 +1,9 @@
 AISwitchChooseMove:
+	; to account for prediction
 	ld hl, TrainerClassAttributes + TRNATTR_AI_MOVE_WEIGHTS
     
+	; Do this for AI_SMART
+	
     ld a, [wTrainerClass]
     dec a
     ld bc, NUM_TRAINER_ATTRIBUTES
@@ -10,6 +13,12 @@ AISwitchChooseMove:
     call GetFarByte
     and AI_SMART
     ret z
+	
+	; Do this if player is switching
+	ld a, [wPlayerIsSwitching]
+	and a
+	ret z
+	
 	call Random
 	cp 20 percent + 1
 	ret nc
