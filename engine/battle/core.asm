@@ -1810,16 +1810,21 @@ HandleWeather:
 	dec [hl]
 	jp z, .ended
 
-	ld a, [wBattleWeather]
-	cp WEATHER_SUN
-	call z, .play_sun
-	cp WEATHER_RAIN
-	call z, .play_rain
-	cp WEATHER_SANDSTORM
-	call z, .play_sandstorm
-	
-	ld hl, .WeatherMessages
-	call .PrintWeatherMessage
+    ld a, [wBattleWeather]
+    dec a ; WEATHER_RAIN
+    ld de, ANIM_IN_RAIN
+    jr z, .anim_weather
+
+    dec a ; WEATHER_SUN
+    ld de, ANIM_IN_SUN
+    jr z, .anim_weather
+
+    ld de, ANIM_IN_SANDSTORM
+    ; fallthrough
+.anim_weather
+    call Call_PlayBattleAnim
+    ld hl, .WeatherMessages
+    call .PrintWeatherMessage
 
 	ld a, [wBattleWeather]
 	cp WEATHER_SANDSTORM
@@ -1834,18 +1839,6 @@ HandleWeather:
 	call .SandstormDamage
 	call SetEnemyTurn
 	jr .SandstormDamage
-	
-.play_sun
-	ld de, ANIM_IN_SUN
-	jp Call_PlayBattleAnim
-	
-.play_rain
-	ld de, ANIM_IN_RAIN
-	jp Call_PlayBattleAnim
-	
-.play_sandstorm
-	ld de, ANIM_IN_SANDSTORM
-	jp Call_PlayBattleAnim
 
 .enemy_first
 	call SetEnemyTurn
@@ -5023,6 +5016,7 @@ Battle_DummyFunction:
 	ret
 
 BattleMenu:
+	call LoadBattleCoreFont
 	xor a
 	ldh [hBGMapMode], a
 	call LoadTempTilemapToTilemap
@@ -9001,7 +8995,7 @@ InitBattleDisplay:
 	hlcoord 1, 5
 	lb bc, 3, 7
 	call ClearBox
-	call LoadStandardFont
+	call LoadBattleCoreFont
 	call _LoadBattleFontsHPBar
 	call .BlankBGMap
 	xor a

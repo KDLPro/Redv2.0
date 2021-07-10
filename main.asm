@@ -472,6 +472,11 @@ SECTION "Font Inversed", ROMX
 FontInversed:
 INCBIN "gfx/font/font_inversed.1bpp"
 
+SECTION "English", ROMX
+
+English:
+INCBIN "gfx/font/english.1bpp"
+
 
 SECTION "Pic Animations 3", ROMX
 

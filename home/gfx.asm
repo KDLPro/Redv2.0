@@ -101,6 +101,14 @@ UpdatePlayerSprite::
 LoadStandardFont::
 	farcall _LoadStandardFont
 	ret
+	
+LoadBattleCoreFont::
+	farcall _LoadBattleCoreFont
+	ret	
+	
+LoadInversedFont::
+	farcall _LoadInversedFont
+	ret
 
 LoadFontsBattleExtra::
 	farcall _LoadFontsBattleExtra

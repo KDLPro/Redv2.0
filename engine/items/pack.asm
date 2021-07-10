@@ -13,6 +13,7 @@
 	const PACKSTATE_QUITRUNSCRIPT      ; 10
 
 Pack:
+	call LoadStandardFont
 	ld hl, wOptions
 	set NO_TEXT_SCROLL, [hl]
 	call InitPackBuffers
