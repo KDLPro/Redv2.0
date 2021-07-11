@@ -602,7 +602,6 @@ wBetaPokerSGBRow:: db
 	ds 1
 ENDU
 
-	ds 1
 
 wBattleWeather::
 ; 00 normal
@@ -622,6 +621,7 @@ wLoweredStat:: db
 wEffectFailed:: db
 wFailedMessage:: db
 wEnemyGoesFirst:: db
+wEnemyShouldGoFirst:: db
 
 wPlayerIsSwitching:: db
 wEnemyIsSwitching::  db

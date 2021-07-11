@@ -2430,7 +2430,7 @@ BattleRestorePP:
 .loop
 	ld a, [de]
 	and a
-	jr z, .done
+	ret z
 	cp [hl]
 	jr nz, .next
 	push hl
@@ -2452,9 +2452,6 @@ endr
 	inc de
 	dec b
 	jr nz, .loop
-
-.done
-	ret
 
 Not_PP_Up:
 	call RestorePP
@@ -2501,45 +2498,43 @@ PPRestoreItem_Cancel:
 	ret
 
 RestorePP:
-	xor a ; PARTYMON
-	ld [wMonType], a
-	call GetMaxPPOfMove
-	ld hl, wPartyMon1PP
-	ld bc, PARTYMON_STRUCT_LENGTH
-	call GetMthMoveOfNthPartymon
-	ld a, [wTempPP]
-	ld b, a
-	ld a, [hl]
-	and PP_MASK
-	cp b
-	jr nc, .dont_restore
+    xor a ; PARTYMON
+    ld [wMonType], a
+    call GetMaxPPOfMove
+    ld hl, wPartyMon1PP
+    ld bc, PARTYMON_STRUCT_LENGTH
+    call GetMthMoveOfNthPartymon
+    ld a, [wTempPP]
+    ld b, a
+    ld a, [hl]
+    and PP_MASK
+    cp b
+    jr nc, .dont_restore
 
-	ld a, [wTempRestorePPItem]
-	cp MAX_ELIXER
-	jr z, .restore_all
-	cp MAX_ETHER
-	jr z, .restore_all
+    ld a, [wTempRestorePPItem]
+    cp MAX_ELIXER
+    jr z, .restore_all
+    cp MAX_ETHER
+    jr z, .restore_all
 
-	ld c, 10
-
-.restore_some
-	ld a, [hl]
-	and PP_MASK
-	add c
-	cp b
-	jr nc, .restore_all
-	ld b, a
+; restore_some
+    ld a, [hl]
+    and PP_MASK
+    add 10
+    cp b
+    jr nc, .restore_all
+    ld b, a
 
 .restore_all
-	ld a, [hl]
-	and PP_UP_MASK
-	or b
-	ld [hl], a
-	ret
+    ld a, [hl]
+    and PP_UP_MASK
+    or b
+    ld [hl], a
+    ret
 
 .dont_restore
-	xor a
-	ret
+    xor a
+    ret
 
 RaiseThePPOfWhichMoveText:
 	text_far _RaiseThePPOfWhichMoveText
@@ -2769,7 +2764,6 @@ ApplyPPUp:
 .use
 	ld a, [hl]
 	and PP_UP_MASK
-	ld a, [de] ; wasted cycle
 	call nz, ComputeMaxPP
 
 .skip
@@ -2879,12 +2873,8 @@ GetMaxPPOfMove:
 	jr z, .got_partymon ; OTPARTYMON
 
 	ld hl, wTempMonMoves
-	dec a
-	jr z, .got_nonpartymon ; BOXMON
-
-	ld hl, wTempMonMoves ; Wasted cycles
-	dec a
-	jr z, .got_nonpartymon ; TEMPMON
+	cp TEMPMON ; Either BOXMON or TEMPMON
+	jr c, .got_nonpartymon
 
 	ld hl, wBattleMonMoves ; WILDMON
 
@@ -2948,4 +2938,78 @@ GetMthMoveOfCurrentMon:
 	ld c, a
 	ld b, 0
 	add hl, bc
+	ret
+	
+SimpleGetMaxPPOfMove:
+	ld a, [wStringBuffer1 + 0]
+	push af
+	ld a, [wStringBuffer1 + 1]
+	push af
+
+	ld a, [wMonType]
+	and a
+
+	push bc
+
+	ld hl, wPartyMon1Moves
+	ld bc, PARTYMON_STRUCT_LENGTH
+	jr z, .got_partymon ; PARTYMON
+
+	ld hl, wOTPartyMon1Moves
+	dec a
+	jr z, .got_partymon ; OTPARTYMON
+
+	pop bc
+	ld hl, wWildMonMoves ; WILDMON
+	jr .gotdatmove
+
+.got_partymon ; PARTYMON, OTPARTYMON
+	ld a, [wCurBattleMon]
+	call AddNTimes
+	pop bc
+
+.gotdatmove
+	ld b, 0
+	add hl, bc
+
+	ld a, [hl]
+	dec a
+
+	push hl
+	ld hl, Moves + MOVE_PP
+	ld bc, MOVE_LENGTH
+	call AddNTimes
+	ld a, BANK(Moves)
+	call GetFarByte
+	ld b, a
+	ld de, wStringBuffer1
+	ld [de], a
+	pop hl
+
+	push bc
+	ld bc, MON_PP - MON_MOVES
+	ld a, [wMonType]
+	cp WILDMON
+	jr nz, .notwild
+	ld bc, wWildMonPP - wWildMonMoves
+.notwild
+	add hl, bc
+	ld a, [hl]
+	and PP_UP_MASK
+	pop bc
+
+	or b
+	ld hl, wStringBuffer1 + 1
+	ld [hl], a
+	xor a
+	ld [wTempPP], a
+	call ComputeMaxPP
+	ld a, [hl]
+	and PP_MASK
+	ld [wTempPP], a
+
+	pop af
+	ld [wStringBuffer1 + 1], a
+	pop af
+	ld [wStringBuffer1 + 0], a
 	ret
