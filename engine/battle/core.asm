@@ -260,18 +260,6 @@ Stubbed_Increments5_a89a:
 	ret
 
 HandleBetweenTurnEffects:
-	ld a, [wPlayerIsSwitching]
-	and a
-	jr nz, .do_speed_check
-	ld a, [wEnemyIsSwitching]
-	and a
-	jr nz, .do_speed_check
-	jr .done_speed_check
-	
-.do_speed_check
-	call SpeedCheckWhoGoesFirst
-	
-.done_speed_check
 	ld a, [wEnemyShouldGoFirst]
 	cp ENEMY_FIRST
 	jr z, .CheckEnemyFirst
@@ -3373,14 +3361,24 @@ ForceEnemySwitch:
 	ret
 
 EnemySwitch:
-	jp EnemySwitch_SetMode
-
 EnemySwitch_SetMode:
 	call ResetEnemyBattleVars
 	call CheckWhetherSwitchmonIsPredetermined
-	jr c, .skip
+	jr c, .try_switch
 	call FindMonInOTPartyToSwitchIntoBattle
-.skip
+	ld a, [wEnemyEffectivenessVsPlayerMons]
+	and a
+	jr nz, .try_switch
+	farcall FindAliveEnemyMons
+    farcall FindEnemyMonsWithAtLeastQuarterMaxHP
+	farcall FindEnemyMonsThatResistPlayer
+    farcall FindAliveEnemyMonsWithASuperEffectiveMove
+	farcall CheckGlitchMonAfterFaint
+	jr z, .glitched
+	ld a, [wEnemyAISwitchScore]
+	inc a
+	ld b, a
+.try_switch
 	; 'b' contains the PartyNr of the mon the AI will switch to
 	call LoadEnemyMonToSwitchTo
 	ld a, 1
@@ -3388,6 +3386,10 @@ EnemySwitch_SetMode:
 	call ClearEnemyMonBox
 	call ShowBattleTextEnemySentOut
 	jp ShowSetEnemyMonAndSendOutAnimation
+	
+.glitched
+	call FindMonInOTPartyToSwitchIntoBattle
+	jr .try_switch
 
 CheckWhetherSwitchmonIsPredetermined:
 ; returns the enemy switchmon index in b, or
@@ -3816,6 +3818,7 @@ ShowSetEnemyMonAndSendOutAnimation:
 
 NewEnemyMonStatus:
 	farcall ResetEnemyDamageTakenThisTurn
+	call SpeedCheckWhoGoesFirst
 	xor a
 	ld [wLastEnemyCounterMove], a
 	ld [wLastEnemyMove], a
@@ -4295,6 +4298,7 @@ SendOutPlayerMon:
 
 NewBattleMonStatus:
 	farcall ResetPlayerDamageTakenThisTurn
+	call SpeedCheckWhoGoesFirst
 	xor a
 	ld [wLastPlayerCounterMove], a
 	ld [wLastPlayerMove], a

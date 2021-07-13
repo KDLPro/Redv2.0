@@ -58,7 +58,7 @@ SwitchOften:
     jr nz, .not_10
     call Random
     cp 15 percent + 1
-    jr c, .switch
+    jp c, LoadMonToSwitchTo
     jp DontSwitch
 .not_10
 
@@ -66,7 +66,7 @@ SwitchOften:
     jr nz, .not_20
     call Random
     cp 25 percent - 1
-    jr c, .switch
+    jr c, LoadMonToSwitchTo
     jp DontSwitch
 .not_20
 
@@ -74,15 +74,8 @@ SwitchOften:
 	call Random
 	cp 10 percent
 	jp c, DontSwitch
-
-.switch
-	ld a, [wEnemySwitchMonParam]
-	and $f
-	inc a
-	; In register 'a' is the number (1-6) of the mon to switch to
-	ld [wEnemySwitchMonIndex], a
-	jp AI_TrySwitch
-
+	jr LoadMonToSwitchTo
+	
 SwitchRarely:
 	ld a, [wEnemySwitchMonParam]
 	and $f0
@@ -92,7 +85,7 @@ SwitchRarely:
 	jr nz, .not_10
 	call Random
 	cp 8 percent
-	jr c, .switch
+	jr c, LoadMonToSwitchTo
 	jp DontSwitch
 .not_10
 
@@ -100,7 +93,7 @@ SwitchRarely:
 	jr nz, .not_20
 	call Random
 	cp 12 percent
-	jr c, .switch
+	jr c, LoadMonToSwitchTo
 	jp DontSwitch
 .not_20
 
@@ -108,13 +101,7 @@ SwitchRarely:
 	call Random
 	cp 79 percent - 1
 	jp c, DontSwitch
-
-.switch
-	ld a, [wEnemySwitchMonParam]
-	and $f
-	inc a
-	ld [wEnemySwitchMonIndex], a
-	jp AI_TrySwitch
+	jr LoadMonToSwitchTo
 
 SwitchSometimes:
 	call Random
@@ -130,7 +117,7 @@ SwitchSometimes:
 	jr nz, .not_10
 	call Random
 	cp 20 percent - 1
-	jr c, .switch
+	jr c, LoadMonToSwitchTo
 	jp DontSwitch
 .not_10
 
@@ -138,7 +125,7 @@ SwitchSometimes:
 	jr nz, .not_20
 	call Random
 	cp 50 percent + 1
-	jr c, .switch
+	jr c, LoadMonToSwitchTo
 	jp DontSwitch
 .not_20
 
@@ -147,12 +134,58 @@ SwitchSometimes:
 	cp 40 percent - 1
 	jp c, DontSwitch
 
-.switch
+LoadMonToSwitchTo:
 	ld a, [wEnemySwitchMonParam]
 	and $f
 	inc a
+	; In register 'a' is the number (1-6) of the mon to switch to
 	ld [wEnemySwitchMonIndex], a
+	ld d, 1
+	call CheckGlitchMon
+	ret z
 	jp AI_TrySwitch
+	
+CheckGlitchMonAfterFaint:
+	ld a, [wEnemyAISwitchScore]
+	inc a
+	ld d, 0
+	; fallthrough
+CheckGlitchMon:
+	; Prevent Glitch Pokémon
+	ld b, a
+	ld a, [wOTPartyCount]
+	cp b
+	jr c, .force_return_z
+	ld a, [wCurOTMon]
+	inc a
+	cp b
+	ret z
+	; Check if the mon to switch to has 0 HP
+	ld hl, wOTPartyMon1
+.loop_check_mon
+	ld a, b
+	cp d
+	jr z, .check_hp
+	inc d
+	push bc
+	ld bc, PARTYMON_STRUCT_LENGTH
+	add hl, bc
+	pop bc
+	jr .loop_check_mon
+
+.check_hp
+	push bc
+	ld bc, MON_HP
+	add hl, bc
+	ld a, [hli]
+	or [hl]
+	pop bc
+	ret
+	
+.force_return_z
+	ld a, 0
+	and a
+	ret
 
 CheckSubstatusCantRun: ; unreferenced
 	ld a, [wEnemySubStatus5]

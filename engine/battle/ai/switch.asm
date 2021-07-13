@@ -210,29 +210,10 @@ CheckAbleToSwitch:
     call FindAliveEnemyMonsWithASuperEffectiveMove
 	
 .do_switch_1
-    ld a, e
-    cp 2
-    jr nz, .not_2
-	
     ld a, [wEnemyAISwitchScore]
     add $30 ; maximum chance
     ld [wEnemySwitchMonParam], a
     ret
-	
-.not_2
-	call FindAliveEnemyMons
-	sla c
-	sla c
-	ld b, $ff
-
-.loop1
-	inc b
-	sla c
-	jr nc, .loop1
-	ld a, b
-	add $30 ; maximum chance
-	ld [wEnemySwitchMonParam], a
-	ret
 
 .checkmatchups
 	 ; Check if AI's Pokémon gets knocked out
