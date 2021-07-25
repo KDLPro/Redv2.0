@@ -32,6 +32,7 @@ AI_SwitchOrTryItem:
 	call AddNTimes
 
 .ok
+	farcall CountConsecutiveTurnsDealLowDmg
 	bit SWITCH_OFTEN_F, [hl]
 	jp nz, SwitchOften
 	bit SWITCH_RARELY_F, [hl]
@@ -45,91 +46,66 @@ DontSwitch:
 	ret
 
 SwitchOften:
-	call Random
-	cp 40 percent + 1
+	 ; Reroll if player is not switching
+	ld a, [wPlayerIsSwitching]
+	and a
+	jr z, .reroll_predict
+	 ; Do not reroll if player is recharging
+	 ; or locked on to a move
+	farcall CheckPlayerRechageOrLockedOn
+	jp nz, .check_switch_param
+	 ; Check if player is incentivised to switch
+	ld a, [wEnemyAISwitchScore]
+	cp 10
 	jr c, .check_switch_param
-	callfar CheckAbleToSwitch
+	 ; Reroll to account for prediction
+	call Random
+	cp 50 percent + 1
+	jr c, .reroll
+	jr .check_switch_param
+	
+.reroll_predict
+	 ; Reroll target switch Pokémon
+	farcall PredictUsersMove
+.reroll
+	farcall CheckAbleToSwitch
 .check_switch_param
 	ld a, [wEnemySwitchMonParam]
 	and $f0
 	jp z, DontSwitch
 	
-    cp $10
-    jr nz, .not_10
-    call Random
-    cp 15 percent + 1
-    jp c, LoadMonToSwitchTo
-    jp DontSwitch
-.not_10
-
-    cp $20
-    jr nz, .not_20
-    call Random
-    cp 25 percent - 1
-    jr c, LoadMonToSwitchTo
-    jp DontSwitch
-.not_20
-
-	; $30
-	call Random
-	cp 10 percent
-	jp c, DontSwitch
-	jr LoadMonToSwitchTo
+	jp LoadMonToSwitchTo
 	
 SwitchRarely:
 	ld a, [wEnemySwitchMonParam]
 	and $f0
 	jp z, DontSwitch
-
-	cp $10
-	jr nz, .not_10
-	call Random
-	cp 8 percent
-	jr c, LoadMonToSwitchTo
-	jp DontSwitch
-.not_10
-
-	cp $20
-	jr nz, .not_20
-	call Random
-	cp 12 percent
-	jr c, LoadMonToSwitchTo
-	jp DontSwitch
-.not_20
-
-	; $30
+	
 	call Random
 	cp 79 percent - 1
 	jp c, DontSwitch
-	jr LoadMonToSwitchTo
+	jp LoadMonToSwitchTo
 
 SwitchSometimes:
+	 ; Check if player is incentivised to switch
+	ld a, [wEnemyAISwitchScore]
+	cp 10
+	jr c, .check_switch_param
+	 ; Do not reroll if player is recharging
+	 ; or locked on to a move
+	farcall CheckPlayerRechageOrLockedOn
+	jp nz, .check_switch_param
+	 ; Reroll to account for prediction
 	call Random
 	cp 50 percent + 1
 	jr c, .check_switch_param
-	callfar CheckAbleToSwitch
+	 ; Reroll target switch Pokémon
+	farcall CheckAbleToSwitch
 .check_switch_param
 	ld a, [wEnemySwitchMonParam]
 	and $f0
 	jp z, DontSwitch
-
-	cp $10
-	jr nz, .not_10
-	call Random
-	cp 20 percent - 1
-	jr c, LoadMonToSwitchTo
-	jp DontSwitch
-.not_10
-
-	cp $20
-	jr nz, .not_20
-	call Random
-	cp 50 percent + 1
-	jr c, LoadMonToSwitchTo
-	jp DontSwitch
-.not_20
-
-	; $30
+	
 	call Random
 	cp 40 percent - 1
 	jp c, DontSwitch
@@ -138,8 +114,13 @@ LoadMonToSwitchTo:
 	ld a, [wEnemySwitchMonParam]
 	and $f
 	inc a
-	; In register 'a' is the number (1-6) of the mon to switch to
+	 ; In register 'a' is the number (1-6) of the mon to switch to
 	ld [wEnemySwitchMonIndex], a
+	 ; Remove glitched Pokémon
+	and a
+	ret z
+	cp 7
+	ret nc
 	ld d, 1
 	call CheckGlitchMon
 	ret z
@@ -151,7 +132,7 @@ CheckGlitchMonAfterFaint:
 	ld d, 0
 	; fallthrough
 CheckGlitchMon:
-	; Prevent Glitch Pokémon
+; Prevent Glitch Pokémon
 	ld b, a
 	ld a, [wOTPartyCount]
 	cp b
@@ -751,8 +732,8 @@ AI_Switch:
 .skiptext
 	ld a, 1
 	ld [wBattleHasJustStarted], a
-	callfar NewEnemyMonStatus
-	callfar ResetEnemyStatLevels
+	farcall NewEnemyMonStatus
+	farcall ResetEnemyStatLevels
 	ld hl, wPlayerSubStatus1
 	res SUBSTATUS_IN_LOVE, [hl]
 	farcall EnemySwitch

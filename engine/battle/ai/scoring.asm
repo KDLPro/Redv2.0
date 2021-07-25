@@ -390,13 +390,22 @@ AI_Smart_EffectHandlers:
 	db -1 ; end
 
 AI_Smart_Sleep:
-; Greatly encourage sleep inducing moves if the enemy has either Dream Eater or Nightmare.
+; Greatly encourage sleep inducing moves if the enemy has either Dream Eater or Nightmare,
+; has low HP, or if the enemy has bad matchup.
 ; 50% chance to greatly encourage sleep inducing moves otherwise.
 
 	ld b, EFFECT_DREAM_EATER
 	call AIHasMoveEffect
 	jr c, .encourage
 
+	farcall CheckAbleToSwitch
+	ld a, [wEnemyAISwitchScore]
+	cp 10
+	jr nc, .encourage
+	
+	call AICheckEnemyQuarterHP
+	jr nc, .encourage
+	
 	ld b, EFFECT_NIGHTMARE
 	call AIHasMoveEffect
 	ret nc
@@ -938,7 +947,8 @@ AI_Smart_ForceSwitch:
 	ret
 	
 ; TO-DO: Encourage this move if there are spikes/rocks
-; and you have bad matchup against opponent.
+; and you have bad matchup against opponent and discourage
+; otherwise.
 
 .encourage
     call AI_80_20
@@ -946,10 +956,16 @@ AI_Smart_ForceSwitch:
 
     jp AI_Encourage_Greatly
 
-AI_Smart_Heal:
 AI_Smart_MorningSun:
 AI_Smart_Synthesis:
 AI_Smart_Moonlight:
+; 80% to greatly discourage this move if weather is raining, sandstorm, (and hail, to be added).
+	ld a, [wBattleWeather]
+	cp WEATHER_RAIN
+	jp z, AI_Discourage_Greatly
+	cp WEATHER_SANDSTORM
+	jp z, AI_Discourage_Greatly
+AI_Smart_Heal:
 ; 80% chance to greatly encourage this move if enemy's HP is below 25%.
 ; 50% chance to encourage this move if enemy's HP is between 25% and 50%.
 ; Discourage otherwise.
@@ -2151,11 +2167,11 @@ AI_Smart_Rollout:
 	cp BASE_STAT_LEVEL + 1
 	jr nc, .maybe_discourage
 
-; 80% chance to greatly encourage this move otherwise.
+; 80% chance to greatly discourage this move otherwise.
 	call Random
 	cp 79 percent - 1
 	ret nc
-	jp AI_Encourage_Greatly
+	jp AI_Discourage_Greatly
 
 .maybe_discourage
 	call AI_80_20
@@ -2244,17 +2260,22 @@ AI_Smart_BatonPass:
 	jp AI_Discourage_Greatly
 
 AI_Smart_Pursuit:
-; 50% chance to greatly encourage this move if player's HP is below 25%.
+; 50% chance to greatly encourage this move if player's HP is below 25%
+; or if player may switch.
 ; 80% chance to discourage this move otherwise.
 
 	call AICheckPlayerQuarterHP
 	jr nc, .encourage
+	farcall CheckAbleToSwitch
+	ld a, [wEnemyAISwitchScore]
+	cp 10
+	jr c, .encourage
 	call AI_80_20
 	ret c
 	jp AI_Discourage
 
 .encourage
-	call AI_50_50
+	call AI_60_40
 	ret c
 	jp AI_Encourage_Greatly
 

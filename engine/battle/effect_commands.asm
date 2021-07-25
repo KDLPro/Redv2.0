@@ -1542,8 +1542,6 @@ BattleCommand_ResetTypeMatchup:
 	ld [wTypeMatchup], a
 	ret
 
-INCLUDE "engine/battle/ai/switch.asm"
-
 INCLUDE "data/types/type_matchups.asm"
 
 BattleCommand_DamageVariation:
@@ -5181,7 +5179,7 @@ BattleCommand_ForceSwitch:
 	jp .succeed
 
 .trainer
-	call FindAliveEnemyMons
+	farcall FindAliveEnemyMons
 	jr c, .switch_fail
 	ld a, [wEnemyGoesFirst]
 	and a

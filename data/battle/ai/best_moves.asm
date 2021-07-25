@@ -1,0 +1,21 @@
+BestMovesOfEachType:
+; Used for predicting STAB moves
+	db NORMAL,	 		DOUBLE_EDGE
+	db FIGHTING, 		CROSS_CHOP
+	db FLYING,	 		SKY_ATTACK
+	db POISON, 			SLUDGE_BOMB
+	db GROUND, 			EARTHQUAKE
+	db ROCK, 			ROCK_SLIDE
+	db BUG,				X_SCISSOR
+	db GHOST, 			SHADOW_BALL
+	db STEEL, 			IRON_TAIL
+	db FIRE,			FIRE_BLAST
+	db WATER,			SURF
+	db GRASS, 			GIGA_DRAIN
+	db ELECTRIC,		THUNDERBOLT
+	db PSYCHIC_TYPE,	PSYCHIC_M
+	db ICE,				ICE_BEAM
+	db DRAGON,			OUTRAGE
+	db DARK,			PURSUIT
+	db -1
+	

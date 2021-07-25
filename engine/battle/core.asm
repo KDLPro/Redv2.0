@@ -112,6 +112,11 @@ DoBattle:
 	call SpikesDamage
 
 .not_linked_2
+	farcall CheckPlayerMoveTypeMatchups
+	farcall CheckAbleToSwitch
+	xor a
+	ld [wEnemyIsSwitching], a
+	ld [wPlayerIsSwitching], a
 	jp BattleTurn
 
 
@@ -164,17 +169,12 @@ BattleTurn:
 	call CheckContestBattleOver
 	jp c, .quit
 
-	ld a, [wPlayerIsSwitching]
-	and a
-	jr z, .cont
 	xor a
 	ld hl, wPlayerUsedMoves
 	ld [hli], a
 	ld [hli], a
 	ld [hli], a
 	ld [hl], a
-.cont
-	farcall DidEnemySwitch
 	xor a
 	ld [wPlayerIsSwitching], a
 	ld [wEnemyIsSwitching], a
@@ -232,7 +232,10 @@ BattleTurn:
 	and a
 	jr nz, .quit
 
+	farcall DidEnemySwitch
 	call HandleBetweenTurnEffects
+	farcall CheckPlayerMoveTypeMatchups
+	farcall CheckAbleToSwitch
 	ld a, [wBattleEnded]
 	and a
 	jr nz, .quit
@@ -2289,6 +2292,7 @@ HandleEnemyMonFaint:
 	ld a, BATTLEPLAYERACTION_USEITEM
 	ld [wBattlePlayerAction], a
 	call HandleEnemySwitch
+	call nz, FaintNoSwitch
 	jp z, WildFled_EnemyFled_LinkBattleCanceled
 	jr DoubleSwitch
 
@@ -2296,9 +2300,17 @@ HandleEnemyMonFaint:
 	ld a, BATTLEPLAYERACTION_USEITEM
 	ld [wBattlePlayerAction], a
 	call HandleEnemySwitch
+	call nz, FaintNoSwitch
 	jp z, WildFled_EnemyFled_LinkBattleCanceled
 	xor a ; BATTLEPLAYERACTION_USEMOVE
 	ld [wBattlePlayerAction], a
+	ret
+	
+FaintNoSwitch:
+	push af
+	xor a
+	ld [wEnemyIsSwitching], a
+	pop af
 	ret
 
 DoubleSwitch:
@@ -3368,15 +3380,19 @@ EnemySwitch_SetMode:
 	call FindMonInOTPartyToSwitchIntoBattle
 	ld a, [wEnemyEffectivenessVsPlayerMons]
 	and a
-	jr nz, .try_switch
+	jr nz, .test_switch
 	farcall FindAliveEnemyMons
     farcall FindEnemyMonsWithAtLeastQuarterMaxHP
 	farcall FindEnemyMonsThatResistPlayer
     farcall FindAliveEnemyMonsWithASuperEffectiveMove
+.test_switch
 	farcall CheckGlitchMonAfterFaint
 	jr z, .glitched
 	ld a, [wEnemyAISwitchScore]
 	inc a
+	 ; Remove glitched Pokémon
+	cp 6
+	jr nc, .glitched
 	ld b, a
 .try_switch
 	; 'b' contains the PartyNr of the mon the AI will switch to
@@ -5123,7 +5139,6 @@ BattleMenu:
 	ret c
 
 .next
-	farcall CheckAbleToSwitch
 	ld a, $1
 	ldh [hBGMapMode], a
 	ld a, [wBattleMenuCursorPosition]

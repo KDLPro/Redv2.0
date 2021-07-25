@@ -1,3 +1,5 @@
+INCLUDE "engine/battle/ai/switch.asm"
+
 CheckSwitchOftenOrSometimes:
 	ld hl, TrainerClassAttributes + TRNATTR_AI_ITEM_SWITCH
     
@@ -26,6 +28,7 @@ CheckSwitchOften:
     bit SWITCH_OFTEN_F, a
     ret 
 	
+	
 CheckLoweredStatsExceptSpd:
 	 ; Checks if non-spd stat (because of Curse) is below -2
     ld a, [wEnemyAtkLevel]
@@ -41,6 +44,7 @@ CheckLoweredStatsExceptSpd:
     cp BASE_STAT_LEVEL - 2
 	ret
 	
+	
 CheckToxicEncoreCount:
 	 ; Checks if Toxic Count is at least 3
 	ld a, [wEnemyToxicCount]
@@ -51,6 +55,7 @@ CheckToxicEncoreCount:
 	cp 3
 	ret
 	
+	
 CountConsecutiveTurnsDealLowDmg:
 	ld a, [wEnemyTurnsTaken]
 	and a
@@ -58,9 +63,17 @@ CountConsecutiveTurnsDealLowDmg:
 	call CheckTurnsToKOPlayer
 	jr c, .dealt_dmg
 	jr z, .dealt_dmg
+	ld a, [wLastEnemyCounterMove]
+	dec a
+	ld hl, Moves + MOVE_POWER
+	call AIGetMoveAttr
+	and a
+	jr z, .status
 	ld a, [wEnemyCantDealDmgTurnsCnsctvly]
 	inc a
 	ld [wEnemyCantDealDmgTurnsCnsctvly], a
+	ret
+.status
 	ret
 .dealt_dmg
 	xor a
@@ -72,7 +85,9 @@ CheckConsecutiveTurnsDealLowDmg:
 	cp 2
 	ret
 	
+	
 CheckStatBoosts:
+; Check both player's and enemy's stat boosts
 	call CheckPlayerStatBoosts
 	call CheckEnemyStatBoosts
 	ret
@@ -110,6 +125,7 @@ CheckEnemyStatBoosts:
 	add e	 ; e holds the stat buffs
 	ld e, a
 	jr .checkenemybuff
+	
 	
 CheckTurnsToKOAI:
 	ld a, [wEnemyMonJustFainted]
@@ -180,6 +196,7 @@ CheckTurnsToKOPlayer:
 	cp a, 4
 	ret
 	
+	
 CheckPlayerRechageOrLockedOn:
 	ld hl, wPlayerSubStatus3
 	bit SUBSTATUS_RAMPAGE, [hl]
@@ -198,16 +215,9 @@ CheckPlayerRechageOrLockedOn:
 	and a
 	ret
 .switch
-	ld a, [wEnemyTurnsTaken]
-	and a
-	jr z, .stay_in
-	call Random
-	cp 50 percent + 1
-	jr c, .stay_in
 	ld a, 1
 	and a
 	ret
-
 	
 CalcPlayerDamageTakenThisTurn:
 	ld a, [wCurDamage]
@@ -234,6 +244,7 @@ ResetEnemyDamageTakenThisTurn:
 	ld [wEnemyDamageTakenThisTurn], a
 	ld [wEnemyDamageTakenThisTurn + 1], a
 	ret
+
 	
 SetEnemyMonJustFainted:
 	ld a, [wEnemyMonJustFainted]
@@ -243,6 +254,7 @@ SetEnemyMonJustFainted:
 	dec a
 	ld [wEnemyMonsLeft], a
 	ret
+	
 	
 DidEnemySwitch:
 	ld a, [wEnemyIsSwitching]
@@ -259,7 +271,8 @@ DidEnemySwitch:
 	ld [wEnemyConsecutiveSwitches], a
 	ret
 	
-CheckNumberOfEnemyMons:
+	
+CheckEnemyMonsLessThanThree:
 	 ; returns c if enemy mons alive is less than 3
 	ld a, [wEnemyMonsLeft]
 	cp 3
