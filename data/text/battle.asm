@@ -902,6 +902,12 @@ DidntAffect1Text:
 	text "It didn't affect"
 	line "<TARGET>!"
 	prompt
+	
+AvoidStatusText:
+	text "<TARGET>"
+	line "avoided the"
+	cont "attack!"
+	prompt
 
 DidntAffect2Text:
 	text "It didn't affect"
