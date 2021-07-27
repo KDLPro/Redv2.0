@@ -464,10 +464,11 @@ Paragraph::
 AutoParagraph::
 	push de
 	call Text_WaitBGMap
-	ld c, 5
+	ld c, 10
 	call DelayFrames
 	hlcoord TEXTBOX_INNERX, TEXTBOX_INNERY
 	lb bc, TEXTBOX_INNERH - 1, TEXTBOX_INNERW
+	call ClearBox
 	ld c, 20
 	call DelayFrames
 	hlcoord TEXTBOX_INNERX, TEXTBOX_INNERY
