@@ -398,7 +398,9 @@ AI_Smart_Sleep:
 	call AIHasMoveEffect
 	jr c, .encourage
 
+	push hl
 	farcall CheckAbleToSwitch
+	pop hl
 	ld a, [wEnemyAISwitchScore]
 	cp 10
 	jr nc, .encourage
@@ -928,7 +930,9 @@ AI_Smart_ForceSwitch:
 ; 80% chance to greatly encourage this move if player has 
 ; more than 2 stat boosts.
 
+	push hl
 	farcall CheckPlayerStatBoosts
+	pop hl
 	ld a, b
 	cp 2
 	jr nc, .encourage
@@ -1033,7 +1037,9 @@ AI_Smart_Reflect:
 
 AI_Smart_Ohko:
 ; Greatly encourage this move if enemy has 1 Pokémon left. 
+	push hl
 	farcall FindAliveEnemyMons
+	pop hl
     jr nc, .level_check
 	jp AI_Encourage_Greatly
 
@@ -1211,7 +1217,9 @@ AI_Smart_Paralyze:
 	call AICheckPlayerQuarterHP
 	jr nc, .discourage
 	
+	push hl
 	farcall CheckPlayerMoveTypeMatchups
+	pop hl
 	ld a, [wEnemyAISwitchScore]
 	cp BASE_AI_SWITCH_SCORE
 	jr c, .encourage
@@ -2246,10 +2254,14 @@ AI_Smart_BatonPass:
 	pop hl
 	ret c
 	
+	push hl
 	farcall FindAliveEnemyMons
+	pop hl
     jr c, .discourage
 	
+	push hl
 	farcall CheckEnemyStatBoosts
+	pop hl
 	 ; Checks if AI has no boosts
 	ld a, e
 	and a
@@ -2266,7 +2278,9 @@ AI_Smart_Pursuit:
 
 	call AICheckPlayerQuarterHP
 	jr nc, .encourage
+	push hl
 	farcall CheckAbleToSwitch
+	pop hl 
 	ld a, [wEnemyAISwitchScore]
 	cp 10
 	jr c, .encourage

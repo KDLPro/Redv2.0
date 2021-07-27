@@ -403,7 +403,7 @@ CheckAbleToSwitch:
 	cp SONICBOOM
 	jp z, .find_immune
 	cp NIGHT_SHADE
-	jr z, .find_immune
+	jp z, .find_immune
 .find_super_effective
     call FindAliveEnemyMons
     call FindEnemyMonsWithAtLeastQuarterMaxHP
@@ -428,12 +428,18 @@ CheckAbleToSwitch:
 	call CheckConsecutiveTurnsDealLowDmg
 	jp nc, .smartcheck
 	
-	farcall AICheckEnemyQuarterHP
+	farcall CheckEnemyQuarterHP
 	jp nc, .smartcheck
 	
 	ld a, [wEnemyAISwitchScore]
 	cp 10
 	jp nc, .no_switch
+	
+	call CheckEnemyMoveMatchups
+	
+	ld a, [wEnemyAISwitchScore]
+	cp 11
+	jp c, .smartcheck
 
 	ld a, [wLastPlayerCounterMove]
 	and a
@@ -475,7 +481,7 @@ CheckAbleToSwitch:
 	
 .no_need_big_brain
 	call FiftyPercentRoll
-	jr c, .find_super_effective
+	jp c, .find_super_effective
 
 
 .constant_damage_find_immune
@@ -496,20 +502,17 @@ CheckAbleToSwitch:
 	ld a, [wCurOTMon]
 	push af
 ; Find target Pokémon to switch to
-	ld hl, wOTPartySpecies
-	ld a, [wEnemySwitchMonParam]
-	and $f
-	ld [wCurOTMon], a
-	inc a
-	ld b, a
-.loop
-	ld a, [hli]
-	ld [wCurSpecies], a
-	call GetBaseData
-	dec b
-	jr z, .check_target_type_matchup
-	jr .loop
-.check_target_type_matchup 
+    ld hl, wOTPartySpecies
+    ld a, [wEnemySwitchMonParam]
+    and $f
+    ld b, 0
+    ld c, a
+    add hl, bc
+    ld [wCurOTMon], a
+
+    ld a, [hl]
+    ld [wCurSpecies], a
+    call GetBaseData
 	 ; If the player's last move is damaging...
 	ld a, [wLastPlayerCounterMove]
 	dec a
@@ -1136,4 +1139,27 @@ AICheckTypeMatchup:
 	ret
 
 INCLUDE "data/types/ai_type_matchups.asm"
+
+CheckEnemyQuarterHP:
+	push hl
+	push de
+	push bc
+	ld hl, wEnemyMonHP
+	ld b, [hl]
+	inc hl
+	ld c, [hl]
+	sla c
+	rl b
+	sla c
+	rl b
+	inc hl
+	inc hl
+	ld a, [hld]
+	cp c
+	ld a, [hl]
+	sbc b
+	pop bc
+	pop de
+	pop hl
+	ret
 
