@@ -407,13 +407,14 @@ CheckEnemyTurn:
 	ld [wEnemyMonStatus], a
 	and a
 	jr z, .woke_up
-
+	
+	ld de, ANIM_SLP
+	call FarPlayBattleAnimation
 	ld hl, FastAsleepText
 	call StdBattleTextbox
 	xor a
 	ld [wNumHits], a
-	ld de, ANIM_SLP
-	call FarPlayBattleAnimation
+	
 	jr .fast_asleep
 
 .woke_up
@@ -460,6 +461,9 @@ CheckEnemyTurn:
 	jp z, .defrost
 
 .frozen
+	ld de, ANIM_FRZ
+	call FarPlayBattleAnimation
+
 	ld hl, FrozenSolidText
 	call StdBattleTextbox
 	
