@@ -211,6 +211,9 @@ BattleCommand_CheckTurn:
 	jp z, .defrost
 	
 .frozen
+	ld de, ANIM_FRZ
+	call FarPlayBattleAnimation
+
 	ld hl, FrozenSolidText
 	call StdBattleTextbox
 
@@ -3819,6 +3822,9 @@ BattleCommand_Poison:
 
 	call CheckSubstituteOpp
 	jr nz, .failed
+	
+	ld hl, AvoidStatusText
+	
 	ld a, [wAttackMissed]
 	and a
 	jr nz, .failed
@@ -6405,8 +6411,8 @@ PrintDidntAffect:
 
 PrintDidntAffect2:
 	call AnimateFailedMove
-	ld hl, DidntAffect1Text ; 'it didn't affect'
-	ld de, DidntAffect2Text ; 'it didn't affect'
+	ld hl, AvoidStatusText ; 'it didn't affect'
+	ld de, ProtectingItselfText ; Protect Text
 	jp FailText_CheckOpponentProtect
 
 PrintParalyze:

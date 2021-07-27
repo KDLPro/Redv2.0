@@ -222,6 +222,9 @@ StdBattleTextbox::
 	rst Bankswitch
 
 	call BattleTextbox
+	
+	ld c, 5
+	call DelayFrames
 
 	pop af
 	rst Bankswitch

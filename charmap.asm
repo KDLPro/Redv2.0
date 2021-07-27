@@ -35,6 +35,8 @@
 	charmap "<TRAINER>", $5d ; "TRAINER"
 	charmap "<ROCKET>",  $5e ; "ROCKET"
 	charmap "<DEXEND>",  $5f
+	charmap "<ATPRA>",	 $60
+	charmap "<ATDNE>",	 $61
 
 ; Actual characters (from gfx/font/font_battle_extra.png)
 
