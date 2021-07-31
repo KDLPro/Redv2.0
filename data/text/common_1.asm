@@ -1115,10 +1115,10 @@ _EnemyUsedOnText::
 	line "used @"
 	text_ram wMonOrItemNameBuffer
 	text_start
-	cont "on @"
+	scroll "on @"
 	text_ram wEnemyMonNick
 	text "!"
-	prompt
+	autodone
 
 _ThatCantBeUsedRightNowText:: ; unreferenced
 	text "That can't be used"

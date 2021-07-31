@@ -719,11 +719,11 @@ Text_BattleEffectActivate::
 _BattleStatWentWayUpText::
 	text_pause
 	text "<SCROLL>rose sharply!"
-	prompt
+	autodone
 
 _BattleStatWentUpText::
 	text " rose!"
-	prompt
+	autodone
 
 Text_BattleFoeEffectActivate::
 	text "<TARGET>'s"
@@ -736,11 +736,11 @@ Text_BattleFoeEffectActivate::
 _BattleStatSharplyFellText::
 	text_pause
 	text "<SCROLL>harshly fell!"
-	prompt
+	autodone
 
 _BattleStatFellText::
 	text " fell!"
-	prompt
+	autodone
 
 Text_BattleUser::
 	text "<USER>@"
@@ -749,32 +749,32 @@ Text_BattleUser::
 _BattleMadeWhirlwindText::
 	text_start
 	line "made a whirlwind!"
-	prompt
+	autodone
 
 _BattleTookSunlightText::
 	text_start
 	line "took in sunlight!"
-	prompt
+	autodone
 
 _BattleLoweredHeadText::
 	text_start
 	line "lowered its head!"
-	prompt
+	autodone
 
 _BattleGlowingText::
 	text_start
 	line "is glowing!"
-	prompt
+	autodone
 
 _BattleFlewText::
 	text_start
 	line "flew up high!"
-	prompt
+	autodone
 
 _BattleDugText::
 	text_start
 	line "dug a hole!"
-	prompt
+	autodone
 
 _ActorNameText::
 	text "<USER>@"
