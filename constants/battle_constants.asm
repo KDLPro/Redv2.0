@@ -71,11 +71,11 @@ NUM_BATTLE_STATS EQU NUM_STATS - 1 ; don't count HP
 STAT_MIN_NORMAL EQU 5
 STAT_MIN_HP EQU 10
 
-MAX_STAT_VALUE EQU 4095
+MAX_STAT_VALUE EQU 8192
 
 ; shiny dvs
-ATKDEFDV_SHINY EQU $EA
-SPDSPCDV_SHINY EQU $AA
+ATKDEFDV_SHINY EQU $EF
+SPDSPCDV_SHINY EQU $FF
 
 ; battle classes (wBattleMode values)
 	const_def 1
@@ -152,7 +152,7 @@ SPDSPCDV_SHINY EQU $AA
 	const ENEMY_LAST_MOVE
 
 ; status condition bit flags
-SLP EQU %111 ; 0-4 turns
+SLP EQU %011 ; 1-3 turns
 	const_def 3
 	const PSN
 	const BRN

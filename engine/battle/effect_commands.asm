@@ -3709,34 +3709,16 @@ BattleCommand_SleepTarget:
 	jr nz, .fail
 
 	call AnimateCurrentMove
-	ld b, SLP
-	ld a, [wInBattleTowerBattle]
-	and a
-	jr z, .random_sleep
-	ld b, %011
+	ld b, %011 ; 3
 
-.random_sleep
-	call BattleRandom
-	cp 51 percent
-	jr c, .two_turns
-	cp 86 percent
-	jr c, .three_turns
-	jr .four_turns
-
-.two_turns
-	ld a, 2
-	jr .continue
-	
-.three_turns
-	ld a, 3
-	jr .continue
-	
-.four_turns
-	ld a, 4
-	
-.continue
-	inc a
-	ld [de], a
+.random_loop
+    call BattleRandom
+    and b
+    jr z, .random_loop
+	cp b
+    jr z, .random_loop
+    inc a
+    ld [de], a
 	call UpdateOpponentInParty
 	call RefreshBattleHuds
 
