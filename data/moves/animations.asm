@@ -270,6 +270,7 @@ BattleAnimations::
 	dw BattleAnim_InLove
 	dw BattleAnim_InSandstorm
 	dw BattleAnim_InNightmare
+	dw BattleAnim_InCurse
 	dw BattleAnim_InWhirlpool
 	dw BattleAnim_InRain
 	dw BattleAnim_InSun
@@ -587,6 +588,15 @@ BattleAnim_InSandstorm:
 	anim_ret
 
 BattleAnim_InNightmare:
+	anim_1gfx ANIM_GFX_ANGELS
+	anim_bgp $1b
+	anim_obp0 $27
+	anim_sound 0, 0, SFX_BUBBLEBEAM
+	anim_obj ANIM_OBJ_IN_NIGHTMARE, 68, 80, $0
+	anim_wait 40
+	anim_ret
+
+BattleAnim_InCurse:
 	anim_1gfx ANIM_GFX_ANGELS
 	anim_sound 0, 0, SFX_BUBBLEBEAM
 	anim_obj ANIM_OBJ_IN_NIGHTMARE, 68, 80, $0
@@ -3214,11 +3224,11 @@ BattleAnim_MindReader:
 	anim_loop 2, .loop
 	anim_wait 32
 	anim_ret
-
+	
 BattleAnim_Nightmare:
-	anim_1gfx ANIM_GFX_ANGELS
+	anim_1gfx ANIM_GFX_ANGELS	
 	anim_bgp $1b
-	anim_obp0 $f
+	anim_obp0 $27
 	anim_obj ANIM_OBJ_NIGHTMARE, 132, 40, $0
 	anim_obj ANIM_OBJ_NIGHTMARE, 132, 40, $a0
 	anim_sound 0, 1, SFX_NIGHTMARE
