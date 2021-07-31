@@ -391,7 +391,7 @@ AI_Smart_EffectHandlers:
 
 AI_Smart_Sleep:
 ; Greatly encourage sleep inducing moves if the enemy has either Dream Eater or Nightmare,
-; has low HP, or if the enemy has bad matchup.
+; has low HP, last move used is NORMAL-type or if the enemy has bad matchup.
 ; 50% chance to greatly encourage sleep inducing moves otherwise.
 
 	ld b, EFFECT_DREAM_EATER
@@ -399,19 +399,41 @@ AI_Smart_Sleep:
 	jr c, .encourage
 
 	push hl
-	farcall CheckAbleToSwitch
+	farcall CheckPlayerMoveTypeMatchups
 	pop hl
 	ld a, [wEnemyAISwitchScore]
-	cp 10
+	cp BASE_AI_SWITCH_SCORE
 	jr nc, .encourage
 	
 	call AICheckEnemyQuarterHP
 	jr nc, .encourage
 	
+	push hl
+	ld a, [wLastPlayerCounterMove]
+	dec a
+	ld hl, Moves + MOVE_POWER
+	call AIGetMoveAttr
+	and a
+	jr z, .effect_move
+	
+	inc hl
+	call AIGetMoveByte
+	ld a, [wBaseType]
+	cp NORMAL
+	jr z, .normal_move_encourage
+	
+	pop hl
 	ld b, EFFECT_NIGHTMARE
 	call AIHasMoveEffect
 	ret nc
+	jr .encourage
+	
+.effect_move
+	pop hl
+	ret
 
+.normal_move_encourage
+	pop hl
 .encourage
 	call AI_50_50
 	ret c
@@ -1905,6 +1927,14 @@ AI_Smart_Curse:
 
 	call AICheckEnemyHalfHP
 	jr nc, .greatly_encourage
+	
+	push hl
+	farcall CheckEnemyMoveMatchups
+	pop hl
+	
+	ld a, [wEnemyAISwitchScore]
+	cp 11
+	jr c, .greatly_encourage
 
 	call AICheckEnemyMaxHP
 	ret nc
@@ -2272,18 +2302,18 @@ AI_Smart_BatonPass:
 	jp AI_Discourage_Greatly
 
 AI_Smart_Pursuit:
-; 50% chance to greatly encourage this move if player's HP is below 25%
+; 60% chance to greatly encourage this move if player's HP is below 25%
 ; or if player may switch.
 ; 80% chance to discourage this move otherwise.
 
 	call AICheckPlayerQuarterHP
 	jr nc, .encourage
 	push hl
-	farcall CheckAbleToSwitch
+	farcall CheckPlayerMoveTypeMatchups
 	pop hl 
 	ld a, [wEnemyAISwitchScore]
-	cp 10
-	jr c, .encourage
+	cp BASE_AI_SWITCH_SCORE
+	jr nc, .encourage
 	call AI_80_20
 	ret c
 	jp AI_Discourage
@@ -2924,6 +2954,8 @@ INCLUDE "data/battle/ai/stall_moves.asm"
 
 
 AI_Aggressive:
+	call AI_60_40
+	ret c
 ; Use whatever does the most damage.
 
 ; Discourage all damaging moves but the one that does the most damage.
@@ -2956,6 +2988,10 @@ AI_Aggressive:
 	pop de
 	pop hl
 
+	dec hl
+	ld a, [hli]
+	cp PURSUIT 
+	call z, PursuitDamage
 ; Update current move if damage is highest so far
 	ld a, [wCurDamage + 1]
 	cp e
@@ -3045,6 +3081,28 @@ AIDamageCalc:
 	farcall EnemyAttackDamage
 	farcall BattleCommand_DamageCalc
 	farcall BattleCommand_Stab
+	ret
+	
+PursuitDamage:
+	call AICheckPlayerQuarterHP
+	jr nc, .calc_pursuit
+	push hl
+	farcall CheckPlayerMoveTypeMatchups
+	pop hl 
+	ld a, [wEnemyAISwitchScore]
+	cp BASE_AI_SWITCH_SCORE
+	ret c
+
+.calc_pursuit
+	ld hl, wCurDamage + 1
+	sla [hl]
+	dec hl
+	rl [hl]
+	ret nc
+
+	ld a, $ff
+	ld [hli], a
+	ld [hl], a
 	ret
 
 INCLUDE "data/battle/ai/constant_damage_effects.asm"

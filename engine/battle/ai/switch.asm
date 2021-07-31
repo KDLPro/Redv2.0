@@ -234,7 +234,7 @@ PredictUsersMove:
 	ld e, a
 .done_checking_matchups
 	ld a, c
-	cp $FF
+	cp $ff
 	jr z, .randomize_type_1
 	call SeventyPercentRoll
 	jr c, .randomize_type_1
@@ -249,7 +249,7 @@ PredictUsersMove:
 	ret
 .randomize_type_1
 	ld a, d
-	cp $FF
+	cp $ff
 	jr z, .randomize_type_2
 	call FiftyPercentRoll
 	jr c, .randomize_type_2
@@ -257,13 +257,13 @@ PredictUsersMove:
 	jr FindMoveBasedOnType
 .randomize_type_2
 	ld a, e
-	cp $FF
+	cp $ff
 	jr z, .check_type_1
 	ld b, e
 	jr FindMoveBasedOnType
 .check_type_1
 	ld a, d
-	cp $FF
+	cp $ff
 	ret z
 	ld b, d
 	jr FindMoveBasedOnType
@@ -395,15 +395,35 @@ CheckAbleToSwitch:
 	jr .checkmatchups
 
 .switch ; Try to switch
-	call FiftyPercentRoll
-	jp nc, .find_immune
 	ld a, [wLastPlayerCounterMove]
 	cp SEISMIC_TOSS
-	jp z, .find_immune
+	jp z, .constant_damage_find_immune
 	cp SONICBOOM
-	jp z, .find_immune
+	jp z, .constant_damage_find_immune
 	cp NIGHT_SHADE
-	jp z, .find_immune
+	jp z, .constant_damage_find_immune
+	
+	ld a, [wEnemyMonType1]
+	cp NORMAL
+	jr nz, .randomize
+	ld a, [wEnemyMonType2]
+	cp NORMAL
+	jr nz, .randomize
+	
+	ld a, [wLastPlayerCounterMove]
+	dec a
+	ld hl, Moves + MOVE_POWER
+	call AIGetMoveAttr
+	and a
+	jr z, .find_super_effective
+	
+	inc hl
+	call AIGetMoveByte
+	cp NORMAL
+	jp z, .find_immune_resist_normal
+.randomize
+	call FiftyPercentRoll
+	jp nc, .find_immune
 .find_super_effective
     call FindAliveEnemyMons
     call FindEnemyMonsWithAtLeastQuarterMaxHP
@@ -429,11 +449,11 @@ CheckAbleToSwitch:
 	jp nc, .smartcheck
 	
 	farcall CheckEnemyQuarterHP
-	jp nc, .smartcheck
+	jp nc, .smartcheck_speed_matchup_check
 	
 	ld a, [wEnemyAISwitchScore]
-	cp 10
-	jp nc, .no_switch
+	cp BASE_AI_SWITCH_SCORE
+	jp nc, .check_move_matchups
 	
 	call CheckEnemyMoveMatchups
 	
@@ -471,7 +491,7 @@ CheckAbleToSwitch:
 	call AICheckTypeMatchup
 	ld a, [wTypeMatchup]
 	cp EFFECTIVE + 1
-	jr c, .checkmatchups2
+	jp c, .checkmatchups2
 	
 .switching
 	 ; Switch out depending on how many times
@@ -488,15 +508,54 @@ CheckAbleToSwitch:
 	 ; Switch out depending on how many times
 	 ; AI switched already. Return z if stay in
 	call .smartcheck_revealed_moves
-	jp z, .no_switch
+	jp z, .no_switch	 
+	 ; try to find a counter to the active Pokémon.
+	call FindEnemyMonsImmuneToOrResistsLastCounterMove
+	ld a, [wEnemyAISwitchScore]
+	cp $ff
+	jp nz, .do_switch
+	
+	call .find_mon_to_switch_resist_se
+	; Check if target switch Pokémon has a super effective move
+	; Return if it has none
+	ld a, e
+	cp 2
+	jp z, .do_switch
+	
+	call FindAliveEnemyMons
+	call FindEnemyMonsWithAtLeastHalfMaxHP
+	jp .do_switch
+	
 .find_immune	 
 	 ; try to find a counter to the active Pokémon.
 	call FindEnemyMonsImmuneToOrResistsLastCounterMove
 	ld a, [wEnemyAISwitchScore]
-	cp $FF
+	cp $ff
 	jp z, .find_super_effective
 	
 	jp .do_switch
+	
+.find_immune_resist_normal
+	call CheckTurnsToKOAI
+	jr c, .immune_resist_switch
+
+	call CheckAbleToSwitch
+	ld a, [wEnemyAISwitchScore]
+	cp BASE_AI_SWITCH_SCORE + 1
+	jp nc, .no_switch
+
+.immune_resist_switch
+	call FindEnemyMonsImmuneToOrResistsLastCounterMove
+	ld a, [wEnemyAISwitchScore]
+	cp $ff
+	jp nz, .do_switch
+	
+	call .find_mon_to_switch_resist_se
+	; Check if target switch Pokémon has a super effective move
+	ld a, e
+	cp 2
+	jp z, .do_switch
+	jp .no_switch
 	
 .find_target_pokemon
 	ld a, [wCurOTMon]
@@ -519,14 +578,15 @@ CheckAbleToSwitch:
 	ld hl, Moves + MOVE_POWER
 	call AIGetMoveAttr
 	and a
-	jr z, .no_need_big_brain
+	jp z, .no_need_big_brain
 	
 	inc hl
 	call AIGetMoveByte
 	ld hl, wBaseType
 	call AICheckTypeMatchup
 	ld a, [wTypeMatchup]
-	cp EFFECTIVE + 1
+	cp EFFECTIVE
+	jr z, .find_resist_no_big_brain
 	jr c, .find_resist_big_brain
 	
 	pop af
@@ -540,10 +600,15 @@ CheckAbleToSwitch:
 	ld [wCurOTMon], a
 	jp .do_switch
 	
+.find_resist_no_big_brain
+	pop af
+	ld [wCurOTMon], a
+	jp .find_resist
+	
 .checkmatchups2
 	ld a, [wPlayerIsSwitching]
 	and a
-	jr nz, .no_need_big_brain
+	jp nz, .no_need_big_brain
 	
 	 ; 50% chance to check target switch Pokémon to "predict"
 	 ; player's prediction #BIGBRAINPLAY
@@ -551,8 +616,8 @@ CheckAbleToSwitch:
 	jr c, .find_target_pokemon
 	
 	ld a, [wEnemyAISwitchScore]
-	cp 10
-	jr nc, .no_switch
+	cp BASE_AI_SWITCH_SCORE
+	jp nc, .no_switch
 	jp .switch
 	
 .find_super_effective_locked_on
@@ -560,7 +625,7 @@ CheckAbleToSwitch:
 	
 	ld a, [wEnemyAISwitchScore]
 	cp 11
-	jr nc, .no_switch
+	jp nc, .no_switch
 	
     call .find_mon_to_switch_resist_se
 	; Check if target switch Pokémon has a super effective move
@@ -572,7 +637,7 @@ CheckAbleToSwitch:
 	 ; try to find a counter to the active Pokémon.
 	call FindEnemyMonsImmuneToOrResistsLastCounterMove
 	ld a, [wEnemyAISwitchScore]
-	cp $FF
+	cp $ff
 	jr z, .no_switch
 	jp .do_switch
 	
@@ -585,11 +650,23 @@ CheckAbleToSwitch:
 	
 .no_last_counter_move
 	ld a, [wEnemyAISwitchScore]
-	cp 10
+	cp BASE_AI_SWITCH_SCORE
 	jr nc, .no_switch
 
 	farcall CheckSwitchOften
-	jr nz, .smartcheck
+	jr nz, .smartcheck_speed_matchup_check
+	jr .no_switch
+	
+.check_move_matchups	
+	call CheckEnemyMoveMatchups
+	
+	ld a, [wEnemyAISwitchScore]
+	cp 11
+	jr nc, .no_switch
+	
+	ld a, [wEnemyConsecutiveSwitches]
+	and a
+	jp z, .smartcheck
 	jr .no_switch
 	
 .smartcheck_speed_matchup_check
@@ -603,7 +680,7 @@ CheckAbleToSwitch:
 	ld a, [wEnemyAISwitchScore]
 	cp 11
 	jr nc, .less_than_three
- ; Switch check only for SWITCH_OFTEN AI
+ ; Switch check only for SWITCH_OFTEN or SWITCH_COMPETITIVE AI
 .smartcheck:
 	ld a, [wEnemyConsecutiveSwitches]
 	cp 3
@@ -627,6 +704,7 @@ CheckAbleToSwitch:
     xor a
     ld [wEnemySwitchMonParam], a
 	ret
+
 	
  ; Switch check for revealed moves
 .smartcheck_revealed_moves:
@@ -931,6 +1009,19 @@ FindEnemyMonsWithASuperEffectiveMove:
 	ld [wEnemyAISwitchScore], a
 	pop bc
 	ret
+	
+FindEnemyMonsWithASuperEffectiveMoveSwitch:
+	call FindEnemyMonsWithASuperEffectiveMove
+
+	ld a, e
+	cp 2
+	jr nz, .no_se ; no move is super-effective
+	ret
+	
+.no_se
+	ld a, $f4
+	ld [wEnemyAISwitchScore], a
+	ret
 
 FindEnemyMonsThatResistPlayer:
 	push bc
@@ -1045,6 +1136,63 @@ FindEnemyMonsWithAtLeastQuarterMaxHP:
 	and c
 	ld c, a
 	ret
+	
+FindEnemyMonsWithAtLeastHalfMaxHP:
+	ld hl, wOTPartyMon1HP
+	ld a, [wOTPartyCount]
+	ld b, a
+	ld c, 1 << (PARTY_LENGTH - 1)
+	ld d, 0
+	ld a, $FF
+	ld [wEnemyAISwitchScore], a
+
+.loop
+	ld a, [wCurOTMon]
+	cp d
+	push hl
+	jr z, .next
+
+	push hl
+	push bc
+	; If the Pokemon has at least half max HP
+	ld bc, MON_HP
+	add hl, bc
+	pop bc
+	push de
+	push bc
+	ld b, [hl]
+	inc hl
+	ld c, [hl]
+	sla c
+	rl b
+	inc hl
+	inc hl
+	ld a, [hld]
+	cp c
+	ld a, [hl]
+	sbc b
+	pop bc
+	pop de
+	pop hl
+	jr c, .next
+
+	; ... encourage that Pokemon.
+	ld a, [wOTPartyCount]
+	sub b
+	ld [wEnemyAISwitchScore], a
+.next
+	pop hl
+	dec b
+	ret z
+
+	push bc
+	ld bc, PARTYMON_STRUCT_LENGTH
+	add hl, bc
+	pop bc
+
+	inc d
+	srl c
+	jr .loop
 	
 
 AIGetMoveAttr:

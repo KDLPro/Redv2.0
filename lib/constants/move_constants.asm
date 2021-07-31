@@ -17,7 +17,7 @@
 	const THUNDERPUNCH ; 09
 	const SCRATCH      ; 0a
 	const VICEGRIP     ; 0b
-	const X_SCISSOR   ; 0c
+	const X_SCISSOR    ; 0c
 	const RAZOR_WIND   ; 0d
 	const SWORDS_DANCE ; 0e
 	const CUT          ; 0f

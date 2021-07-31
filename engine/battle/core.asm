@@ -1197,7 +1197,7 @@ ResidualDamage:
 
 	xor a
 	ld [wNumHits], a
-	ld de, ANIM_IN_NIGHTMARE
+	ld de, ANIM_IN_CURSE
 	call Call_PlayBattleAnim_OnlyIfVisible
 	call GetQuarterMaxHP
 	call SubtractHPFromUser
@@ -3384,8 +3384,15 @@ EnemySwitch_SetMode:
 	farcall FindAliveEnemyMons
     farcall FindEnemyMonsWithAtLeastQuarterMaxHP
 	farcall FindEnemyMonsThatResistPlayer
-    farcall FindAliveEnemyMonsWithASuperEffectiveMove
+    farcall FindEnemyMonsWithASuperEffectiveMoveSwitch
+	ld a, [wEnemyAISwitchScore]
+	cp $f4
+	jr nz, .test_switch
+	farcall FindEnemyMonsImmuneToOrResistsLastCounterMove
 .test_switch
+	ld a, [wEnemyAISwitchScore]
+	dec a
+	ld [wEnemyAISwitchScore], a
 	farcall CheckGlitchMonAfterFaint
 	jr z, .glitched
 	ld a, [wEnemyAISwitchScore]
@@ -6285,16 +6292,22 @@ LoadEnemyMon:
 	ld [de], a
 	jp .Happiness
 
-.InitDVs:
-; Trainer DVs
+.InitDVs
 
-; All trainers have preset DVs, determined by class
-; See GetTrainerDVs for more on that
-	farcall GetTrainerDVs
-; These are the DVs we'll use if we're actually in a trainer battle
 	ld a, [wBattleMode]
 	dec a
-	jr nz, .UpdateDVs
+	jr z, .WildDVs
+
+; Trainer DVs
+	ld a, [wCurPartyMon]
+	ld hl, wOTPartyMon1DVs
+	call GetPartyLocation
+	ld b, [hl]
+	inc hl
+	ld c, [hl]
+	jr .UpdateDVs
+
+.WildDVs:
 
 ; Wild DVs
 ; Here's where the fun starts
@@ -6458,7 +6471,17 @@ LoadEnemyMon:
 
 .Happiness:
 ; Set happiness
+	ld a, [wBattleMode]
+	dec a
 	ld a, BASE_HAPPINESS
+	jr z, .load_happiness
+
+	ld a, [wCurPartyMon]
+	ld hl, wOTPartyMon1Happiness
+	call GetPartyLocation
+	ld a, [hl]
+
+.load_happiness
 	ld [wEnemyMonHappiness], a
 ; Set level
 	ld a, [wCurPartyLevel]
@@ -6467,6 +6490,14 @@ LoadEnemyMon:
 	ld de, wEnemyMonMaxHP
 	ld b, FALSE
 	ld hl, wEnemyMonDVs - (MON_DVS - MON_EVS + 1)
+	ld a, [wBattleMode]
+	dec a
+	jr z, .no_evs
+	ld a, [wCurPartyMon]
+	ld hl, wOTPartyMon1EVs - 1
+	call GetPartyLocation
+	ld b, TRUE
+.no_evs
 	predef CalcMonStats
 
 ; If we're in a trainer battle,
@@ -6626,14 +6657,27 @@ LoadEnemyMon:
 	ld a, [wTempEnemyMonSpecies]
 	ld [wNamedObjectIndex], a
 
-	call GetPokemonName
-
 ; Did we catch it?
 	ld a, [wBattleMode]
 	and a
 	ret z
 
-; Update enemy nick
+; Update enemy nick	
+	ld a, [wBattleMode]
+	dec a ; WILD_BATTLE?
+	jr z, .no_nickname
+	ld a, [wOtherTrainerType]
+	bit TRAINERTYPE_NICKNAME_F, a
+	jr z, .no_nickname
+	ld a, [wCurPartyMon]
+	ld hl, wOTPartyMonNicknames
+	ld bc, MON_NAME_LENGTH
+	call AddNTimes
+	jr .got_nickname
+.no_nickname
+	call GetPokemonName
+ 	ld hl, wStringBuffer1
+.got_nickname
 	ld hl, wStringBuffer1
 	ld de, wEnemyMonNick
 	ld bc, MON_NAME_LENGTH
@@ -6897,7 +6941,7 @@ ApplyStatLevelMultiplier:
 	call Divide
 	pop hl
 
-; Cap at 999.
+; Cap at 8196.
 	ldh a, [hQuotient + 3]
 	sub LOW(MAX_STAT_VALUE)
 	ldh a, [hQuotient + 2]
@@ -8374,54 +8418,6 @@ InitEnemyWildmon:
 	ret
 
 FillEnemyMovesFromMoveIndicesBuffer: ; unreferenced
-	ld hl, wEnemyMonMoves
-	ld de, wListMoves_MoveIndicesBuffer
-	ld b, NUM_MOVES
-.loop
-	ld a, [de]
-	inc de
-	ld [hli], a
-	and a
-	jr z, .clearpp
-
-	push bc
-	push hl
-
-	push hl
-	dec a
-	ld hl, Moves + MOVE_PP
-	ld bc, MOVE_LENGTH
-	call AddNTimes
-	ld a, BANK(Moves)
-	call GetFarByte
-	pop hl
-
-	ld bc, wEnemyMonPP - (wEnemyMonMoves + 1)
-	add hl, bc
-	ld [hl], a
-
-	pop hl
-	pop bc
-
-	dec b
-	jr nz, .loop
-	ret
-
-.clear
-	xor a
-	ld [hli], a
-
-.clearpp
-	push bc
-	push hl
-	ld bc, wEnemyMonPP - (wEnemyMonMoves + 1)
-	add hl, bc
-	xor a
-	ld [hl], a
-	pop hl
-	pop bc
-	dec b
-	jr nz, .clear
 	ret
 
 ExitBattle:

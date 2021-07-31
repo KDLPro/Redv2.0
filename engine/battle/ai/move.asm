@@ -19,6 +19,22 @@ AISwitchChooseMove:
 	and a
 	ret z
 	
+	ld hl, wEnemyMonMoves
+	ld b, NUM_MOVES + 1
+.checkmove
+	dec b
+	jr z, .done_checking_moves
+
+	ld a, [hl]
+	and a
+	jr z, .done_checking_moves
+	cp PURSUIT
+	ret z
+
+	inc hl
+	jr .checkmove
+	
+.done_checking_moves
 	call Random
 	cp 20 percent + 1
 	ret nc

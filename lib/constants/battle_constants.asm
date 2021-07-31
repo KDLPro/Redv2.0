@@ -1,7 +1,7 @@
 ; significant level values
 MAX_LEVEL EQU 100
 MIN_LEVEL EQU 2
-EGG_LEVEL EQU 5
+EGG_LEVEL EQU 1
 
 ; maximum moves known per mon
 NUM_MOVES EQU 4
@@ -9,10 +9,7 @@ NUM_MOVES EQU 4
 ; significant stat values
 BASE_STAT_LEVEL EQU 7
 MAX_STAT_LEVEL EQU 13
-
-; damage limits before type effectiveness
-MIN_NEUTRAL_DAMAGE EQU 2
-MAX_NEUTRAL_DAMAGE EQU 999
+ALL_STAT_BASE_LEVEL EQU 49
 
 ; turns that sleep lasts
 REST_SLEEP_TURNS EQU 2
@@ -28,6 +25,9 @@ EFFECTIVE          EQU 10
 NOT_VERY_EFFECTIVE EQU 05
 NO_EFFECT          EQU 00
 
+; enemy AI behavior
+BASE_AI_SWITCH_SCORE EQU 10
+
 ; wPlayerStatLevels and wEnemyStatLevels indexes (see wram.asm)
 ; GetStatName arguments (see data/battle/stat_names.asm)
 	const_def
@@ -38,7 +38,7 @@ NO_EFFECT          EQU 00
 	const SP_DEFENSE
 	const ACCURACY
 	const EVASION
-	const ABILITY ; used for BattleCommand_Curse
+	const STATS ; used for BattleCommand_Curse
 NUM_LEVEL_STATS EQU const_value
 
 ; move struct members (see data/moves/moves.asm)
@@ -71,11 +71,11 @@ NUM_BATTLE_STATS EQU NUM_STATS - 1 ; don't count HP
 STAT_MIN_NORMAL EQU 5
 STAT_MIN_HP EQU 10
 
-MAX_STAT_VALUE EQU 999
+MAX_STAT_VALUE EQU 8192
 
 ; shiny dvs
-ATKDEFDV_SHINY EQU $EA
-SPDSPCDV_SHINY EQU $AA
+ATKDEFDV_SHINY EQU $EF
+SPDSPCDV_SHINY EQU $FF
 
 ; battle classes (wBattleMode values)
 	const_def 1
@@ -152,14 +152,15 @@ SPDSPCDV_SHINY EQU $AA
 	const ENEMY_LAST_MOVE
 
 ; status condition bit flags
-SLP EQU %111 ; 0-7 turns
+SLP EQU %111 ; 0-4 turns
 	const_def 3
 	const PSN
 	const BRN
 	const FRZ
 	const PAR
+	const TOX
 
-ALL_STATUS EQU (1 << PSN) | (1 << BRN) | (1 << FRZ) | (1 << PAR) | SLP
+ALL_STATUS EQU (1 << PSN) | (1 << BRN) | (1 << FRZ) | (1 << PAR) | (1 << TOX) | SLP
 
 ; wPlayerSubStatus1 or wEnemySubStatus1 bit flags
 	const_def
@@ -257,6 +258,9 @@ ALL_STATUS EQU (1 << PSN) | (1 << BRN) | (1 << FRZ) | (1 << PAR) | SLP
 	const WIN
 	const LOSE
 	const DRAW
+
+; Enemy's Speed Relative to Player (wEnemyGoesFirst)
+ENEMY_FIRST EQU 1
 
 BATTLERESULT_CAUGHT_CELEBI EQU 6
 BATTLERESULT_BOX_FULL EQU 7

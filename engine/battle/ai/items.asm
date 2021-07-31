@@ -1,5 +1,9 @@
 AI_SwitchOrTryItem:
 	and a
+	
+	ld a, [wCurEnemyMove]
+	cp $FF
+	ret z
 
 	ld a, [wBattleMode]
 	dec a
@@ -19,6 +23,8 @@ AI_SwitchOrTryItem:
 	ld a, [wEnemyWrapCount]
 	and a
 	jr nz, DontSwitch
+	
+	farcall CountConsecutiveTurnsDealLowDmg
 
 	; always load the first trainer class in wTrainerClass for Battle Tower trainers
 	ld hl, TrainerClassAttributes + TRNATTR_AI_ITEM_SWITCH
@@ -32,7 +38,8 @@ AI_SwitchOrTryItem:
 	call AddNTimes
 
 .ok
-	farcall CountConsecutiveTurnsDealLowDmg
+	bit SWITCH_COMPETITIVE_F, [hl]
+	jp nz, SwitchCompetitive
 	bit SWITCH_OFTEN_F, [hl]
 	jp nz, SwitchOften
 	bit SWITCH_RARELY_F, [hl]
@@ -45,7 +52,7 @@ DontSwitch:
 	call AI_TryItem
 	ret
 
-SwitchOften:
+SwitchCompetitive:
 	 ; Reroll if player is not switching
 	ld a, [wPlayerIsSwitching]
 	and a
@@ -56,7 +63,7 @@ SwitchOften:
 	jp nz, .check_switch_param
 	 ; Check if player is incentivised to switch
 	ld a, [wEnemyAISwitchScore]
-	cp 10
+	cp BASE_AI_SWITCH_SCORE
 	jr c, .check_switch_param
 	 ; Reroll to account for prediction
 	call Random
@@ -75,6 +82,40 @@ SwitchOften:
 	jp z, DontSwitch
 	
 	jp LoadMonToSwitchTo
+
+SwitchOften:
+	 ; Reroll if player is not switching
+	ld a, [wPlayerIsSwitching]
+	and a
+	jr z, .reroll_predict
+	 ; Do not reroll if player is recharging
+	 ; or locked on to a move
+	farcall CheckPlayerRechageOrLockedOn
+	jp nz, .check_switch_param
+	 ; Check if player is incentivised to switch
+	ld a, [wEnemyAISwitchScore]
+	cp BASE_AI_SWITCH_SCORE
+	jr c, .check_switch_param
+	 ; Reroll to account for prediction
+	call Random
+	cp 50 percent + 1
+	jr c, .reroll
+	jr .check_switch_param
+	
+.reroll_predict
+	 ; Reroll target switch Pokémon
+	farcall PredictUsersMove
+.reroll
+	farcall CheckAbleToSwitch
+.check_switch_param
+	ld a, [wEnemySwitchMonParam]
+	and $f0
+	jp z, DontSwitch
+	
+	call Random
+	cp 30 percent - 1
+	jp c, DontSwitch
+	jp LoadMonToSwitchTo
 	
 SwitchRarely:
 	ld a, [wEnemySwitchMonParam]
@@ -82,14 +123,14 @@ SwitchRarely:
 	jp z, DontSwitch
 	
 	call Random
-	cp 79 percent - 1
+	cp 80 percent - 1
 	jp c, DontSwitch
 	jp LoadMonToSwitchTo
 
 SwitchSometimes:
 	 ; Check if player is incentivised to switch
 	ld a, [wEnemyAISwitchScore]
-	cp 10
+	cp BASE_AI_SWITCH_SCORE
 	jr c, .check_switch_param
 	 ; Do not reroll if player is recharging
 	 ; or locked on to a move
@@ -107,7 +148,7 @@ SwitchSometimes:
 	jp z, DontSwitch
 	
 	call Random
-	cp 40 percent - 1
+	cp 50 percent - 1
 	jp c, DontSwitch
 
 LoadMonToSwitchTo:

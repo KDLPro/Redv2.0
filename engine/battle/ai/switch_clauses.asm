@@ -10,6 +10,8 @@ CheckSwitchOftenOrSometimes:
     
     ld a, BANK(TrainerClassAttributes)
     call GetFarByte
+    bit SWITCH_COMPETITIVE_F, a
+    ret nz
     bit SWITCH_OFTEN_F, a
     ret nz
     bit SWITCH_SOMETIMES_F, a
@@ -25,6 +27,8 @@ CheckSwitchOften:
     
     ld a, BANK(TrainerClassAttributes)
     call GetFarByte
+    bit SWITCH_COMPETITIVE_F, a
+    ret nz
     bit SWITCH_OFTEN_F, a
     ret 
 	
