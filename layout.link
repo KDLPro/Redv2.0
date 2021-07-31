@@ -67,6 +67,8 @@ ROMX $10
 	"Enemy Trainers"
 ROMX $11
 	"Battle Core"
+ROMX $12
+	"Effect Command Pointers"
 ROMX $13
 	"bank13"
 	"Evolutions and Attacks"
