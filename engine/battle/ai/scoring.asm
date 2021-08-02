@@ -229,7 +229,7 @@ AI_Types:
 .immune
 	call AIDiscourageMove
 	jr .checkmove
-
+	
 
 AI_Offensive:
 ; Greatly discourage non-damaging moves.
@@ -412,12 +412,16 @@ AI_Smart_Sleep:
 	ld a, [wLastPlayerCounterMove]
 	dec a
 	ld hl, Moves + MOVE_POWER
-	call AIGetMoveAttr
+	push hl
+	farcall AIGetMoveAttr
+	pop hl
 	and a
 	jr z, .effect_move
 	
 	inc hl
-	call AIGetMoveByte
+	push hl
+	farcall AIGetMoveByte
+	pop hl
 	ld a, [wBaseType]
 	cp NORMAL
 	jr z, .normal_move_encourage
@@ -1890,12 +1894,11 @@ AI_Smart_Curse:
 	jp AI_Encourage
 
 .approve
-	inc [hl]
-	inc [hl]
+	call AI_Encourage_Greatly
 .greatly_encourage
-	inc [hl]
+	call AI_Encourage
 .encourage
-	inc [hl]
+	call AI_Encourage
 	ret
 
 .ghost_curse
@@ -1933,7 +1936,7 @@ AI_Smart_Curse:
 	pop hl
 	
 	ld a, [wEnemyAISwitchScore]
-	cp 11
+	cp BASE_AI_SWITCH_SCORE
 	jr c, .greatly_encourage
 
 	call AICheckEnemyMaxHP
@@ -2954,7 +2957,7 @@ INCLUDE "data/battle/ai/stall_moves.asm"
 
 
 AI_Aggressive:
-	call AI_60_40
+	call AI_50_50
 	ret c
 ; Use whatever does the most damage.
 

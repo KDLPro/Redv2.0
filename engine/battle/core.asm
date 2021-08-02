@@ -3377,10 +3377,6 @@ EnemySwitch_SetMode:
 	call ResetEnemyBattleVars
 	call CheckWhetherSwitchmonIsPredetermined
 	jr c, .try_switch
-	call FindMonInOTPartyToSwitchIntoBattle
-	ld a, [wEnemyEffectivenessVsPlayerMons]
-	and a
-	jr nz, .test_switch
 	farcall FindAliveEnemyMons
     farcall FindEnemyMonsWithAtLeastQuarterMaxHP
 	farcall FindEnemyMonsThatResistPlayer
@@ -3388,6 +3384,7 @@ EnemySwitch_SetMode:
 	ld a, [wEnemyAISwitchScore]
 	cp $f4
 	jr nz, .test_switch
+.find_resist
 	farcall FindEnemyMonsImmuneToOrResistsLastCounterMove
 .test_switch
 	ld a, [wEnemyAISwitchScore]
@@ -4498,6 +4495,10 @@ RecallPlayerMon:
 	ret
 
 HandleHealingItems:
+	call HasPlayerFainted
+	ret z
+	call HasEnemyFainted
+	ret z
 	call HandleHPHealingItem
 	call UseHeldStatusHealingItem
 	jp UseConfusionHealingItem
