@@ -58,7 +58,7 @@ Moves:
 	move BITE,         EFFECT_FLINCH_HIT,         60, DARK,         100, 25,  30
 	move GROWL,        EFFECT_ATTACK_DOWN,         0, NORMAL,       100, 40,   0
 	move ROAR,         EFFECT_FORCE_SWITCH,        0, NORMAL,       100, 20,   0
-	move SING,         EFFECT_SLEEP,               0, NORMAL,        70, 15,   0
+	move SING,         EFFECT_SLEEP,               0, NORMAL,        80, 15,   0
 	move SUPERSONIC,   EFFECT_CONFUSE,             0, NORMAL,        55, 20,   0
 	move SONICBOOM,    EFFECT_STATIC_DAMAGE,      25, NORMAL,        90, 20,   0
 	move DISABLE,      EFFECT_DISABLE,             0, NORMAL,        55, 20,   0
@@ -89,8 +89,8 @@ Moves:
 	move RAZOR_LEAF,   EFFECT_NORMAL_HIT,         55, GRASS,         95, 25,   0
 	move SOLARBEAM,    EFFECT_SOLARBEAM,         120, GRASS,        100, 10,   0
 	move POISONPOWDER, EFFECT_POISON,              0, POISON,        75, 35,   0
-	move STUN_SPORE,   EFFECT_PARALYZE,            0, GRASS,         75, 30,   0
-	move SLEEP_POWDER, EFFECT_SLEEP,               0, GRASS,         75, 15,   0
+	move STUN_SPORE,   EFFECT_PARALYZE,            0, GRASS,         85, 30,   0
+	move SLEEP_POWDER, EFFECT_SLEEP,               0, GRASS,         85, 15,   0
 	move PETAL_DANCE,  EFFECT_RAMPAGE,            70, GRASS,        100, 20,   0
 	move STRING_SHOT,  EFFECT_SPEED_DOWN,          0, BUG,           95, 40,   0
 	move DRAGON_RAGE,  EFFECT_STATIC_DAMAGE,      45, DRAGON,       100, 10,   0
@@ -106,7 +106,7 @@ Moves:
 	move TOXIC,        EFFECT_TOXIC,               0, POISON,        85, 10,   0
 	move CONFUSION,    EFFECT_CONFUSE_HIT,        50, PSYCHIC_TYPE, 100, 25,  10
 	move PSYCHIC_M,    EFFECT_SP_DEF_DOWN_HIT,    90, PSYCHIC_TYPE, 100, 10,  10
-	move HYPNOSIS,     EFFECT_SLEEP,               0, PSYCHIC_TYPE,  70, 20,   0
+	move HYPNOSIS,     EFFECT_SLEEP,               0, PSYCHIC_TYPE,  80, 20,   0
 	move MEDITATE,     EFFECT_ATTACK_UP,           0, PSYCHIC_TYPE, 100, 40,   0
 	move AGILITY,      EFFECT_SPEED_UP_2,          0, PSYCHIC_TYPE, 100, 30,   0
 	move QUICK_ATTACK, EFFECT_PRIORITY_HIT,       40, NORMAL,       100, 30,   0

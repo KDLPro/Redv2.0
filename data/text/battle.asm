@@ -561,6 +561,20 @@ DisabledMoveText:
 	text " is"
 	scroll "DISABLED!"
 	autodone
+	
+PlayerQuickClawText:
+	text_ram wBattleMonNick
+	text "'s"
+	line "Quick Claw lets"
+	scroll "it go first!"
+	autodone
+	
+EnemyQuickClawText:
+	text_ram wEnemyMonNick
+	text "'s"
+	line "Quick Claw lets"
+	scroll "it go first!"
+	autodone
 
 LoafingAroundText:
 	text_ram wBattleMonNick

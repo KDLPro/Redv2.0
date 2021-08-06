@@ -521,7 +521,7 @@ wEnemyMonsLeft:: db
 wEnemyTurnsTaken::  db
 wPlayerTurnsTaken:: db
 	
-wEnemyCantDealDmgTurnsCnsctvly:: db
+	ds 1
 wEnemyMonJustFainted:: db
 
 wPlayerSubstituteHP:: db

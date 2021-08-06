@@ -391,42 +391,27 @@ AI_Smart_EffectHandlers:
 
 AI_Smart_Sleep:
 ; Greatly encourage sleep inducing moves if the enemy has either Dream Eater or Nightmare,
-; has low HP, last move used is NORMAL-type or if the enemy has bad matchup.
+; or if the enemy has bad matchup.
+; Greatly discourage sleep inducing moves if player has low HP.
 ; 50% chance to greatly encourage sleep inducing moves otherwise.
 
 	ld b, EFFECT_DREAM_EATER
 	call AIHasMoveEffect
 	jr c, .encourage
 
+	call MoveAICheckTurnsToKOAI
+	jr c, .encourage
+	
 	push hl
 	farcall CheckPlayerMoveTypeMatchups
 	pop hl
 	ld a, [wEnemyAISwitchScore]
-	cp BASE_AI_SWITCH_SCORE
+	cp BASE_AI_SWITCH_SCORE + 1
 	jr nc, .encourage
 	
-	call AICheckEnemyQuarterHP
-	jr nc, .encourage
+	call AICheckPlayerQuarterHP
+	jr nc, .discourage
 	
-	push hl
-	ld a, [wLastPlayerCounterMove]
-	dec a
-	ld hl, Moves + MOVE_POWER
-	push hl
-	farcall AIGetMoveAttr
-	pop hl
-	and a
-	jr z, .effect_move
-	
-	inc hl
-	push hl
-	farcall AIGetMoveByte
-	pop hl
-	ld a, [wBaseType]
-	cp NORMAL
-	jr z, .normal_move_encourage
-	
-	pop hl
 	ld b, EFFECT_NIGHTMARE
 	call AIHasMoveEffect
 	ret nc
@@ -436,12 +421,13 @@ AI_Smart_Sleep:
 	pop hl
 	ret
 
-.normal_move_encourage
-	pop hl
 .encourage
 	call AI_50_50
 	ret c
 	jp AI_Encourage_Greatly
+	
+.discourage
+	jp AI_Discourage_Greatly
 
 AI_Smart_LeechHit:
     push hl
@@ -1927,10 +1913,9 @@ AI_Smart_Curse:
 .ghost_continue
 	call AICheckEnemyQuarterHP
 	jp nc, .approve
-
-	call AICheckEnemyHalfHP
-	jr nc, .greatly_encourage
 	
+	ld a, BASE_AI_SWITCH_SCORE
+	ld [wEnemyAISwitchScore], a
 	push hl
 	farcall CheckEnemyMoveMatchups
 	pop hl
@@ -1938,13 +1923,10 @@ AI_Smart_Curse:
 	ld a, [wEnemyAISwitchScore]
 	cp BASE_AI_SWITCH_SCORE
 	jr c, .greatly_encourage
-
-	call AICheckEnemyMaxHP
-	ret nc
-
-	ld a, [wPlayerTurnsTaken]
-	and a
-	ret nz
+	
+	call AI_80_20
+	ret c
+	jp AI_Discourage_Greatly
 
 .maybe_greatly_encourage
 	call AI_50_50
@@ -2308,18 +2290,36 @@ AI_Smart_Pursuit:
 ; 60% chance to greatly encourage this move if player's HP is below 25%
 ; or if player may switch.
 ; 80% chance to discourage this move otherwise.
-
 	call AICheckPlayerQuarterHP
 	jr nc, .encourage
+	
 	push hl
 	farcall CheckPlayerMoveTypeMatchups
 	pop hl 
 	ld a, [wEnemyAISwitchScore]
+	cp BASE_AI_SWITCH_SCORE + 1
+	jr nc, .encourage
+	
+	ld a, BASE_AI_SWITCH_SCORE
+	ld [wEnemyAISwitchScore], a
+	push hl
+	farcall CheckEnemyMoveMatchups
+	pop hl 
+	ld a, [wEnemyAISwitchScore]
 	cp BASE_AI_SWITCH_SCORE
 	jr nc, .encourage
+	
+	call MoveAICheckTurnsToKOAI
+	jr c, .discourage_greatly
+	
 	call AI_80_20
 	ret c
 	jp AI_Discourage
+	
+.discourage_greatly
+	call AI_60_40
+	ret c
+	jp AI_Discourage_Greatly
 
 .encourage
 	call AI_60_40
@@ -2660,13 +2660,30 @@ AI_Smart_Stomp:
 	; fallthrough
 	
 AI_Smart_Flinch:
-; 60% chance to encourage this move if the enemy is faster than player.
+; 40% chance to encourage this move if the enemy is faster than player.
+; 60% chance to encourage this move if enemy has low hp.
+; Greatly discourage this move if enemy is asleep or frozen.
+	ld a, [wBattleMonStatus]
+	bit FRZ, a
+	jp nz, AI_Discourage_Greatly
+	and SLP
+	jp nz, AI_Discourage_Greatly
+	
 	call AICompareSpeed
 	ret nc
 	
+	call AICheckEnemyQuarterHP
+	jr nc, .lowhp
+	
+	call AI_60_40
+	ret nc
+.encourage
+	jp AI_Encourage
+	
+.lowhp
 	call AI_60_40
 	ret c
-	jp AI_Encourage
+	jr .encourage
 
 AI_Smart_Solarbeam:
 ; 40% chance to encourage this move when it's sunny.
@@ -2907,21 +2924,15 @@ AIHasMoveInArray:
 INCLUDE "data/battle/ai/useful_moves.asm"
 
 AI_Opportunist:
-; Discourage stall moves when the enemy's HP is low.
-
-; Do nothing if enemy's HP is above 50%.
-	call AICheckEnemyHalfHP
-	ret c
+; Discourage stall moves when the player's HP is low.
 
 ; Discourage stall moves if enemy's HP is below 25%.
-	call AICheckEnemyQuarterHP
-	jr nc, .lowhp
+	call AICheckPlayerQuarterHP
+	ret c
 
-; 50% chance to discourage stall moves if enemy's HP is between 25% and 50%.
 	call AI_50_50
 	ret c
 
-.lowhp
 	ld hl, wEnemyAIMoveScores - 1
 	ld de, wEnemyMonMoves
 	ld c, NUM_MOVES + 1
@@ -2935,19 +2946,15 @@ AI_Opportunist:
 	and a
 	jr z, .done
 
-	push hl
-	push de
-	push bc
-	ld hl, StallMoves
-	ld de, 1
-	call IsInArray
+	dec de
+	ld a, [de]
+	call AIGetEnemyMove
+	inc de
+	ld a, [wEnemyMoveStruct + MOVE_POWER]
+	and a
+	jr nz, .checkmove
 
-	pop bc
-	pop de
-	pop hl
-	jr nc, .checkmove
-
-	inc [hl]
+	call AI_Discourage_Greatly
 	jr .checkmove
 
 .done
@@ -2957,31 +2964,29 @@ INCLUDE "data/battle/ai/stall_moves.asm"
 
 
 AI_Aggressive:
+	call AICheckEnemyHalfHP
+	jr nc, .start
+	call AICheckPlayerHalfHP
+	jr nc, .start
 	call AI_50_50
 	ret c
+.start
 ; Use whatever does the most damage.
 
-; Discourage all damaging moves but the one that does the most damage.
-; If no damaging move deals damage to the player (immune),
-; no move will be discouraged
-
-; Figure out which attack does the most damage and put it in c.
-	ld hl, wEnemyMonMoves
-	ld bc, 0
-	ld de, 0
+; Discourage all damaging moves that deal low damage unless they're reckless too.
+	ld hl, wEnemyAIMoveScores - 1
+	ld de, wEnemyMonMoves
+	ld b, 0
 .checkmove
 	inc b
 	ld a, b
 	cp NUM_MOVES + 1
-	jr z, .gotstrongestmove
-
-	ld a, [hli]
-	and a
-	jr z, .gotstrongestmove
+	jr z, .done
 
 	push hl
 	push de
 	push bc
+	ld a, [de]
 	call AIGetEnemyMove
 	ld a, [wEnemyMoveStruct + MOVE_POWER]
 	and a
@@ -2989,64 +2994,42 @@ AI_Aggressive:
 	call AIDamageCalc
 	pop bc
 	pop de
-	pop hl
-
-	dec hl
-	ld a, [hli]
+	push de
+	ld a, [de]
 	cp PURSUIT 
 	call z, PursuitDamage
-; Update current move if damage is highest so far
-	ld a, [wCurDamage + 1]
-	cp e
-	ld a, [wCurDamage]
-	sbc d
-	jr c, .checkmove
-
-	ld a, [wCurDamage + 1]
-	ld e, a
-	ld a, [wCurDamage]
-	ld d, a
-	ld c, b
-	jr .checkmove
-
-.nodamage
+	pop de
+	pop hl
+	
+	inc de
+	inc hl
+	
+	push hl
+	push de
+	push bc
+	farcall CheckPlayerMoveTypeMatchups
 	pop bc
 	pop de
 	pop hl
-	jr .checkmove
+	ld a, [wEnemyAISwitchScore]
+	cp BASE_AI_SWITCH_SCORE
+	jr c, .low_hp
+	
+	call AICheckEnemyHalfHP
+	jr nc, .low_hp
+	push hl
+	push de
+	push bc
+	call AIAggessiveCheckTurnsToKOPlayer
+	pop bc
+	pop de
+	pop hl
+	
+; Discourage this move it takes 4 or more hits to KO player
+	cp 4
+	jr c, .checkmove
 
-.gotstrongestmove
-; Nothing we can do if no attacks did damage.
-	ld a, c
-	and a
-	jr z, .done
-
-; Discourage moves that do less damage unless they're reckless too.
-	ld hl, wEnemyAIMoveScores - 1
-	ld de, wEnemyMonMoves
-	ld b, 0
-.checkmove2
-	inc b
-	ld a, b
-	cp NUM_MOVES + 1
-	jr z, .done
-
-; Ignore this move if it is the highest damaging one.
-	cp c
-	ld a, [de]
-	inc de
-	inc hl
-	jr z, .checkmove2
-
-	call AIGetEnemyMove
-
-; Ignore this move if its power is 0 or 1.
-; Moves such as Seismic Toss, Hidden Power,
-; Counter and Fissure have a base power of 1.
-	ld a, [wEnemyMoveStruct + MOVE_POWER]
-	cp 2
-	jr c, .checkmove2
-
+.check_reckless
 ; Ignore this move if it is reckless.
 	push hl
 	push de
@@ -3058,14 +3041,44 @@ AI_Aggressive:
 	pop bc
 	pop de
 	pop hl
-	jr c, .checkmove2
+	jr c, .checkmove
 
 ; If we made it this far, discourage this move.
-	inc [hl]
-	jr .checkmove2
+	call AI_Discourage
+	jr .checkmove
+	
+.nodamage
+	pop bc
+	pop de
+	pop hl
+	inc de
+	inc hl
+	jr .checkmove
 
 .done
 	ret
+	
+.low_hp
+	push hl
+	push de
+	push bc
+	call AIAggessiveCheckTurnsToKOPlayer
+	pop bc
+	pop de
+	pop hl
+	
+; Discourage this move it takes 3 or more hits to KO player
+	cp 3
+	jr c, .checkmove
+	
+; Otherwise, randomly encourage this move if it takes 1 hit to KO player.
+	cp 2
+	jr z, .checkmove
+	
+	call AI_50_50
+	jr c, .checkmove
+	call AI_Encourage
+	jr .check_reckless
 
 INCLUDE "data/battle/ai/reckless_moves.asm"
 
@@ -3089,14 +3102,31 @@ AIDamageCalc:
 PursuitDamage:
 	call AICheckPlayerQuarterHP
 	jr nc, .calc_pursuit
+	
+	ld a, [wCurDamage]
+	ld d, a
+	ld a, [wCurDamage + 1]
+	ld e, a
+	
 	push hl
 	farcall CheckPlayerMoveTypeMatchups
 	pop hl 
 	ld a, [wEnemyAISwitchScore]
-	cp BASE_AI_SWITCH_SCORE
-	ret c
+	cp BASE_AI_SWITCH_SCORE + 1
+	jr c, .return
+	
+	call MoveAICheckTurnsToKOAI
+	jr c, .return
 
+	ld a, d
+	ld [wCurDamage], a
+	ld a, e
+	ld [wCurDamage + 1], a
+	
 .calc_pursuit
+	call Random
+	cp 50 percent + 1
+	ret c
 	ld hl, wCurDamage + 1
 	sla [hl]
 	dec hl
@@ -3107,8 +3137,48 @@ PursuitDamage:
 	ld [hli], a
 	ld [hl], a
 	ret
+	
+.return
+	ld a, d
+	ld [wCurDamage], a
+	ld a, e
+	ld [wCurDamage + 1], a
+	ret
 
 INCLUDE "data/battle/ai/constant_damage_effects.asm"
+
+AIAggessiveCheckTurnsToKOPlayer:
+	ld hl, wCurDamage
+	ld a, [hli]
+	cpl
+	ld e, a
+	ld a, [hl]
+	cpl
+	ld d, a
+	and e
+	cp -1
+	jr z, .max_turns
+	inc de
+	ld hl, wBattleMonHP
+	ld a, [hli]
+	ld h, [hl]
+	ld l, a
+	xor a
+.loop
+	inc a
+	add hl, de
+	jr nc, .less_than_six_turns
+	cp 6
+	jr c, .loop
+	jr .max_turns
+.just_fainted
+	xor a
+	ld [wEnemyMonJustFainted], a
+.max_turns
+	ld a, -1
+.less_than_six_turns
+	ret
+	
 
 AI_Cautious:
 ; 90% chance to discourage moves with residual effects after the first turn.
@@ -3347,6 +3417,45 @@ endr
 	jr .checkmove
 
 INCLUDE "data/battle/ai/risky_effects.asm"
+
+MoveAICheckTurnsToKOAI:
+	ld a, [wEnemyMonJustFainted]
+	and a
+	jr nz, .just_fainted
+	ld a, [wPlayerTurnsTaken]
+	and a
+	jr z, .max_turns
+	ld hl, wEnemyDamageTakenThisTurn
+	ld a, [hli]
+	cpl
+	ld e, a
+	ld a, [hl]
+	cpl
+	ld d, a
+	and e
+	cp -1
+	jr z, .max_turns
+	inc de
+	ld hl, wEnemyMonHP
+	ld a, [hli]
+	ld h, [hl]
+	ld l, a
+	xor a
+.loop
+	inc a
+	add hl, de
+	jr nc, .less_than_four_turns
+	cp 4
+	jr c, .loop
+	jr .max_turns
+.just_fainted
+	xor a
+	ld [wEnemyMonJustFainted], a
+.max_turns
+	ld a, -1
+.less_than_four_turns
+	cp a, 3
+	ret
 
 
 AI_None:

@@ -11,6 +11,10 @@ CheckPlayerMoveTypeMatchups:
 	ld a, [hl]
 	and a
 	jr z, .unknown_moves
+	
+	ld a, [wEnemyTurnsTaken]
+	and a
+	jr z, .unknown_moves
 
 	ld d, NUM_MOVES
 	ld e, 0
@@ -18,34 +22,49 @@ CheckPlayerMoveTypeMatchups:
 	ld a, [hli]
 	and a
 	jr z, .exit
-	push hl
-	dec a
-	ld hl, Moves + MOVE_POWER
-	call AIGetMoveAttr
-	and a
-	jr z, .next
-
-	inc hl
-	call AIGetMoveByte
-	ld hl, wEnemyMonType
-	call AICheckTypeMatchup
-	ld a, [wTypeMatchup]
-	cp EFFECTIVE
-	jr z, .neutral
-	jr nc, .super_effective
 	
-; not very effective
+	push hl
+	push hl
+	push de
+	push bc
+	call SwitchAIGetPlayerMove
+	call PlayerDamageCalc
+	pop bc
+	call CheckTurnsToKOAIUsingPlayersMoves
+	pop de
+	pop hl
+	
+	push af
+	call CheckEnemyHalfHP
+	jr nc, .enemy_low_hp
+	pop af
+	
+	cp 3
+	jr c, .huge_damage
+	cp 5
+	jr c, .decent_damage
+	
+.small_damage
 	ld a, e
 	cp 1 ; 0.1
 	jr nc, .next
 	ld e, 1
 	jr .next
 
-.neutral
+.enemy_low_hp
+	pop af
+	
+	cp 2
+	jr c, .huge_damage
+	cp 4
+	jr c, .decent_damage
+	jr .small_damage
+
+.decent_damage
 	ld e, 2
 	jr .next
 
-.super_effective
+.huge_damage
 	call DoubleDown
 	call DoubleDown
 	call DoubleDown
@@ -75,6 +94,9 @@ CheckPlayerMoveTypeMatchups:
 	pop bc
 	pop de
 	pop hl
+	xor a
+	ld [wCurDamage], a
+	ld [wCurDamage+1], a
 	ret
 
 .unknown_moves
@@ -102,8 +124,6 @@ CheckEnemyMoveMatchups:
 	ld b, NUM_MOVES + 1
 	ld c, 0
 
-	ld a, [wTypeMatchup]
-	push af
 .loop2
 	dec b
 	jr z, .exit2
@@ -112,47 +132,85 @@ CheckEnemyMoveMatchups:
 	and a
 	jr z, .exit2
 
+	push hl
+	push de
+	push bc
+	call SwitchAIGetEnemyMove
+	call SwitchAIDamageCalc
+	pop bc
+	pop de
+	pop hl
+
+	ld a, [de]
 	inc de
-	dec a
-	ld hl, Moves + MOVE_POWER
-	call AIGetMoveAttr
-	and a
+	
+	push bc
+	push de
+	cp PURSUIT 
+	call z, SwitchPursuitDamage
+	pop de
+	
+	push de
+	push hl
+	call CheckTurnsToKOPlayerUsingEnemyMoves
+	pop hl
+	pop de
+	
+	push af
+	call CheckPlayerHalfHP
+	jr nc, .player_low_hp
+	pop af
+	pop bc
+	
+	; small damage
+	
+	inc c
+	cp $FF
 	jr z, .loop2
 
-	inc hl
-	call AIGetMoveByte
-	ld hl, wBattleMonType1
-	call AICheckTypeMatchup
+	; decent damage
+	
+	inc c
+	inc c
+	inc c
+	inc c
+	inc c
+	cp 4
+	jr nc, .loop2
 
-	ld a, [wTypeMatchup]
-	; immune
-	and a
+	; huge damage
+	ld c, 100
+	jr .loop2
+	
+.player_low_hp
+	pop af
+	pop bc
+	
+	; small damage
+	
+	inc c
+	cp $FF
 	jr z, .loop2
 
-	; not very effective
+	; decent damage
+	
 	inc c
-	cp EFFECTIVE
-	jr c, .loop2
+	inc c
+	inc c
+	inc c
+	inc c
+	cp 3
+	jr nc, .loop2
 
-	; neutral
-	inc c
-	inc c
-	inc c
-	inc c
-	inc c
-	cp EFFECTIVE
-	jr z, .loop2
-
-	; super effective
+	; huge damage
 	ld c, 100
 	jr .loop2
 
 .exit2
-	pop af
-	ld [wTypeMatchup], a
 
 	ld a, c
 	and a
+	call c, DoubleDown
 	jr z, DoubleDown ; double down
 	cp 5
 	jr c, DecreaseScore ; down
@@ -381,20 +439,19 @@ CheckAbleToSwitch:
 .checkperish
     ld a, [wEnemySubStatus1]
     bit SUBSTATUS_PERISH, a
-    jr z, .no_perish
+    jr z, .checkmatchups
 
     ld a, [wEnemyPerishCount]
     cp 1
     jr z, .switch
-	
-.no_perish
-	 ; Check if AI deals low damage for at least
-	 ; 2 consecutive turns
-	call CheckConsecutiveTurnsDealLowDmg
-	jp nc, .smartcheck
-	jr .checkmatchups
+	jp .checkmatchups
 
 .switch ; Try to switch
+	ld a, [wBattleMonStatus]
+	bit FRZ, a
+	jp nz, .smartcheck_speed_matchup_check
+	and SLP
+	jp nz, .smartcheck_speed_matchup_check
 	ld a, [wLastPlayerCounterMove]
 	cp SEISMIC_TOSS
 	jp z, .constant_damage_find_immune
@@ -403,24 +460,6 @@ CheckAbleToSwitch:
 	cp NIGHT_SHADE
 	jp z, .constant_damage_find_immune
 	
-	ld a, [wEnemyMonType1]
-	cp NORMAL
-	jr nz, .randomize
-	ld a, [wEnemyMonType2]
-	cp NORMAL
-	jr nz, .randomize
-	
-	ld a, [wLastPlayerCounterMove]
-	dec a
-	ld hl, Moves + MOVE_POWER
-	call AIGetMoveAttr
-	and a
-	jr z, .find_super_effective
-	
-	inc hl
-	call AIGetMoveByte
-	cp NORMAL
-	jp z, .find_immune_resist_normal
 .randomize
 	call FiftyPercentRoll
 	jp nc, .find_immune
@@ -439,27 +478,20 @@ CheckAbleToSwitch:
 	ret
 
 .checkmatchups
-	 ; Check if AI's Pokémon gets knocked out
-	 ; for a maximum of 2 turns (OHKO or 2HKO)
-	call CheckTurnsToKOAI
-	jp c, .smartcheck_speed_matchup_check
-	 ; Check if AI deals low damage for at least
-	 ; 2 consecutive turns
-	call CheckConsecutiveTurnsDealLowDmg
-	jp nc, .smartcheck
-	
-	farcall CheckEnemyQuarterHP
+	call CheckEnemyQuarterHP
 	jp nc, .smartcheck_speed_matchup_check
 	
 	ld a, [wEnemyAISwitchScore]
 	cp BASE_AI_SWITCH_SCORE
 	jp nc, .check_move_matchups
 	
+	ld a, BASE_AI_SWITCH_SCORE
+	ld [wEnemyAISwitchScore], a
 	call CheckEnemyMoveMatchups
 	
 	ld a, [wEnemyAISwitchScore]
-	cp 11
-	jp c, .smartcheck
+	cp BASE_AI_SWITCH_SCORE
+	jp c, .smartcheck_speed_matchup_check
 
 	ld a, [wLastPlayerCounterMove]
 	and a
@@ -515,6 +547,9 @@ CheckAbleToSwitch:
 	cp $ff
 	jp nz, .do_switch
 	
+	call CheckSwitchOften
+	jp nz, .no_switch
+	
 	call .find_mon_to_switch_resist_se
 	; Check if target switch Pokémon has a super effective move
 	; Return if it has none
@@ -534,15 +569,6 @@ CheckAbleToSwitch:
 	jp z, .find_super_effective
 	
 	jp .do_switch
-	
-.find_immune_resist_normal
-	call CheckTurnsToKOAI
-	jr c, .immune_resist_switch
-
-	call CheckAbleToSwitch
-	ld a, [wEnemyAISwitchScore]
-	cp BASE_AI_SWITCH_SCORE + 1
-	jp nc, .no_switch
 
 .immune_resist_switch
 	call FindEnemyMonsImmuneToOrResistsLastCounterMove
@@ -556,6 +582,24 @@ CheckAbleToSwitch:
 	cp 2
 	jp z, .do_switch
 	jp .no_switch
+
+.checkmatchups2
+	ld a, [wPlayerIsSwitching]
+	and a
+	jp nz, .no_need_big_brain
+	
+	call CheckSwitchOften
+	jr z, .no_need_big_brain
+	
+	 ; 50% chance to check target switch Pokémon to "predict"
+	 ; player's prediction #BIGBRAINPLAY
+	call FiftyPercentRoll
+	jr c, .find_target_pokemon
+	
+	ld a, [wEnemyAISwitchScore]
+	cp BASE_AI_SWITCH_SCORE
+	jp nc, .no_switch
+	jp .switch
 	
 .find_target_pokemon
 	ld a, [wCurOTMon]
@@ -604,38 +648,18 @@ CheckAbleToSwitch:
 	pop af
 	ld [wCurOTMon], a
 	jp .find_resist
+
 	
-.checkmatchups2
-	ld a, [wPlayerIsSwitching]
-	and a
-	jp nz, .no_need_big_brain
-	
-	 ; 50% chance to check target switch Pokémon to "predict"
-	 ; player's prediction #BIGBRAINPLAY
-	call FiftyPercentRoll
-	jr c, .find_target_pokemon
+.find_super_effective_locked_on
+	ld a, BASE_AI_SWITCH_SCORE
+	ld [wEnemyAISwitchScore], a
+	call CheckEnemyMoveMatchups
 	
 	ld a, [wEnemyAISwitchScore]
 	cp BASE_AI_SWITCH_SCORE
 	jp nc, .no_switch
-	jp .switch
-	
-.find_super_effective_locked_on
-	call CheckEnemyMoveMatchups
-	
-	ld a, [wEnemyAISwitchScore]
-	cp 11
-	jp nc, .no_switch
 	
     call .find_mon_to_switch_resist_se
-	; Check if target switch Pokémon has a super effective move
-	; Return if it has none
-	ld a, e
-	cp 2
-	jr nz, .no_switch
-	
-	 ; try to find a counter to the active Pokémon.
-	call FindEnemyMonsImmuneToOrResistsLastCounterMove
 	ld a, [wEnemyAISwitchScore]
 	cp $ff
 	jr z, .no_switch
@@ -649,37 +673,42 @@ CheckAbleToSwitch:
 	ret
 	
 .no_last_counter_move
+	call CheckPlayerMoveTypeMatchups
 	ld a, [wEnemyAISwitchScore]
 	cp BASE_AI_SWITCH_SCORE
 	jr nc, .no_switch
 
-	farcall CheckSwitchOften
+	call CheckSwitchOften
 	jr nz, .smartcheck_speed_matchup_check
 	jr .no_switch
 	
 .check_move_matchups	
+	ld a, BASE_AI_SWITCH_SCORE
+	ld [wEnemyAISwitchScore], a
 	call CheckEnemyMoveMatchups
 	
 	ld a, [wEnemyAISwitchScore]
-	cp 11
+	cp BASE_AI_SWITCH_SCORE
 	jr nc, .no_switch
 	
 	ld a, [wEnemyConsecutiveSwitches]
 	and a
-	jp z, .smartcheck
+	jp z, .smartcheck_speed_matchup_check
 	jr .no_switch
 	
 .smartcheck_speed_matchup_check
 	 ; If enemy is slower, higher chance to switch
 	farcall AICompareSpeed
 	jr nc, .smartcheck
-	 ; Reduced switch chance if enemy can counter player
+	 ; Don't switch if enemy can counter player
 	 ; thru its moves
+	ld a, BASE_AI_SWITCH_SCORE
+	ld [wEnemyAISwitchScore], a
 	call CheckEnemyMoveMatchups
 	
 	ld a, [wEnemyAISwitchScore]
-	cp 11
-	jr nc, .less_than_three
+	cp BASE_AI_SWITCH_SCORE
+	jr nc, .no_switch
  ; Switch check only for SWITCH_OFTEN or SWITCH_COMPETITIVE AI
 .smartcheck:
 	ld a, [wEnemyConsecutiveSwitches]
@@ -760,6 +789,112 @@ SeventyFivePercentRoll:
 	call Random
 	cp 75 percent + 1
 	ret
+	
+SwitchAIGetPlayerMove:
+; Load attributes of move a into ram
+
+	push hl
+	push de
+	push bc
+	dec a
+	ld hl, Moves
+	ld bc, MOVE_LENGTH
+	call AddNTimes
+
+	ld de, wPlayerMoveStruct
+	ld a, BANK(Moves)
+	call FarCopyBytes
+
+	pop bc
+	pop de
+	pop hl
+	ret
+	
+SwitchAIGetEnemyMove:
+; Load attributes of move a into ram
+
+	push hl
+	push de
+	push bc
+	dec a
+	ld hl, Moves
+	ld bc, MOVE_LENGTH
+	call AddNTimes
+
+	ld de, wEnemyMoveStruct
+	ld a, BANK(Moves)
+	call FarCopyBytes
+
+	pop bc
+	pop de
+	pop hl
+	ret
+
+PlayerDamageCalc:
+	ld a, 0
+	ldh [hBattleTurn], a
+	ld a, [wPlayerMoveStruct + MOVE_EFFECT]
+	ld de, 1
+	ld hl, ConstantDamageEffects
+	call IsInArray
+	jr nc, .notconstant
+	farcall BattleCommand_ConstantDamage
+	ret
+
+.notconstant
+	farcall PlayerAttackDamage
+	farcall BattleCommand_DamageCalc
+	farcall BattleCommand_Stab
+	ret
+	
+SwitchAIDamageCalc:
+	ld a, 1
+	ldh [hBattleTurn], a
+	ld a, [wEnemyMoveStruct + MOVE_EFFECT]
+	ld de, 1
+	ld hl, SwitchAIConstantDamageEffects
+	call IsInArray
+	jr nc, .notconstant
+	farcall BattleCommand_ConstantDamage
+	ret
+
+.notconstant
+	farcall EnemyAttackDamage
+	farcall BattleCommand_DamageCalc
+	farcall BattleCommand_Stab
+	ret
+	
+SwitchPursuitDamage:
+	push hl
+	farcall AICheckPlayerQuarterHP
+	pop hl
+	jr nc, .calc_pursuit
+	
+	call CheckPlayerMoveTypeMatchups
+	ld a, [wEnemyAISwitchScore]
+	cp BASE_AI_SWITCH_SCORE + 1
+	ret c
+	
+	call CheckTurnsToKOAI
+	ret c
+
+.calc_pursuit
+	call Random
+	cp 50 percent + 1
+	ret c
+	ld hl, wCurDamage + 1
+	sla [hl]
+	dec hl
+	rl [hl]
+	ret nc
+
+	ld a, $ff
+	ld [hli], a
+	ld [hl], a
+	ret
+	
+INCLUDE "data/battle/ai/switch_ai_constant_damage_effects.asm"
+	
 
 FindAliveEnemyMons:
 	ld a, [wOTPartyCount]
@@ -828,14 +963,24 @@ FindEnemyMonsImmuneToOrResistsLastCounterMove:
 
 	push hl
 	push bc
-	; If the Pokemon has at least 1 HP...
+	; If the Pokemon has at least 1/2 max HP...
 	ld bc, MON_HP
 	add hl, bc
-	pop bc
 	ld a, [hli]
-	or [hl]
+	ld b, [hl]
+	inc hl
+	ld c, [hl]
+	sla c
+	rl b
+	inc hl
+	inc hl
+	ld a, [hld]
+	cp c
+	ld a, [hl]
+	sbc b
+	pop bc
 	pop hl
-	jr z, .next
+	jr nc, .next
 
 	ld a, [hl]
 	ld [wCurSpecies], a
@@ -855,9 +1000,28 @@ FindEnemyMonsImmuneToOrResistsLastCounterMove:
 	ld a, [wTypeMatchup]
 	cp EFFECTIVE
 	jr nc, .next
+	
+	; If the Pokemon is faster than the player...
+	pop hl
+	push hl
+	push bc
+	ld bc, MON_SPD
+	add hl, bc
+	
+	inc hl
+	ld a, [hld]
+	ld b, a
+	ld a, [wBattleMonSpeed + 1]
+	cp b
+	ld a, [hl]
+	ld b, a
+	ld a, [wBattleMonSpeed]
+	sbc b
+	pop bc
+	jr nc, .next
+	
 	; ... encourage that Pokemon.
-	ld a, [wOTPartyCount]
-	sub b
+	ld a, d
 	ld [wEnemyAISwitchScore], a
 .next
 	pop hl
@@ -881,9 +1045,45 @@ FindAliveEnemyMonsWithASuperEffectiveMove:
 	ld b, 1 << (PARTY_LENGTH - 1)
 	ld c, 0
 .loop
-	ld a, [hli]
-	or [hl]
-	jr z, .next
+	; Check the Pokemon has at least 1/2 max HP...
+	push hl
+	push de
+	push bc
+	ld hl, wEnemyMonHP
+	ld b, [hl]
+	inc hl
+	ld c, [hl]
+	sla c
+	rl b
+	inc hl
+	inc hl
+	ld a, [hld]
+	cp c
+	ld a, [hl]
+	sbc b
+	pop bc
+	pop de
+	pop hl
+	jr nc, .next
+	
+	; Check the Pokemon is faster than player...
+	pop hl
+	push hl
+	push bc
+	ld b, 00
+	ld c, 28
+	add hl, bc
+	inc hl
+	ld a, [hld]
+	ld b, a
+	ld a, [wBattleMonSpeed + 1]
+	cp b
+	ld a, [hl]
+	ld b, a
+	ld a, [wBattleMonSpeed]
+	sbc b
+	pop bc
+	jr nc, .next
 
 	ld a, b
 	or c
@@ -993,9 +1193,11 @@ FindEnemyMonsWithASuperEffectiveMove:
 	ld b, a
 	and a
 	ret z
+	
+	jp FindEnemyMonsImmuneToOrResistsLastCounterMove
 
 .done2
-	; convert the bit flag to an int and return
+; convert the bit flag to an int and return
 	push bc
 	sla b
 	sla b
@@ -1011,7 +1213,7 @@ FindEnemyMonsWithASuperEffectiveMove:
 	ret
 	
 FindEnemyMonsWithASuperEffectiveMoveSwitch:
-	call FindEnemyMonsWithASuperEffectiveMove
+	call FindAliveEnemyMonsWithASuperEffectiveMove
 
 	ld a, e
 	cp 2
@@ -1056,7 +1258,7 @@ FindEnemyMonsThatResistPlayer:
 	ld hl, wBaseType
 	call AICheckTypeMatchup
 	ld a, [wTypeMatchup]
-	cp EFFECTIVE + 1
+	cp EFFECTIVE
 	jr nc, .dont_choose_mon
 	ld a, [wBattleMonType2]
 
@@ -1064,7 +1266,7 @@ FindEnemyMonsThatResistPlayer:
 	ld hl, wBaseType
 	call AICheckTypeMatchup
 	ld a, [wTypeMatchup]
-	cp EFFECTIVE + 1
+	cp EFFECTIVE
 	jr nc, .dont_choose_mon
 
 	ld a, b
@@ -1288,6 +1490,7 @@ AICheckTypeMatchup:
 
 INCLUDE "data/types/ai_type_matchups.asm"
 
+
 CheckEnemyQuarterHP:
 	push hl
 	push de
@@ -1298,6 +1501,44 @@ CheckEnemyQuarterHP:
 	ld c, [hl]
 	sla c
 	rl b
+	sla c
+	rl b
+	inc hl
+	inc hl
+	ld a, [hld]
+	cp c
+	ld a, [hl]
+	sbc b
+	pop bc
+	pop de
+	pop hl
+	ret
+	
+CheckPlayerHalfHP:
+	push hl
+	ld hl, wBattleMonHP
+	ld b, [hl]
+	inc hl
+	ld c, [hl]
+	sla c
+	rl b
+	inc hl
+	inc hl
+	ld a, [hld]
+	cp c
+	ld a, [hl]
+	sbc b
+	pop hl
+	ret
+
+CheckEnemyHalfHP:
+	push hl
+	push de
+	push bc
+	ld hl, wEnemyMonHP
+	ld b, [hl]
+	inc hl
+	ld c, [hl]
 	sla c
 	rl b
 	inc hl

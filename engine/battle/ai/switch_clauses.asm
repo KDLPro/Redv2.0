@@ -60,36 +60,6 @@ CheckToxicEncoreCount:
 	ret
 	
 	
-CountConsecutiveTurnsDealLowDmg:
-	ld a, [wEnemyTurnsTaken]
-	and a
-	jr z, .dealt_dmg
-	call CheckTurnsToKOPlayer
-	jr c, .dealt_dmg
-	jr z, .dealt_dmg
-	ld a, [wLastEnemyCounterMove]
-	dec a
-	ld hl, Moves + MOVE_POWER
-	call AIGetMoveAttr
-	and a
-	jr z, .status
-	ld a, [wEnemyCantDealDmgTurnsCnsctvly]
-	inc a
-	ld [wEnemyCantDealDmgTurnsCnsctvly], a
-	ret
-.status
-	ret
-.dealt_dmg
-	xor a
-	ld [wEnemyCantDealDmgTurnsCnsctvly], a
-	ret
-
-CheckConsecutiveTurnsDealLowDmg:
-	ld a, [wEnemyCantDealDmgTurnsCnsctvly]
-	cp 2
-	ret
-	
-	
 CheckStatBoosts:
 ; Check both player's and enemy's stat boosts
 	call CheckPlayerStatBoosts
@@ -170,6 +140,44 @@ CheckTurnsToKOAI:
 	cp a, 3
 	ret
 	
+CheckTurnsToKOAIUsingPlayersMoves:
+	ld a, [wEnemyMonJustFainted]
+	and a
+	jr nz, .just_fainted
+	ld a, [wPlayerTurnsTaken]
+	and a
+	jr z, .max_turns
+	ld hl, wCurDamage
+	ld a, [hli]
+	cpl
+	ld e, a
+	ld a, [hl]
+	cpl
+	ld d, a
+	and e
+	cp -1
+	jr z, .max_turns
+	inc de
+	ld hl, wEnemyMonHP
+	ld a, [hli]
+	ld h, [hl]
+	ld l, a
+	xor a
+.loop
+	inc a
+	add hl, de
+	jr nc, .less_than_six_turns
+	cp 6
+	jr c, .loop
+	jr .max_turns
+.just_fainted
+	xor a
+	ld [wEnemyMonJustFainted], a
+.max_turns
+	ld a, -1
+.less_than_six_turns
+	ret
+	
 CheckTurnsToKOPlayer:
 	ld hl, wPlayerDamageTakenThisTurn
 	ld a, [hli]
@@ -198,6 +206,38 @@ CheckTurnsToKOPlayer:
 	ld a, -1
 .less_than_four_turns
 	cp a, 4
+	ret
+	
+CheckTurnsToKOPlayerUsingEnemyMoves:
+	ld hl, wCurDamage
+	ld a, [hli]
+	cpl
+	ld e, a
+	ld a, [hl]
+	cpl
+	ld d, a
+	and e
+	cp -1
+	jr z, .max_turns
+	inc de
+	ld hl, wBattleMonHP
+	ld a, [hli]
+	ld h, [hl]
+	ld l, a
+	xor a
+.loop
+	inc a
+	add hl, de
+	jr nc, .less_than_six_turns
+	cp 6
+	jr c, .loop
+	jr .max_turns
+.just_fainted
+	xor a
+	ld [wEnemyMonJustFainted], a
+.max_turns
+	ld a, -1
+.less_than_six_turns
 	ret
 	
 	
@@ -264,8 +304,6 @@ DidEnemySwitch:
 	ld a, [wEnemyIsSwitching]
 	and a
 	jr z, .enemy_didnt_switch
-	xor a
-	ld [wEnemyCantDealDmgTurnsCnsctvly], a
 	ld a, [wEnemyConsecutiveSwitches]
 	inc a
 	ld [wEnemyConsecutiveSwitches], a

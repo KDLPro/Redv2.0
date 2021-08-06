@@ -246,7 +246,6 @@ ReadTrainerPartyPieces:
 	jr nz, .evs_loop
 
 .no_evs
-
 ; happpiness?
 	ld a, [wOtherTrainerType]
 	bit TRAINERTYPE_HAPPINESS_F, a
@@ -269,7 +268,6 @@ ReadTrainerPartyPieces:
 	ld [de], a
 	
 .no_happiness
-
 ; item?
 	ld a, [wOtherTrainerType]
 	bit TRAINERTYPE_ITEM_F, a
@@ -287,7 +285,6 @@ ReadTrainerPartyPieces:
 	call GetNextTrainerDataByte
 	ld [de], a
 .no_item
-
 ; moves?
 	ld a, [wOtherTrainerType]
 	bit TRAINERTYPE_MOVES_F, a
@@ -347,11 +344,10 @@ ReadTrainerPartyPieces:
 	inc de
 	dec b
 	jr nz, .copy_pp
-.copied_pp
 
+.copied_pp
 	pop hl
 .no_moves
-
 ; Custom DVs or EVs affect stats, so recalculate them 
 ; after TryAddMonToParty
 	ld a, [wOtherTrainerType]
@@ -386,7 +382,6 @@ ReadTrainerPartyPieces:
 	ld [hl], c
 	dec hl
 	ld [hl], b
-
 	pop hl
 .no_stat_recalc
 	jp .loop

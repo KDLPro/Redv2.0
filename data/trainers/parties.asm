@@ -3562,11 +3562,41 @@ GruntFGroup:
 
 MysticalmanGroup:
 	; MYSTICALMAN (1)
-	db "EUSINE@", TRAINERTYPE_MOVES
-	db 26, UMBREON,    REFLECT, PURSUIT, FAINT_ATTACK, QUICK_ATTACK
-	db 26, VICTREEBEL, SLEEP_POWDER, MEGA_DRAIN, SLUDGE_BOMB, RAZOR_LEAF
-	db 26, POLIWHIRL,  SURF, ICE_PUNCH, LOW_KICK, HYPNOSIS
-	db 28, HAUNTER,    SHADOW_BALL, HYPNOSIS, MEAN_LOOK, CURSE
-	db 27, NOCTOWL,	   HYPNOSIS, PSYBEAM, WING_ATTACK, HYPER_VOICE
-	db 27, GRAVELER,   MAGNITUDE, ROCK_TOMB, ROCK_SLIDE, ROCK_SMASH
+	db "EUSINE@", TRAINERTYPE_COMPETITIVE_BASIC_NO_NICK
+	
+	db 26, UMBREON
+	db $aa, $aa
+	db $30, $00, $30, $30, $30, $30 ; hp, atk, def, spd, spa, spd
+	db NO_ITEM
+	db REFLECT, PURSUIT, CRUNCH, QUICK_ATTACK
+	
+	db 27, VICTREEBEL
+	db $aa, $a9
+	db $30, $00, $00, $30, $30, $00 ; hp, atk, def, spd, spa, spd
+	db GOLD_BERRY
+	db SLEEP_POWDER, GIGA_DRAIN, SLUDGE_BOMB, RAZOR_LEAF
+	
+	db 26, POLIWHIRL
+	db $a9, $aa
+	db $20, $80, $40, $00, $00, $00 ; hp, atk, def, spd, spa, spd
+	db GOLD_BERRY
+	db SURF, ICE_PUNCH, CROSS_CHOP, HYPNOSIS
+	
+	db 28, HAUNTER  
+	db $a9, $9a
+	db $30, $00, $00, $30, $30, $00 ; hp, atk, def, spd, spa, spd
+	db NO_ITEM
+	db SHADOW_BALL, HYPNOSIS, PSYCHIC_M, CURSE
+	
+	db 27, NOCTOWL
+	db $aa, $aa    
+	db $30, $00, $00, $30, $30, $00 ; hp, atk, def, spd, spa, spd
+	db LEFTOVERS
+	db HYPNOSIS, PSYCHIC_M, WING_ATTACK, HYPER_VOICE
+	
+	db 27, GRAVELER
+	db $aa, $aa
+	db $20, $80, $40, $00, $00, $00 ; hp, atk, def, spd, spa, spd
+	db QUICK_CLAW
+	db EARTHQUAKE, ROCK_TOMB, ROCK_SLIDE, ROCK_SMASH
 	db -1 ; end

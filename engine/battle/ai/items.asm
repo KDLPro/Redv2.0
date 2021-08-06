@@ -1,13 +1,13 @@
 AI_SwitchOrTryItem:
 	and a
-	
-	ld a, [wCurEnemyMove]
-	cp $FF
-	ret z
 
 	ld a, [wBattleMode]
 	dec a
 	ret z
+	
+	ld a, [wCurEnemyMove]
+	cp $FF
+	jr z, DontSwitch
 
 	ld a, [wLinkMode]
 	and a
@@ -23,8 +23,6 @@ AI_SwitchOrTryItem:
 	ld a, [wEnemyWrapCount]
 	and a
 	jr nz, DontSwitch
-	
-	farcall CountConsecutiveTurnsDealLowDmg
 
 	; always load the first trainer class in wTrainerClass for Battle Tower trainers
 	ld hl, TrainerClassAttributes + TRNATTR_AI_ITEM_SWITCH
@@ -164,8 +162,7 @@ LoadMonToSwitchTo:
 	ret nc
 	ld d, 1
 	call CheckGlitchMon
-	ret z
-	jp AI_TrySwitch
+	jp VerifyTargetMonType
 	
 CheckGlitchMonAfterFaint:
 	ld a, [wEnemyAISwitchScore]
@@ -208,6 +205,52 @@ CheckGlitchMon:
 	ld a, 0
 	and a
 	ret
+	
+VerifyTargetMonType:
+	 ; Make sure the Pokémon just switched in
+	 ; has a different type to the one on the field.
+	ld e, 0
+	
+	ld a, [wCurOTMon]
+	ld d, a
+	
+	ld hl, wOTPartySpecies
+    ld a, [wEnemySwitchMonParam]
+    and $f
+    ld b, 0
+    ld c, a
+    add hl, bc
+    ld [wCurOTMon], a
+
+    ld a, [hl]
+    ld [wCurSpecies], a
+    call GetBaseData
+	
+	ld a, [wBaseType1]
+	ld b, a
+	ld a, [wEnemyMonType1]
+	cp b
+	jr nz, .check_type_2
+	
+	inc e
+	
+.check_type_2
+	ld a, [wBaseType2]
+	ld b, a
+	ld a, [wEnemyMonType2]
+	cp b
+	jr nz, .done_checking_types
+	
+	inc e
+	
+.done_checking_types
+	ld a, d
+	ld [wCurOTMon], a
+	ld a, e
+	cp 2
+	ret z
+	jp AI_TrySwitch
+
 
 CheckSubstatusCantRun: ; unreferenced
 	ld a, [wEnemySubStatus5]

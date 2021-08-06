@@ -497,7 +497,6 @@ EnemyTriesToFlee:
 	ret
 
 DetermineMoveOrder:
-	call SpeedCheckWhoGoesFirst
 	ld a, [wLinkMode]
 	and a
 	jr z, .use_move
@@ -527,7 +526,7 @@ DetermineMoveOrder:
 	jp .player_first
 
 .switch
-	farcall AI_Switch
+	callfar AI_Switch
 	call SetEnemyTurn
 	call SpikesDamage
 	jp .enemy_first
@@ -543,9 +542,9 @@ DetermineMoveOrder:
 
 .equal_priority
 	call SetPlayerTurn
-	farcall GetUserItem
+	callfar GetUserItem
 	push bc
-	farcall GetOpponentItem
+	callfar GetOpponentItem
 	pop de
 	ld a, d
 	cp HELD_QUICK_CLAW
@@ -556,8 +555,8 @@ DetermineMoveOrder:
 	call BattleRandom
 	cp e
 	jr nc, .speed_check
-	jp .player_first
-
+	jp .player_quick_claw_first
+	
 .player_no_quick_claw
 	ld a, b
 	cp HELD_QUICK_CLAW
@@ -565,7 +564,7 @@ DetermineMoveOrder:
 	call BattleRandom
 	cp c
 	jr nc, .speed_check
-	jp .enemy_first
+	jp .enemy_quick_claw_first
 
 .both_have_quick_claw
 	ldh a, [hSerialConnectionStatus]
@@ -573,30 +572,56 @@ DetermineMoveOrder:
 	jr z, .player_2b
 	call BattleRandom
 	cp c
-	jp c, .enemy_first
+	jp c, .enemy_quick_claw_first
 	call BattleRandom
 	cp e
-	jp c, .player_first
+	jp c, .player_quick_claw_first
 	jr .speed_check
 
 .player_2b
 	call BattleRandom
 	cp e
-	jp c, .player_first
+	jp c, .player_quick_claw_first
 	call BattleRandom
 	cp c
-	jp c, .enemy_first
+	jp c, .enemy_quick_claw_first
 	jr .speed_check
 
 .speed_check
-	ld a, [wEnemyShouldGoFirst]
-	cp ENEMY_FIRST
-	jr z, .enemy_first
+	ld de, wBattleMonSpeed
+	ld hl, wEnemyMonSpeed
+	ld c, 2
+	call CompareBytes
+	jr z, .speed_tie
+	jp nc, .player_first
+	jp .enemy_first
+
+.speed_tie
+	ldh a, [hSerialConnectionStatus]
+	cp USING_INTERNAL_CLOCK
+	jr z, .player_2c
+	call BattleRandom
+	cp 50 percent + 1
+	jp c, .player_first
+	jp .enemy_first
+
+.player_2c
+	call BattleRandom
+	cp 50 percent + 1
+	jp c, .enemy_first
 	
 .player_first
 	scf
 	ret
 
+.player_quick_claw_first
+	ld hl, PlayerQuickClawText
+	call StdBattleTextbox
+	jr .player_first
+
+.enemy_quick_claw_first
+	ld hl, EnemyQuickClawText
+	call StdBattleTextbox
 .enemy_first
 	and a
 	ret
