@@ -3402,14 +3402,21 @@ EnemySwitch_SetMode:
 	call ResetEnemyBattleVars
 	call CheckWhetherSwitchmonIsPredetermined
 	jr c, .try_switch
-	farcall FindAliveEnemyMons
-    farcall FindEnemyMonsWithAtLeastQuarterMaxHP
-	farcall FindEnemyMonsThatResistPlayer
-    farcall FindEnemyMonsWithASuperEffectiveMoveSwitch
+	
+	push hl
+	farcall FindMonToSwitchResistSE
+	pop hl
+	ld a, [wEnemyAISwitchScore]
+	cp $ff
+	jr nz, .test_switch
+	
+	push hl
+	farcall FindMonToSwitchSESwitch
+	pop hl
 	ld a, [wEnemyAISwitchScore]
 	cp $f4
 	jr nz, .test_switch
-.find_resist
+	
 	farcall FindEnemyMonsImmuneToOrResistsLastCounterMove
 .test_switch
 	ld a, [wEnemyAISwitchScore]

@@ -1668,6 +1668,15 @@ AI_Smart_HealBell:
 AI_Smart_PriorityHit:
 	call AICompareSpeed
 	ret c
+	
+; Dismiss this move if the enemy won't be fainted immediately.
+
+	push hl
+	farcall CheckOnlyEnemyMoveMatchups
+	pop hl
+	ld a, [wEnemyAISwitchScore]
+	cp BASE_AI_SWITCH_SCORE - 2
+	jp z, AIDiscourageMove
 
 ; Dismiss this move if the player is flying or underground.
 	ld a, [wPlayerSubStatus3]
@@ -1912,21 +1921,34 @@ AI_Smart_Curse:
 
 .ghost_continue
 	call AICheckEnemyQuarterHP
-	jp nc, .approve
+	jp nc, .rarely_greatly_encourage
 	
-	ld a, BASE_AI_SWITCH_SCORE
-	ld [wEnemyAISwitchScore], a
 	push hl
-	farcall CheckEnemyMoveMatchups
+	farcall CheckPlayerMoveTypeMatchups
+	pop hl
+	
+	ld a, [wEnemyAISwitchScore]
+	cp BASE_AI_SWITCH_SCORE
+	jp nc, AI_Discourage_Greatly
+	
+	push hl
+	farcall CheckOnlyEnemyMoveMatchups
 	pop hl
 	
 	ld a, [wEnemyAISwitchScore]
 	cp BASE_AI_SWITCH_SCORE
 	jr c, .greatly_encourage
 	
+	call AI_Discourage_Greatly
 	call AI_80_20
 	ret c
 	jp AI_Discourage_Greatly
+	
+.rarely_greatly_encourage
+	call AI_80_20
+	ret nc
+	
+	jp AI_Encourage_Greatly
 
 .maybe_greatly_encourage
 	call AI_50_50
@@ -2300,10 +2322,8 @@ AI_Smart_Pursuit:
 	cp BASE_AI_SWITCH_SCORE + 1
 	jr nc, .encourage
 	
-	ld a, BASE_AI_SWITCH_SCORE
-	ld [wEnemyAISwitchScore], a
 	push hl
-	farcall CheckEnemyMoveMatchups
+	farcall CheckOnlyEnemyMoveMatchups
 	pop hl 
 	ld a, [wEnemyAISwitchScore]
 	cp BASE_AI_SWITCH_SCORE
@@ -2856,6 +2876,49 @@ AICheckPlayerQuarterHP:
 	sbc b
 	pop hl
 	ret
+	
+MoveAICheckTurnsToKOAI:
+	push hl
+	push de
+	ld a, [wEnemyMonJustFainted]
+	and a
+	jr nz, .just_fainted
+	ld a, [wPlayerTurnsTaken]
+	and a
+	jr z, .max_turns
+	ld hl, wEnemyDamageTakenThisTurn
+	ld a, [hli]
+	cpl
+	ld e, a
+	ld a, [hl]
+	cpl
+	ld d, a
+	and e
+	cp -1
+	jr z, .max_turns
+	inc de
+	ld hl, wEnemyMonHP
+	ld a, [hli]
+	ld h, [hl]
+	ld l, a
+	xor a
+.loop
+	inc a
+	add hl, de
+	jr nc, .less_than_four_turns
+	cp 4
+	jr c, .loop
+	jr .max_turns
+.just_fainted
+	xor a
+	ld [wEnemyMonJustFainted], a
+.max_turns
+	ld a, -1
+.less_than_four_turns
+	cp a, 3
+	pop de
+	pop hl
+	ret
 
 AIHasMoveEffect:
 ; Return carry if the enemy has move b.
@@ -2924,11 +2987,21 @@ AIHasMoveInArray:
 INCLUDE "data/battle/ai/useful_moves.asm"
 
 AI_Opportunist:
-; Discourage stall moves when the player's HP is low.
+; Discourage status moves when the player's HP is low.
 
-; Discourage stall moves if enemy's HP is below 25%.
+; Discourage status moves if enemy's HP is below 25%.
 	call AICheckPlayerQuarterHP
 	ret c
+	
+; Discourage status moves if enemy has very good matchup
+; against player.
+
+	push hl
+	farcall CheckPlayerMoveTypeMatchups
+	pop hl
+	ld a, [wEnemyAISwitchScore]
+	cp BASE_AI_SWITCH_SCORE
+	jr nc, .checkmove
 
 	call AI_50_50
 	ret c
@@ -2964,6 +3037,14 @@ INCLUDE "data/battle/ai/stall_moves.asm"
 
 
 AI_Aggressive:
+; Be aggressive when the player has a status condition.
+	ld a, [wBattleMonStatus]
+	bit FRZ, a
+	jr nz, .start
+	and SLP
+	jr nz, .start
+	
+; Be aggressive when either player or enemy has low hp.
 	call AICheckEnemyHalfHP
 	jr nc, .start
 	call AICheckPlayerHalfHP
@@ -3417,46 +3498,6 @@ endr
 	jr .checkmove
 
 INCLUDE "data/battle/ai/risky_effects.asm"
-
-MoveAICheckTurnsToKOAI:
-	ld a, [wEnemyMonJustFainted]
-	and a
-	jr nz, .just_fainted
-	ld a, [wPlayerTurnsTaken]
-	and a
-	jr z, .max_turns
-	ld hl, wEnemyDamageTakenThisTurn
-	ld a, [hli]
-	cpl
-	ld e, a
-	ld a, [hl]
-	cpl
-	ld d, a
-	and e
-	cp -1
-	jr z, .max_turns
-	inc de
-	ld hl, wEnemyMonHP
-	ld a, [hli]
-	ld h, [hl]
-	ld l, a
-	xor a
-.loop
-	inc a
-	add hl, de
-	jr nc, .less_than_four_turns
-	cp 4
-	jr c, .loop
-	jr .max_turns
-.just_fainted
-	xor a
-	ld [wEnemyMonJustFainted], a
-.max_turns
-	ld a, -1
-.less_than_four_turns
-	cp a, 3
-	ret
-
 
 AI_None:
 	ret

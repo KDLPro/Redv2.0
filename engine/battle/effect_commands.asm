@@ -346,7 +346,7 @@ BattleCommand_CheckTurn:
 
 	; 25% chance to be fully paralyzed
 	call BattleRandom
-	cp 25 percent
+	cp 25 percent + 1
 	ret nc
 
 	ld hl, FullyParalyzedText
@@ -624,7 +624,7 @@ CheckEnemyTurn:
 
 	; 25% chance to be fully paralyzed
 	call BattleRandom
-	cp 25 percent
+	cp 25 percent + 1
 	ret nc
 
 	ld hl, FullyParalyzedText

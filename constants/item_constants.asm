@@ -114,7 +114,7 @@
 	const SMOKE_BALL   ; 6a
 	const NEVERMELTICE ; 6b
 	const MAGNET       ; 6c
-	const MIRACLEBERRY ; 6d
+	const MIRACLEBERRY ; 6d, Lum Berry
 	const PEARL        ; 6e
 	const BIG_PEARL    ; 6f
 	const EVERSTONE    ; 70
@@ -155,7 +155,7 @@
 	const ITEM_93      ; 93
 	const ITEM_94      ; 94
 	const ITEM_95      ; 95
-	const MYSTERYBERRY ; 96
+	const MYSTERYBERRY ; 96, Leppa Berry
 	const DRAGON_SCALE ; 97
 	const BERSERK_GENE ; 98
 	const ITEM_99      ; 99

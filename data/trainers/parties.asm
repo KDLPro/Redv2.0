@@ -3564,7 +3564,7 @@ MysticalmanGroup:
 	; MYSTICALMAN (1)
 	db "EUSINE@", TRAINERTYPE_COMPETITIVE_BASIC_NO_NICK
 	
-	db 26, UMBREON
+	db 28, UMBREON
 	db $aa, $aa
 	db $30, $00, $30, $30, $30, $30 ; hp, atk, def, spd, spa, spd
 	db NO_ITEM
@@ -3574,12 +3574,12 @@ MysticalmanGroup:
 	db $aa, $a9
 	db $30, $00, $00, $30, $30, $00 ; hp, atk, def, spd, spa, spd
 	db GOLD_BERRY
-	db SLEEP_POWDER, GIGA_DRAIN, SLUDGE_BOMB, RAZOR_LEAF
+	db STUN_SPORE, GIGA_DRAIN, SLUDGE_BOMB, LEECH_LIFE
 	
-	db 26, POLIWHIRL
+	db 29, POLIWRATH
 	db $a9, $aa
 	db $20, $80, $40, $00, $00, $00 ; hp, atk, def, spd, spa, spd
-	db GOLD_BERRY
+	db MIRACLEBERRY
 	db SURF, ICE_PUNCH, CROSS_CHOP, HYPNOSIS
 	
 	db 28, HAUNTER  
@@ -3590,7 +3590,7 @@ MysticalmanGroup:
 	
 	db 27, NOCTOWL
 	db $aa, $aa    
-	db $30, $00, $00, $30, $30, $00 ; hp, atk, def, spd, spa, spd
+	db $30, $20, $00, $30, $30, $30 ; hp, atk, def, spd, spa, spd
 	db LEFTOVERS
 	db HYPNOSIS, PSYCHIC_M, WING_ATTACK, HYPER_VOICE
 	
