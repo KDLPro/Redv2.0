@@ -1229,6 +1229,7 @@ AI_Smart_Paralyze:
 	call AICheckPlayerQuarterHP
 	jr nc, .discourage
 	
+; Encourage this move if player has good matchup.
 	push hl
 	farcall CheckPlayerMoveTypeMatchups
 	pop hl

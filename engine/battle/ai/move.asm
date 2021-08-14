@@ -35,6 +35,21 @@ AISwitchChooseMove:
 	jr .checkmove
 	
 .done_checking_moves
+
+; Higher chance to predict if player has bad matchup.
+	push hl
+	farcall CheckPlayerMoveTypeMatchups
+	pop hl
+	ld a, [wEnemyAISwitchScore]
+	cp BASE_AI_SWITCH_SCORE
+	jr c, .good_matchup
+
+	call Random
+	cp 30 percent + 1
+	ret nc
+	jr AIChooseMove
+
+.good_matchup
 	call Random
 	cp 20 percent + 1
 	ret nc

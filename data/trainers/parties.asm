@@ -3576,17 +3576,17 @@ MysticalmanGroup:
 	db GOLD_BERRY
 	db STUN_SPORE, GIGA_DRAIN, SLUDGE_BOMB, LEECH_LIFE
 	
-	db 29, POLIWRATH
-	db $a9, $aa
-	db $20, $80, $40, $00, $00, $00 ; hp, atk, def, spd, spa, spd
-	db MIRACLEBERRY
-	db SURF, ICE_PUNCH, CROSS_CHOP, HYPNOSIS
-	
-	db 28, HAUNTER  
+	db 28, MISDREAVUS
 	db $a9, $9a
 	db $30, $00, $00, $30, $30, $00 ; hp, atk, def, spd, spa, spd
 	db NO_ITEM
 	db SHADOW_BALL, HYPNOSIS, PSYCHIC_M, CURSE
+	
+	db 27, SANDSLASH
+	db $aa, $aa
+	db $20, $80, $40, $00, $00, $00 ; hp, atk, def, spd, spa, spd
+	db QUICK_CLAW
+	db EARTHQUAKE, ROCK_TOMB, ROCK_SLIDE, ROCK_SMASH
 	
 	db 27, NOCTOWL
 	db $aa, $aa    
@@ -3594,9 +3594,9 @@ MysticalmanGroup:
 	db LEFTOVERS
 	db HYPNOSIS, PSYCHIC_M, WING_ATTACK, HYPER_VOICE
 	
-	db 27, GRAVELER
-	db $aa, $aa
+	db 29, POLIWRATH
+	db $a9, $aa
 	db $20, $80, $40, $00, $00, $00 ; hp, atk, def, spd, spa, spd
-	db QUICK_CLAW
-	db EARTHQUAKE, ROCK_TOMB, ROCK_SLIDE, ROCK_SMASH
+	db MIRACLEBERRY
+	db SURF, ICE_PUNCH, CROSS_CHOP, HYPNOSIS
 	db -1 ; end

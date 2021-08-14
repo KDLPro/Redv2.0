@@ -216,17 +216,18 @@ CheckEnemyMoveMatchups:
 
 .exit
 
+	ld a, c
+	and a
+	call z, DoubleDown ; double down
+	call z, DoubleDown ; double down
+	cp 5
+	call c, DecreaseScore ; down
+	cp 100
+
 	pop bc
 	pop de
 	pop hl
-
-	ld a, c
-	and a
-	call c, DoubleDown
-	jr z, DoubleDown ; double down
-	cp 5
-	jr c, DecreaseScore ; down
-	cp 100
+	
 	ret c
 	jr IncreaseScore ; up
 
@@ -1149,7 +1150,7 @@ FindEnemyMonsImmuneToOrResistsLastCounterMoveReverse:
 	call AIGetMoveAttr
 	and a
 	jr z, .next
-	; and the Pokemon is immune to it...
+	; and the Pokemon is immune or resists it...
 	inc hl
 	call AIGetMoveByte
 	ld hl, wBaseType
@@ -1352,25 +1353,6 @@ FindAliveEnemyMonsWithASuperEffectiveMoveSwitch:
 	ld a, [hld]
 	cp c
 	ld a, [hl]
-	sbc b
-	pop bc
-	pop hl
-	jr nc, .next
-	
-	; Check the Pokemon and if it's faster than player
-	push hl
-	push bc
-	ld bc, 8
-	add hl, bc
-	
-	inc hl
-	ld a, [hld]
-	ld b, a
-	ld a, [wBattleMonSpeed + 1]
-	cp b
-	ld a, [hl]
-	ld b, a
-	ld a, [wBattleMonSpeed]
 	sbc b
 	pop bc
 	pop hl
