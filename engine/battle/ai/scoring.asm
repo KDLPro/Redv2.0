@@ -375,7 +375,6 @@ AI_Smart_EffectHandlers:
 	dbw EFFECT_RAIN_DANCE,       AI_Smart_RainDance
 	dbw EFFECT_SUNNY_DAY,        AI_Smart_SunnyDay
 	dbw EFFECT_BELLY_DRUM,       AI_Smart_BellyDrum
-	dbw EFFECT_PSYCH_UP,         AI_Smart_PsychUp
 	dbw EFFECT_MIRROR_COAT,      AI_Smart_MirrorCoat
 	dbw EFFECT_SKULL_BASH,       AI_Smart_SkullBash
 	dbw EFFECT_TWISTER,          AI_Smart_Twister
@@ -414,12 +413,8 @@ AI_Smart_Sleep:
 	
 	ld b, EFFECT_NIGHTMARE
 	call AIHasMoveEffect
-	ret nc
+	jr nc, .discourage
 	jr .encourage
-	
-.effect_move
-	pop hl
-	ret
 
 .encourage
 	call AI_50_50
@@ -571,8 +566,7 @@ AI_Smart_LockOn:
 	cp 71 percent - 1
 	jr nc, .checkmove2
 
-	dec [hl]
-	dec [hl]
+	call AI_Encourage_Greatly
 	jr .checkmove2
 
 .dismiss
@@ -2037,7 +2031,7 @@ AI_Smart_Foresight:
 	cp 8 percent
 	ret c
 
-	inc [hl]
+	call AI_Discourage
 	ret
 
 .encourage
@@ -2201,16 +2195,8 @@ AI_Smart_Rollout:
 	bit PAR, a
 	jr nz, .maybe_discourage
 
-; 80% chance to discourage this move if the enemy's HP is below 25%,
-; or if accuracy or evasion modifiers favour the player.
+; 80% chance to discourage this move if the enemy's HP is below 25%.
 	call AICheckEnemyQuarterHP
-	jr nc, .maybe_discourage
-
-	ld a, [wEnemyAccLevel]
-	cp BASE_STAT_LEVEL
-	jr c, .maybe_discourage
-	ld a, [wPlayerEvaLevel]
-	cp BASE_STAT_LEVEL + 1
 	jr nc, .maybe_discourage
 
 ; 80% chance to greatly discourage this move otherwise.
@@ -2345,6 +2331,7 @@ AI_Smart_Pursuit:
 .encourage
 	call AI_60_40
 	ret c
+	call AI_Encourage
 	jp AI_Encourage_Greatly
 
 AI_Smart_RapidSpin:
@@ -2513,60 +2500,6 @@ AI_Smart_BellyDrum:
 	add 5
 	ld [hl], a
 	ret
-
-AI_Smart_PsychUp:
-	push hl
-	ld hl, wEnemyAtkLevel
-	ld b, NUM_LEVEL_STATS
-	ld c, 100
-
-; Calculate the sum of all enemy's stat level modifiers. Add 100 first to prevent underflow.
-; Put the result in c. c will range between 58 and 142.
-.enemy_loop
-	ld a, [hli]
-	sub BASE_STAT_LEVEL
-	add c
-	ld c, a
-	dec b
-	jr nz, .enemy_loop
-
-; Calculate the sum of all player's stat level modifiers. Add 100 first to prevent underflow.
-; Put the result in d. d will range between 58 and 142.
-	ld hl, wPlayerAtkLevel
-	ld b, NUM_LEVEL_STATS
-	ld d, 100
-
-.player_loop
-	ld a, [hli]
-	sub BASE_STAT_LEVEL
-	add d
-	ld d, a
-	dec b
-	jr nz, .player_loop
-
-; Greatly discourage this move if enemy's stat levels are higher than player's (if c>=d).
-	ld a, c
-	sub d
-	pop hl
-	jr nc, .discourage
-
-; Else, 80% chance to encourage this move unless player's accuracy level is lower than -1...
-	ld a, [wPlayerAccLevel]
-	cp BASE_STAT_LEVEL - 1
-	ret c
-
-; ...or enemy's evasion level is higher than +0.
-	ld a, [wEnemyEvaLevel]
-	cp BASE_STAT_LEVEL + 1
-	ret nc
-
-	call AI_80_20
-	ret c
-
-	jp AI_Encourage
-
-.discourage
-	jp AI_Discourage_Greatly
 
 AI_Smart_MirrorCoat:
 	push hl
@@ -3058,12 +2991,12 @@ AI_Aggressive:
 ; Discourage all damaging moves that deal low damage unless they're reckless too.
 	ld hl, wEnemyAIMoveScores - 1
 	ld de, wEnemyMonMoves
-	ld b, 0
+	ld bc, 0
 .checkmove
 	inc b
 	ld a, b
 	cp NUM_MOVES + 1
-	jr z, .done
+	jp z, .done
 
 	push hl
 	push de
@@ -3074,31 +3007,21 @@ AI_Aggressive:
 	and a
 	jr z, .nodamage
 	call AIDamageCalc
-	pop bc
 	pop de
 	push de
 	ld a, [de]
 	cp PURSUIT 
 	call z, PursuitDamage
+	pop bc
 	pop de
 	pop hl
 	
 	inc de
 	inc hl
 	
-	push hl
-	push de
-	push bc
-	farcall CheckPlayerMoveTypeMatchups
-	pop bc
-	pop de
-	pop hl
-	ld a, [wEnemyAISwitchScore]
-	cp BASE_AI_SWITCH_SCORE
-	jr c, .low_hp
-	
 	call AICheckEnemyHalfHP
 	jr nc, .low_hp
+	
 	push hl
 	push de
 	push bc
@@ -3107,10 +3030,29 @@ AI_Aggressive:
 	pop de
 	pop hl
 	
+; Encourage moves that can OHKO and have perfect accuracy.
+	cp 1
+	jr nz, .check_turns_to_ko
+	
+	ld a, [wEnemyMoveStruct + MOVE_ACC]
+	cp 99 percent + 1
+	jr c, .check_turns_to_ko
+	
+	call AI_Encourage
+	
+; Encourage moves that have no recoil.
+	
+	ld a, [wEnemyMoveStruct + MOVE_EFFECT]
+	cp EFFECT_RECOIL_HIT
+	jr z, .check_turns_to_ko
+	
+	call AI_Encourage
+	
+.check_turns_to_ko
 ; Discourage this move it takes 4 or more hits to KO player
 	cp 4
 	jr c, .checkmove
-
+	
 .check_reckless
 ; Ignore this move if it is reckless.
 	push hl
@@ -3136,9 +3078,6 @@ AI_Aggressive:
 	inc de
 	inc hl
 	jr .checkmove
-
-.done
-	ret
 	
 .low_hp
 	push hl
@@ -3148,19 +3087,36 @@ AI_Aggressive:
 	pop bc
 	pop de
 	pop hl
+
+; Encourage moves that can OHKO and have perfect accuracy.
+	cp 1
+	jr nz, .check_turns_to_ko_lowhp
+	
+	ld a, [wEnemyMoveStruct + MOVE_ACC]
+	cp 99 percent + 1
+	jr c, .check_turns_to_ko_lowhp
+	
+	call AI_Encourage
+	
+	ld a, [wEnemyMoveStruct + MOVE_EFFECT]
+	cp EFFECT_RECOIL_HIT
+	jr z, .check_turns_to_ko_lowhp
+	
+	call AI_Encourage
+	
+.check_turns_to_ko_lowhp
 	
 ; Discourage this move it takes 3 or more hits to KO player
 	cp 3
-	jr c, .checkmove
+	jp c, .checkmove
 	
-; Otherwise, randomly encourage this move if it takes 1 hit to KO player.
-	cp 2
-	jr z, .checkmove
-	
-	call AI_50_50
-	jr c, .checkmove
-	call AI_Encourage
 	jr .check_reckless
+	
+.done
+	ld a, 0
+	ld [wCurDamage], a
+	ld [wCurDamage+1], a
+	ret
 
 INCLUDE "data/battle/ai/reckless_moves.asm"
 
@@ -3544,21 +3500,15 @@ AI_60_40:
 	cp 40 percent - 1
 	ret
 	
+AI_Discourage_Greatly:
+	call AI_Discourage
 AI_Discourage:
 	inc [hl]
 	ret
-	
-AI_Discourage_Greatly:
-	inc [hl]
-	inc [hl]
-	ret
-	
-AI_Encourage:
-	dec [hl]
-	ret
-	
+
 AI_Encourage_Greatly:
-	dec [hl]
+	call AI_Encourage
+AI_Encourage:
 	dec [hl]
 	ret
 	

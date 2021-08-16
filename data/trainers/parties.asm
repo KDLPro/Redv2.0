@@ -3566,37 +3566,37 @@ MysticalmanGroup:
 	
 	db 28, UMBREON
 	db $aa, $aa
-	db $30, $00, $30, $30, $30, $30 ; hp, atk, def, spd, spa, spd
+	db $40, $00, $40, $40, $40, $40 ; hp, atk, def, spd, spa, spd
 	db NO_ITEM
 	db REFLECT, PURSUIT, CRUNCH, QUICK_ATTACK
 	
 	db 27, VICTREEBEL
 	db $aa, $a9
-	db $30, $00, $00, $30, $30, $00 ; hp, atk, def, spd, spa, spd
+	db $70, $00, $00, $70, $30, $00 ; hp, atk, def, spd, spa, spd
 	db GOLD_BERRY
 	db STUN_SPORE, GIGA_DRAIN, SLUDGE_BOMB, LEECH_LIFE
 	
 	db 28, MISDREAVUS
 	db $a9, $9a
-	db $30, $00, $00, $30, $30, $00 ; hp, atk, def, spd, spa, spd
+	db $30, $00, $70, $30, $70, $00 ; hp, atk, def, spd, spa, spd
 	db NO_ITEM
 	db SHADOW_BALL, HYPNOSIS, PSYCHIC_M, CURSE
 	
 	db 27, SANDSLASH
 	db $aa, $aa
-	db $20, $80, $40, $00, $00, $00 ; hp, atk, def, spd, spa, spd
+	db $20, $80, $40, $00, $40, $00 ; hp, atk, def, spd, spa, spd
 	db QUICK_CLAW
 	db EARTHQUAKE, ROCK_TOMB, ROCK_SLIDE, ROCK_SMASH
 	
 	db 27, NOCTOWL
 	db $aa, $aa    
-	db $30, $20, $00, $30, $30, $30 ; hp, atk, def, spd, spa, spd
+	db $50, $50, $00, $00, $30, $30 ; hp, atk, def, spd, spa, spd
 	db LEFTOVERS
 	db HYPNOSIS, PSYCHIC_M, WING_ATTACK, HYPER_VOICE
 	
 	db 29, POLIWRATH
 	db $a9, $aa
-	db $20, $80, $40, $00, $00, $00 ; hp, atk, def, spd, spa, spd
+	db $20, $80, $40, $00, $40, $00 ; hp, atk, def, spd, spa, spd
 	db MIRACLEBERRY
 	db SURF, ICE_PUNCH, CROSS_CHOP, HYPNOSIS
 	db -1 ; end
