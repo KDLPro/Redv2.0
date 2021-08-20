@@ -391,7 +391,7 @@ AI_Smart_EffectHandlers:
 AI_Smart_Sleep:
 ; Greatly encourage sleep inducing moves if the enemy has either Dream Eater or Nightmare,
 ; or if the enemy has bad matchup.
-; Greatly discourage sleep inducing moves if player has low HP.
+; Greatly discourage sleep inducing moves if player has low HP or if the enemy doesn't have Nightmare.
 ; 50% chance to greatly encourage sleep inducing moves otherwise.
 
 	ld b, EFFECT_DREAM_EATER
@@ -405,8 +405,15 @@ AI_Smart_Sleep:
 	farcall CheckPlayerMoveTypeMatchups
 	pop hl
 	ld a, [wEnemyAISwitchScore]
-	cp BASE_AI_SWITCH_SCORE + 1
-	jr nc, .encourage
+	cp BASE_AI_SWITCH_SCORE
+	jr c, .encourage
+	
+	push hl
+	farcall CheckOnlyEnemyMoveMatchups
+	pop hl
+	ld a, [wEnemyAISwitchScore]
+	cp BASE_AI_SWITCH_SCORE - 1
+	jr c, .encourage
 	
 	call AICheckPlayerQuarterHP
 	jr nc, .discourage
@@ -1661,23 +1668,18 @@ AI_Smart_HealBell:
 
 
 AI_Smart_PriorityHit:
-	call AICompareSpeed
-	ret c
-	
-; Dismiss this move if the enemy won't be fainted immediately.
-
-	push hl
-	farcall CheckOnlyEnemyMoveMatchups
-	pop hl
-	ld a, [wEnemyAISwitchScore]
-	cp BASE_AI_SWITCH_SCORE - 2
-	jp z, AIDiscourageMove
-
 ; Dismiss this move if the player is flying or underground.
 	ld a, [wPlayerSubStatus3]
 	and 1 << SUBSTATUS_FLYING | 1 << SUBSTATUS_UNDERGROUND
 	jp nz, AIDiscourageMove
+	
+	call AICompareSpeed
+	jr nc, .check_ko
+	
+	call AI_50_50
+	ret c
 
+.check_ko
 ; Greatly encourage this move if it will KO the player.
 	ld a, 1
 	ldh [hBattleTurn], a
@@ -1694,9 +1696,20 @@ AI_Smart_PriorityHit:
 	cp c
 	ld a, [wBattleMonHP]
 	sbc b
-	ret nc
+	jr nc, .not_ko
 	call AI_Encourage_Greatly
 	jp AI_Encourage
+	
+.not_ko
+; Dismiss this move if the enemy won't be fainted immediately.
+
+	push hl
+	farcall CheckOnlyEnemyMoveMatchups
+	pop hl
+	ld a, [wEnemyAISwitchScore]
+	cp BASE_AI_SWITCH_SCORE - 2
+	jp nc, AIDiscourageMove
+	ret
 
 AI_Smart_Thief:
 ; Don't use Thief unless it's the only move available.
@@ -2983,6 +2996,8 @@ AI_Aggressive:
 	jr nc, .start
 	call AICheckPlayerHalfHP
 	jr nc, .start
+	
+; 50% chance to be aggressive otherwise.
 	call AI_50_50
 	ret c
 .start
