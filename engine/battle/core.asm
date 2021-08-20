@@ -3487,11 +3487,26 @@ ResetEnemyBattleVars:
 	ld [wEnemyItemState], a
 	xor a
 	ld [wPlayerWrapCount], a
+	ld a, [wBattleHasJustStarted]
+	and a
+	jr nz, .slide
+	ld a, [wEnemyMonJustFainted]
+	and a
+	jr z, .no_faint
+.slide
 	hlcoord 18, 0
 	ld a, 8
 	call SlideBattlePicOut
+.empty	
 	call EmptyBattleTextbox
 	jp LoadStandardMenuHeader
+	
+.no_faint
+	call SetEnemyTurn
+	ld de, ANIM_RETURN_MON
+	call Call_PlayBattleAnim
+	call SetPlayerTurn
+	jr .empty
 
 ResetBattleParticipants:
 	xor a

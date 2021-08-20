@@ -814,16 +814,12 @@ AI_Switch:
 	call PrintText
 
 .skiptext
-	ld a, 1
-	ld [wBattleHasJustStarted], a
 	farcall NewEnemyMonStatus
 	farcall ResetEnemyStatLevels
 	ld hl, wPlayerSubStatus1
 	res SUBSTATUS_IN_LOVE, [hl]
 	farcall EnemySwitch
 	farcall ResetBattleParticipants
-	xor a
-	ld [wBattleHasJustStarted], a
 	ld a, [wLinkMode]
 	and a
 	ret nz
