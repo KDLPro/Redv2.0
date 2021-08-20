@@ -779,6 +779,11 @@ WasBurnedText:
 	text "<TARGET>"
 	line "was burned!"
 	autodone
+	
+AlreadyBurnedText:
+	text "<TARGET>'s"
+	line "already frozen!"
+	autodone
 
 DefrostedOpponentText:
 	text "<USER>"
@@ -788,6 +793,11 @@ DefrostedOpponentText:
 WasFrozenText:
 	text "<TARGET>"
 	line "was frozen solid!"
+	autodone
+	
+AlreadyFrozenText:
+	text "<TARGET>'s"
+	line "already frozen!"
 	autodone
 
 WontRiseAnymoreText:
@@ -966,22 +976,6 @@ HPIsFullText:
 DraggedOutText:
 	text "<USER>"
 	line "was dragged out!"
-	autodone
-
-autoparalyzedText:
-	text "<TARGET>'s"
-	line "autoparalyzed! Maybe"
-	scroll "it can't attack!"
-	autodone
-
-FullyautoparalyzedText:
-	text "<USER>'s"
-	line "fully autoparalyzed!"
-	autodone
-
-AlreadyautoparalyzedText:
-	text "<TARGET>'s"
-	line "already autoparalyzed!"
 	autodone
 
 ProtectedByText:
