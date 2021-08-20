@@ -87,6 +87,7 @@ CheckPlayerMoveTypeMatchups:
 	call IncreaseScore
 
 .done_checking_moves
+	call CheckEnemyMoveMatchups
 	ld a, d
 	and a
 	jr nz, .unknown_moves
@@ -153,10 +154,16 @@ CheckEnemyMoveMatchups:
 	inc de
 	
 	push bc
+	push af
+	ld a, [wEnemyAISwitchScore]
+	push af
 	push de
 	cp PURSUIT 
 	call z, SwitchPursuitDamage
 	pop de
+	pop af
+	ld [wEnemyAISwitchScore], a
+	pop af
 	
 	push de
 	push hl
@@ -173,32 +180,8 @@ CheckEnemyMoveMatchups:
 	; small damage
 	
 	inc c
-	cp $FF
-	jr z, .loop
-
-	; decent damage
-	
-	inc c
-	inc c
-	inc c
-	inc c
-	inc c
 	cp 4
 	jr nc, .loop
-
-	; huge damage
-	ld c, 100
-	jr .loop
-	
-.player_low_hp
-	pop af
-	pop bc
-	
-	; small damage
-	
-	inc c
-	cp $FF
-	jr z, .loop
 
 	; decent damage
 	
@@ -213,15 +196,47 @@ CheckEnemyMoveMatchups:
 	; huge damage
 	ld c, 100
 	jr .loop
+	
+.player_low_hp
+	pop af
+	pop bc
+	
+	; small damage
+	
+	inc c
+	cp 3
+	jr nc, .loop
+
+	; decent damage
+	
+	inc c
+	inc c
+	inc c
+	inc c
+	inc c
+	cp 2
+	jr nc, .loop
+
+	; huge damage
+	ld c, 100
+	jr .loop
 
 .exit
-
 	ld a, c
 	and a
 	call z, DoubleDown ; double down
 	call z, DoubleDown ; double down
 	cp 5
 	call c, DecreaseScore ; down
+	ld a, [wEnemyTurnsTaken]
+	cp 6
+	jr c, .done_check_stall
+	ld a, [wPlayerTurnsTaken]
+	cp 6
+	jr c, .done_check_stall
+	call DoubleDown
+.done_check_stall
+	ld a, c
 	cp 100
 
 	pop bc
@@ -229,7 +244,7 @@ CheckEnemyMoveMatchups:
 	pop hl
 	
 	ret c
-	jr IncreaseScore ; up
+	jr IncreaseSharply ; up
 
 DoubleDown:
 	call DecreaseScore
@@ -239,6 +254,8 @@ DecreaseScore:
 	ld [wEnemyAISwitchScore], a
 	ret
 
+IncreaseSharply:
+	call IncreaseScore
 IncreaseScore:
 	ld a, [wEnemyAISwitchScore]
 	inc a
@@ -392,10 +409,24 @@ CheckAbleToSwitch:
     jp	 .checklockedon
 	
 .startsmartcheck
+	 ; Randomize switch if there is status that
+	 ; prevents the enemy from attacking
+	ld a, [wEnemyMonStatus]
+	bit FRZ, a
+	jr nz, .stall_switch
+	bit PAR, a
+	jr nz, .stall_switch
+	and SLP
+	jr nz, .stall_switch
+	jr .no_stall_status
+.stall_switch
+	call SixtyPercentRoll
+	jp nc, .smartcheck_speed_matchup_check
+.no_stall_status
 	 ; Checks if Toxic Count is at least 3
 	 ; Checks if Encore Count is at least 2
 	call CheckToxicEncoreCount
-	jp nc, .rollswitch
+	jp nc, .smartcheck
 	 ; Checks if Evasion is greater than 0
 	ld a, [wEnemyEvaLevel]
     cp BASE_STAT_LEVEL + 1
@@ -403,7 +434,7 @@ CheckAbleToSwitch:
 	 ; Checks if Accuracy is below -1
     ld a, [wEnemyAccLevel]
     cp BASE_STAT_LEVEL - 1
-    jr c, .rollswitch
+    jp c, .smartcheck
 	call CheckStatBoosts
 .cont_check
 	 ; Checks if AI has no boosts
@@ -422,19 +453,10 @@ CheckAbleToSwitch:
 	 ; Check if player has at least 2 stat buffs
 	ld a, b
 	cp 2
-	jr nc, .rollswitch
+	jp nc, .checkmatchups
 	 ; Checks if non-spd stat (because of Curse) is below -2
 	call CheckLoweredStatsExceptSpd
-	jr c, .rollswitch
-	jr .checklockedon
-
-.rollswitch
-	ld a, [wEnemyConsecutiveSwitches]
-	cp 2
-	jp nc, .rare_switch
-	
-	call SixtyPercentRoll
-	jr c, .switch
+	jp c, .smartcheck
 	
 .checklockedon
 	 ; AI may switch if player is recharging
@@ -480,8 +502,10 @@ CheckAbleToSwitch:
 	
 .find_resist
 	call FindEnemyMonsThatResistPlayer
-	call FindAliveEnemyMonsWithASuperEffectiveMove
-	
+	call FindAliveEnemyMonsWithASuperEffectiveMove	
+	ld a, [wEnemyAISwitchScore]
+	cp $FF
+	call z, FindEnemyMonsImmuneToOrResistsLastCounterMove
 .do_switch
 	ld a, [wEnemyAISwitchScore]
 	add $10
@@ -1190,6 +1214,7 @@ FindAliveEnemyMonsWithASuperEffectiveMove:
 	ld b, 1 << (PARTY_LENGTH - 1)
 	ld c, 0
 .loop
+	; Check the Pokemon has at least 1/2 max HP...
 	push hl
 	push bc
 	ld b, [hl]
@@ -1391,14 +1416,17 @@ FindAliveEnemyMonsWithASuperEffectiveMoveSwitch:
 
 FindEnemyMonsThatResistPlayer:
 	push bc
-	ld hl, wOTPartySpecies
+	push de
+	ld hl, wOTPartyMon1
 	ld b, 1 << (PARTY_LENGTH - 1)
 	ld c, 0
+	ld a, [wEnemyMonsLeft]
+	ld d, a
 
 .loop
-	ld a, [hli]
-	cp $ff
-	jr z, .done
+	ld a, d
+	and a
+	jp z, .done
 
 	push hl
 	
@@ -1408,6 +1436,7 @@ FindEnemyMonsThatResistPlayer:
 	cp 2 ; at least one more turn before waking up
 	jp nc, .choose_mon
 	
+	ld a, [hl]
 	ld [wCurSpecies], a
 	call GetBaseData
 	ld a, [wLastPlayerCounterMove]
@@ -1431,6 +1460,8 @@ FindEnemyMonsThatResistPlayer:
 	ld a, [wTypeMatchup]
 	cp EFFECTIVE
 	jr nc, .dont_choose_mon
+	cp NO_EFFECT
+	jr z, .choose_mon
 	ld a, [wBattleMonType2]
 
 .check_type
@@ -1439,6 +1470,43 @@ FindEnemyMonsThatResistPlayer:
 	ld a, [wTypeMatchup]
 	cp EFFECTIVE
 	jr nc, .dont_choose_mon
+	cp NO_EFFECT
+	jr z, .choose_mon
+	
+	pop hl
+	push hl
+	; If the Pokemon is faster than the player...
+	push hl
+	push bc
+	ld bc, MON_SPD
+	add hl, bc
+	
+	inc hl
+	ld a, [hld]
+	ld b, a
+	ld a, [wBattleMonSpeed + 1]
+	cp b
+	ld a, [hl]
+	ld b, a
+	ld a, [wBattleMonSpeed]
+	sbc b
+	pop bc
+	pop hl
+	jr c, .choose_mon
+	
+	ld a, [wEnemyMonStatus]
+	bit FRZ, a
+	jr nz, .stall_status
+	bit PAR, a
+	jr nz, .stall_status
+	and SLP
+	jr nz, .stall_status
+	jr .dont_choose_mon
+
+.stall_status	
+	ld a, [wPlayerTurnsTaken]
+	cp 5
+	jr c, .dont_choose_mon
 
 .choose_mon
 	ld a, b
@@ -1448,10 +1516,19 @@ FindEnemyMonsThatResistPlayer:
 .dont_choose_mon
 	srl b
 	pop hl
-	jr .loop
+	
+	push bc
+	ld bc, PARTYMON_STRUCT_LENGTH
+	add hl, bc
+	pop bc
+	
+	dec d
+	
+	jp .loop
 
 .done
 	ld a, c
+	pop de
 	pop bc
 	and c
 	ld c, a
