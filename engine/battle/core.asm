@@ -3483,10 +3483,11 @@ ResetEnemyBattleVars:
 	ld [wLastEnemyCounterMove], a
 	ld [wLastEnemyMove], a
 	ld [wCurEnemyMove], a
+	ld [wCurDamage], a
+	ld [wCurDamage + 1], a
+	ld [wPlayerWrapCount], a
 	dec a
 	ld [wEnemyItemState], a
-	xor a
-	ld [wPlayerWrapCount], a
 	ld a, [wBattleHasJustStarted]
 	and a
 	jr nz, .slide

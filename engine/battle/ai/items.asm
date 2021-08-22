@@ -162,6 +162,7 @@ LoadMonToSwitchTo:
 	ret nc
 	ld d, 1
 	call CheckGlitchMon
+	ret z
 	jp VerifyTargetMonType
 	
 CheckGlitchMonAfterFaint:
@@ -795,6 +796,8 @@ AI_Switch:
 	res SUBSTATUS_RAGE, [hl]
 	xor a
 	ldh [hBattleTurn], a
+	ld [wCurDamage], a
+	ld [wCurDamage + 1], a
 	callfar PursuitSwitch
 
 	push af

@@ -10,7 +10,7 @@ CheckPlayerMoveTypeMatchups:
 	ld hl, wPlayerUsedMoves
 	ld a, [hl]
 	and a
-	jr z, .unknown_moves
+	jp z, .unknown_moves
 	
 	ld a, [wEnemyTurnsTaken]
 	and a
@@ -87,7 +87,14 @@ CheckPlayerMoveTypeMatchups:
 	call IncreaseScore
 
 .done_checking_moves
+	ld a, [wEnemyTurnsTaken]
+	cp 4
+	jr c, .done_check_stall
+	ld a, [wPlayerTurnsTaken]
+	cp 6
+	jr c, .done_check_stall
 	call CheckEnemyMoveMatchups
+.done_check_stall
 	ld a, d
 	and a
 	jr nz, .unknown_moves
@@ -97,7 +104,7 @@ CheckPlayerMoveTypeMatchups:
 	pop hl
 	xor a
 	ld [wCurDamage], a
-	ld [wCurDamage+1], a
+	ld [wCurDamage + 1], a
 	ret
 
 .unknown_moves
@@ -222,6 +229,10 @@ CheckEnemyMoveMatchups:
 	jr .loop
 
 .exit
+	xor a
+	ld [wCurDamage], a
+	ld [wCurDamage + 1], a
+	
 	ld a, c
 	and a
 	call z, DoubleDown ; double down
@@ -229,7 +240,7 @@ CheckEnemyMoveMatchups:
 	cp 5
 	call c, DecreaseScore ; down
 	ld a, [wEnemyTurnsTaken]
-	cp 6
+	cp 4
 	jr c, .done_check_stall
 	ld a, [wPlayerTurnsTaken]
 	cp 6
@@ -762,7 +773,7 @@ CheckAbleToSwitch:
 	jr nc, .rare_switch
 	call CheckEnemyMonsLessThanThree
 	jr c, .less_than_three
-	call SeventyPercentRoll
+	call SixtyFivePercentRoll
 	jr nc, .no_switch
 	jp .randomize
 .less_than_three
@@ -799,11 +810,11 @@ CheckAbleToSwitch:
 	jr nc, .rare_switch_revealed
 	call CheckEnemyMonsLessThanThree
 	jr c, .less_than_three_revealed
-	call SeventyPercentRoll
+	call SixtyPercentRoll
 	jr nc, .stay_in
 	jr .switch_out
 .less_than_three_revealed
-	call SixtyPercentRoll
+	call FiftyPercentRoll
 	jr c, .stay_in
 	jr .switch_out
 	
@@ -1055,6 +1066,10 @@ FindEnemyMonsImmuneToOrResistsLastCounterMove:
 	pop hl
 	jr nc, .next
 	
+	ld a, [wPlayerTurnsTaken]
+	cp 5
+	jr nc, .stalled
+	
 	; If the Pokemon is faster than the player...
 	push hl
 	push bc
@@ -1073,7 +1088,8 @@ FindEnemyMonsImmuneToOrResistsLastCounterMove:
 	pop bc
 	pop hl
 	jr nc, .next
-
+	
+.stalled
 	ld a, [hl]
 	ld [wCurSpecies], a
 	call GetBaseData
@@ -1145,6 +1161,11 @@ FindEnemyMonsImmuneToOrResistsLastCounterMoveReverse:
 	pop hl
 	jr nc, .next
 	
+	
+	ld a, [wPlayerTurnsTaken]
+	cp 5
+	jr nc, .stalled
+	
 	; If the Pokemon is faster than the player...
 	push hl
 	push bc
@@ -1164,6 +1185,7 @@ FindEnemyMonsImmuneToOrResistsLastCounterMoveReverse:
 	pop hl
 	jr nc, .next
 
+.stalled
 	ld a, [hl]
 	ld [wCurSpecies], a
 	call GetBaseData

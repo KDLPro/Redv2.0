@@ -342,11 +342,9 @@ AI_Smart_EffectHandlers:
 	dbw EFFECT_SNORE,            AI_Smart_Snore
 	dbw EFFECT_CONVERSION2,      AI_Smart_Conversion2
 	dbw EFFECT_LOCK_ON,          AI_Smart_LockOn
-	dbw EFFECT_DEFROST_OPPONENT, AI_Smart_DefrostOpponent
 	dbw EFFECT_SLEEP_TALK,       AI_Smart_SleepTalk
 	dbw EFFECT_DESTINY_BOND,     AI_Smart_DestinyBond
 	dbw EFFECT_REVERSAL,         AI_Smart_Reversal
-	dbw EFFECT_SPITE,            AI_Smart_Spite
 	dbw EFFECT_HEAL_BELL,        AI_Smart_HealBell
 	dbw EFFECT_PRIORITY_HIT,     AI_Smart_PriorityHit
 	dbw EFFECT_THIEF,            AI_Smart_Thief
@@ -396,9 +394,6 @@ AI_Smart_Sleep:
 
 	ld b, EFFECT_DREAM_EATER
 	call AIHasMoveEffect
-	jr c, .encourage
-
-	call MoveAICheckTurnsToKOAI
 	jr c, .encourage
 	
 	push hl
@@ -1548,61 +1543,6 @@ AI_Smart_DefrostOpponent:
 ; No move has EFFECT_DEFROST_OPPONENT, so this layer is unused.
 	ret
 
-AI_Smart_Spite:
-	ld a, [wLastPlayerCounterMove]
-	and a
-	jr nz, .usedmove
-
-	call AICompareSpeed
-	jp c, AIDiscourageMove
-
-	call AI_50_50
-	ret c
-	jp AI_Discourage
-
-.usedmove
-	push hl
-	ld b, a
-	ld c, NUM_MOVES
-	ld hl, wBattleMonMoves
-	ld de, wBattleMonPP
-
-.moveloop
-	ld a, [hli]
-	cp b
-	jr z, .foundmove
-
-	inc de
-	dec c
-	jr nz, .moveloop
-
-	pop hl
-	ret
-
-.foundmove
-	pop hl
-	ld a, [de]
-	cp 6
-	jr c, .encourage
-	cp 15
-	jr nc, .discourage
-
-	call Random
-	cp 39 percent + 1
-	ret nc
-
-.discourage
-	jp AI_Discourage
-
-.encourage
-	call Random
-	cp 39 percent + 1
-	ret c
-	jp AI_Encourage_Greatly
-
-.dismiss ; unreferenced
-	jp AIDiscourageMove
-
 AI_Smart_DestinyBond:
 AI_Smart_Reversal:
 AI_Smart_SkullBash:
@@ -2329,11 +2269,6 @@ AI_Smart_Pursuit:
 	cp BASE_AI_SWITCH_SCORE
 	jr nc, .encourage
 	
-	call MoveAICheckTurnsToKOAI
-	jr c, .discourage_greatly
-	
-	call AI_80_20
-	ret c
 	jp AI_Discourage
 	
 .discourage_greatly
@@ -2823,49 +2758,7 @@ AICheckPlayerQuarterHP:
 	sbc b
 	pop hl
 	ret
-	
-MoveAICheckTurnsToKOAI:
-	push hl
-	push de
-	ld a, [wEnemyMonJustFainted]
-	and a
-	jr nz, .just_fainted
-	ld a, [wPlayerTurnsTaken]
-	and a
-	jr z, .max_turns
-	ld hl, wEnemyDamageTakenThisTurn
-	ld a, [hli]
-	cpl
-	ld e, a
-	ld a, [hl]
-	cpl
-	ld d, a
-	and e
-	cp -1
-	jr z, .max_turns
-	inc de
-	ld hl, wEnemyMonHP
-	ld a, [hli]
-	ld h, [hl]
-	ld l, a
-	xor a
-.loop
-	inc a
-	add hl, de
-	jr nc, .less_than_four_turns
-	cp 4
-	jr c, .loop
-	jr .max_turns
-.just_fainted
-	xor a
-	ld [wEnemyMonJustFainted], a
-.max_turns
-	ld a, -1
-.less_than_four_turns
-	cp a, 3
-	pop de
-	pop hl
-	ret
+
 
 AIHasMoveEffect:
 ; Return carry if the enemy has move b.
@@ -2991,11 +2884,14 @@ AI_Aggressive:
 	and SLP
 	jr nz, .start
 	
-; Be aggressive when either player or enemy has low hp.
+; Be aggressive when either player or enemy has low hp
+; or has a bad matchup.
 	call AICheckEnemyHalfHP
 	jr nc, .start
 	call AICheckPlayerHalfHP
 	jr nc, .start
+	farcall CheckPlayerMoveTypeMatchups
+	jr c, .start
 	
 ; 50% chance to be aggressive otherwise.
 	call AI_50_50
@@ -3166,9 +3062,6 @@ PursuitDamage:
 	pop hl 
 	ld a, [wEnemyAISwitchScore]
 	cp BASE_AI_SWITCH_SCORE + 1
-	jr c, .return
-	
-	call MoveAICheckTurnsToKOAI
 	jr c, .return
 
 	ld a, d
