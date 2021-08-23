@@ -2518,9 +2518,6 @@ BattleCommand_CheckFaint:
 BattleCommand_BuildOpponentRage:
 ; buildopponentrage
 
-	jp .start
-
-.start
 	ld a, [wAttackMissed]
 	and a
 	ret nz

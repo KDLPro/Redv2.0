@@ -3574,7 +3574,7 @@ MysticalmanGroup:
 	db $aa, $a9
 	db $70, $00, $00, $70, $30, $00 ; hp, atk, def, spd, spa, spd
 	db GOLD_BERRY
-	db STUN_SPORE, GIGA_DRAIN, SLUDGE_BOMB, LEECH_LIFE
+	db SYNTHESIS, GIGA_DRAIN, SLUDGE_BOMB, LEECH_LIFE
 	
 	db 28, MISDREAVUS
 	db $a9, $9a

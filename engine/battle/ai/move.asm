@@ -45,7 +45,7 @@ AISwitchChooseMove:
 	jr c, .good_matchup
 
 	call Random
-	cp 30 percent + 1
+	cp 35 percent + 1
 	ret nc
 	jr AIChooseMove
 

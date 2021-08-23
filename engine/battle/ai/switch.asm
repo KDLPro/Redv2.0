@@ -1163,7 +1163,7 @@ FindEnemyMonsImmuneToOrResistsLastCounterMoveReverse:
 	
 	
 	ld a, [wPlayerTurnsTaken]
-	cp 5
+	cp 4
 	jr nc, .stalled
 	
 	; If the Pokemon is faster than the player...
@@ -1527,7 +1527,7 @@ FindEnemyMonsThatResistPlayer:
 
 .stall_status	
 	ld a, [wPlayerTurnsTaken]
-	cp 5
+	cp 4
 	jr c, .dont_choose_mon
 
 .choose_mon

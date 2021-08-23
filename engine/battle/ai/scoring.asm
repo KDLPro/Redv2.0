@@ -401,7 +401,7 @@ AI_Smart_Sleep:
 	pop hl
 	ld a, [wEnemyAISwitchScore]
 	cp BASE_AI_SWITCH_SCORE
-	jr c, .encourage
+	jr nc, .lowhp_check
 	
 	push hl
 	farcall CheckOnlyEnemyMoveMatchups
@@ -410,6 +410,10 @@ AI_Smart_Sleep:
 	cp BASE_AI_SWITCH_SCORE - 1
 	jr c, .encourage
 	
+	call AI_80_20
+	jr nc, .encourage
+	
+.lowhp_check
 	call AICheckPlayerQuarterHP
 	jr nc, .discourage
 	
@@ -977,10 +981,58 @@ AI_Smart_Moonlight:
 	jp z, AI_Discourage_Greatly
 	cp WEATHER_SANDSTORM
 	jp z, AI_Discourage_Greatly
+	cp WEATHER_SUN
+	jr nz, AI_Smart_Heal
+
+; Discourage this move if damage taken in the last turn was greater
+; than the amount of HP healed.
+	
+	ld a, 1
+	ldh [hBattleTurn], a
+	
+	push bc
+	push de
+	push hl
+	farcall GetTwoThirdsMaxHP
+	ld d, b
+	ld e, c
+	ld b, c
+	ld a, [wEnemyDamageTakenThisTurn + 1]
+	cp b
+	ld b, d
+	ld a, [wEnemyDamageTakenThisTurn]
+	sbc b
+	pop hl
+	pop de
+	pop bc
+	jp nc, AI_Discourage
+	
 AI_Smart_Heal:
 ; 80% chance to greatly encourage this move if enemy's HP is below 25%.
 ; 50% chance to encourage this move if enemy's HP is between 25% and 50%.
+; Discourage this move if damage taken in the last turn was greater
+; than the amount of HP healed.
 ; Discourage otherwise.
+
+	ld a, 1
+	ldh [hBattleTurn], a
+	
+	push bc
+	push de
+	push hl
+	farcall GetTwoThirdsMaxHP
+	ld d, b
+	ld e, c
+	ld b, c
+	ld a, [wEnemyDamageTakenThisTurn + 1]
+	cp b
+	ld b, d
+	ld a, [wEnemyDamageTakenThisTurn]
+	sbc b
+	pop hl
+	pop de
+	pop bc
+	jp nc, AI_Discourage
 
 	call AICheckEnemyQuarterHP
 	jr nc, .encourage
