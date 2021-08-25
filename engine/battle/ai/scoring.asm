@@ -1928,7 +1928,7 @@ AI_Smart_Curse:
 	pop hl
 	
 	ld a, [wEnemyAISwitchScore]
-	cp BASE_AI_SWITCH_SCORE
+	cp BASE_AI_SWITCH_SCORE + 1
 	jp nc, AI_Discourage_Greatly
 	
 	push hl
@@ -1937,7 +1937,7 @@ AI_Smart_Curse:
 	
 	ld a, [wEnemyAISwitchScore]
 	cp BASE_AI_SWITCH_SCORE
-	jr c, .greatly_encourage
+	jr c, .maybe_greatly_encourage
 	
 	call AI_Discourage_Greatly
 	call AI_80_20
@@ -3012,6 +3012,14 @@ AI_Aggressive:
 	call AI_Encourage
 	
 .check_turns_to_ko
+	push hl
+	push de
+	push bc
+	call AIAggessiveCheckTurnsToKOPlayer
+	pop bc
+	pop de
+	pop hl
+
 ; Discourage this move it takes 4 or more hits to KO player
 	cp 4
 	jr c, .checkmove
@@ -3419,12 +3427,6 @@ INCLUDE "data/battle/ai/risky_effects.asm"
 AI_None:
 	ret
 
-AIDiscourageMove:
-	ld a, [hl]
-	add 10
-	ld [hl], a
-	ret
-
 AIGetEnemyMove:
 ; Load attributes of move a into ram
 
@@ -3458,6 +3460,12 @@ AI_50_50:
 AI_60_40:
 	call Random
 	cp 40 percent - 1
+	ret
+
+AIDiscourageMove:
+	ld a, [hl]
+	add 10
+	ld [hl], a
 	ret
 	
 AI_Discourage_Greatly:

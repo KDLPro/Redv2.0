@@ -88,10 +88,10 @@ CheckPlayerMoveTypeMatchups:
 
 .done_checking_moves
 	ld a, [wEnemyTurnsTaken]
-	cp 4
+	cp 3
 	jr c, .done_check_stall
 	ld a, [wPlayerTurnsTaken]
-	cp 6
+	cp 5
 	jr c, .done_check_stall
 	call CheckEnemyMoveMatchups
 .done_check_stall
@@ -240,10 +240,10 @@ CheckEnemyMoveMatchups:
 	cp 5
 	call c, DecreaseScore ; down
 	ld a, [wEnemyTurnsTaken]
-	cp 4
+	cp 3
 	jr c, .done_check_stall
 	ld a, [wPlayerTurnsTaken]
-	cp 6
+	cp 5
 	jr c, .done_check_stall
 	call DoubleDown
 .done_check_stall
@@ -1067,7 +1067,7 @@ FindEnemyMonsImmuneToOrResistsLastCounterMove:
 	jr nc, .next
 	
 	ld a, [wPlayerTurnsTaken]
-	cp 5
+	cp 4
 	jr nc, .stalled
 	
 	; If the Pokemon is faster than the player...

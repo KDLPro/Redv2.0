@@ -150,6 +150,7 @@ SwitchSometimes:
 	jp c, DontSwitch
 
 LoadMonToSwitchTo:
+	farcall CheckPlayerMoveTypeMatchups
 	ld a, [wEnemySwitchMonParam]
 	and $f
 	inc a
