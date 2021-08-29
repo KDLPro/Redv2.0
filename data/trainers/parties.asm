@@ -119,8 +119,9 @@ ChuckGroup:
 	; CHUCK (1)
 	db "CHUCK@", TRAINERTYPE_MOVES
 	db 28, HITMONTOP,  TRIPLE_KICK, DYNAMICPUNCH, DIG, RAPID_SPIN
+	db 29, HERACROSS,  DYNAMICPUNCH, FURY_CUTTER, HORN_ATTACK, SEISMIC_TOSS
 	db 27, PRIMEAPE,   MACH_PUNCH, FIRE_PUNCH, KARATE_CHOP, FURY_SWIPES
-	db 30, POLIWRATH,  HYPNOSIS, MIND_READER, SURF, DYNAMICPUNCH
+	db 30, POLIWRATH,  ICE_PUNCH, MIND_READER, SURF, DYNAMICPUNCH
 	db -1 ; end
 
 ClairGroup:
@@ -1018,9 +1019,43 @@ CooltrainerFGroup:
 	db -1 ; end
 
 	; COOLTRAINERF (5)
-	db "KATE@", TRAINERTYPE_NORMAL
-	db 26, SHELLDER
-	db 28, CLOYSTER
+	db "KATE@", TRAINERTYPE_COMPETITIVE_BASIC_NO_NICK
+	
+	db 29, BAYLEEF
+	db $aa, $aa
+	db $20, $00, $40, $80, $40, $00 ; hp, atk, def, spd, spa, spd
+	db NO_ITEM
+	db GIGA_DRAIN, SYNTHESIS, LIGHT_SCREEN, LEECH_SEED
+	
+	db 29, STEELIX
+	db $aa, $aa
+	db $20, $80, $40, $00, $40, $00 ; hp, atk, def, spd, spa, spd
+	db QUICK_CLAW
+	db EARTHQUAKE, IRON_TAIL, ROCK_SLIDE, SELFDESTRUCT
+	
+	db 29, SLOWBRO
+	db $aa, $a9
+	db $70, $00, $00, $70, $30, $00 ; hp, atk, def, spd, spa, spd
+	db GOLD_BERRY
+	db SURF, PSYCHIC_M, ICE_BEAM, RECOVER
+	
+	db 28, TYRANITAR
+	db $a9, $9a
+	db $20, $20, $20, $20, $20, $00 ; hp, atk, def, spd, spa, spd
+	db NO_ITEM
+	db ROCK_SLIDE, CRUNCH, PURSUIT, EARTHQUAKE
+	
+	db 29, GROWLITHE
+	db $aa, $a9
+	db $70, $30, $00, $30, $30, $00 ; hp, atk, def, spd, spa, spd
+	db LEFTOVERS
+	db FLAMETHROWER, EARTHQUAKE, BODY_SLAM, REST
+	
+	db 29, HERACROSS
+	db $a9, $aa
+	db $20, $80, $40, $00, $40, $00 ; hp, atk, def, spd, spa, spd
+	db MIRACLEBERRY
+	db MEGAHORN, SEISMIC_TOSS, CROSS_CHOP, REST
 	db -1 ; end
 
 	; COOLTRAINERF (6)
