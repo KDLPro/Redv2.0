@@ -498,6 +498,7 @@ BattleAnim_Confused:
 	anim_wait 96
 	anim_ret
 
+BattleAnim_Rest:
 BattleAnim_Slp:
 	anim_1gfx ANIM_GFX_STATUS
 	anim_sound 0, 1, SFX_SNORE
@@ -1993,16 +1994,6 @@ BattleAnim_DizzyPunch:
 	anim_obj ANIM_OBJ_CHICK, 136, 24, $aa
 	anim_obj ANIM_OBJ_CHICK, 136, 24, $bf
 	anim_wait 96
-	anim_ret
-
-BattleAnim_Rest:
-	anim_1gfx ANIM_GFX_STATUS
-	anim_sound 0, 0, SFX_TAIL_WHIP
-.loop
-	anim_obj ANIM_OBJ_ASLEEP, 64, 80, $0
-	anim_wait 40
-	anim_loop 3, .loop
-	anim_wait 32
 	anim_ret
 
 BattleAnim_HyperVoice:
