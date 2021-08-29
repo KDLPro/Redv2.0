@@ -171,9 +171,9 @@ BattleTurn:
 
 	xor a
 	ld hl, wPlayerUsedMoves
+rept 3
 	ld [hli], a
-	ld [hli], a
-	ld [hli], a
+endr
 	ld [hl], a
 	xor a
 	ld [wPlayerIsSwitching], a
@@ -4547,9 +4547,13 @@ HandleHealingItems:
 	ret z
 	call HasEnemyFainted
 	ret z
+rept 2
 	call HandleHPHealingItem
 	call UseHeldStatusHealingItem
-	jp UseConfusionHealingItem
+	call UseConfusionHealingItem
+	call SwitchTurnCore
+endr
+	ret
 
 HandleHPHealingItem:
 	farcall GetOpponentItem
