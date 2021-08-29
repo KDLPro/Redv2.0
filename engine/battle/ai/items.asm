@@ -75,6 +75,7 @@ SwitchCompetitive:
 .reroll
 	farcall CheckAbleToSwitch
 .check_switch_param
+	farcall CheckPlayerMoveTypeMatchups
 	ld a, [wEnemySwitchMonParam]
 	and $f0
 	jp z, DontSwitch
@@ -106,6 +107,7 @@ SwitchOften:
 .reroll
 	farcall CheckAbleToSwitch
 .check_switch_param
+	farcall CheckPlayerMoveTypeMatchups
 	ld a, [wEnemySwitchMonParam]
 	and $f0
 	jp z, DontSwitch
@@ -150,7 +152,6 @@ SwitchSometimes:
 	jp c, DontSwitch
 
 LoadMonToSwitchTo:
-	farcall CheckPlayerMoveTypeMatchups
 	ld a, [wEnemySwitchMonParam]
 	and $f
 	inc a
