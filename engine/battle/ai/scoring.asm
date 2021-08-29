@@ -42,8 +42,7 @@ AI_Basic:
 	push de
 	push bc
 	ld hl, StatusOnlyEffects
-	ld de, 1
-	call IsInArray
+	call IsInByteArray
 
 	pop bc
 	pop de
@@ -316,7 +315,6 @@ AI_Smart_EffectHandlers:
 	dbw EFFECT_ALWAYS_HIT,       AI_Smart_AlwaysHit
 	dbw EFFECT_ACCURACY_DOWN,    AI_Smart_AccuracyDown
 	dbw EFFECT_RESET_STATS,      AI_Smart_ResetStats
-	dbw EFFECT_BIDE,             AI_Smart_Bide
 	dbw EFFECT_FORCE_SWITCH,     AI_Smart_ForceSwitch
 	dbw EFFECT_HEAL,             AI_Smart_Heal
 	dbw EFFECT_TOXIC,            AI_Smart_Toxic
@@ -332,7 +330,6 @@ AI_Smart_EffectHandlers:
 	dbw EFFECT_SPEED_DOWN_HIT,   AI_Smart_SpeedDownHit
 	dbw EFFECT_SUBSTITUTE,       AI_Smart_Substitute
 	dbw EFFECT_HYPER_BEAM,       AI_Smart_HyperBeam
-	dbw EFFECT_RAGE,             AI_Smart_Rage
 	dbw EFFECT_MIMIC,            AI_Smart_Mimic
 	dbw EFFECT_LEECH_SEED,       AI_Smart_LeechSeed
 	dbw EFFECT_DISABLE,          AI_Smart_Disable
@@ -593,6 +590,14 @@ AI_Smart_Selfdestruct:
 	call AICheckLastPlayerMon
 	pop hl
 	jr nz, .discourage
+	
+; May greatly discourage if enemy is a Ghost-type
+	ld a, [wBattleMonType1]
+	cp GHOST
+	jr z, .random_discourage
+	ld a, [wBattleMonType2]
+	cp GHOST
+	jr z, .random_discourage
 
 .notlastmon
 ; Greatly discourage this move if enemy's HP is above 50%.
@@ -612,6 +617,11 @@ AI_Smart_Selfdestruct:
 .discourage
 	call AI_Discourage_Greatly
 	jp AI_Discourage
+	
+.random_discourage
+	call AI_80_20
+	jr c, .notlastmon
+	jr .discourage
 
 AI_Smart_DreamEater:
 ; 90% chance to greatly encourage this move.
@@ -926,16 +936,6 @@ AI_Smart_ResetStats:
 	pop hl
 	jp AI_Discourage
 
-AI_Smart_Bide:
-; 90% chance to discourage this move unless enemy's HP is full.
-
-	call AICheckEnemyMaxHP
-	ret c
-	call Random
-	cp 10 percent
-	ret c
-	jp AI_Discourage
-
 AI_Smart_ForceSwitch:
 ; Whirlwind, Roar.
 
@@ -983,6 +983,8 @@ AI_Smart_Moonlight:
 	jp z, AI_Discourage_Greatly
 	cp WEATHER_SUN
 	jr nz, AI_Smart_Heal
+	
+	call AI_Encourage_Greatly
 
 ; Discourage this move if damage taken in the last turn was greater
 ; than the amount of HP healed.
@@ -991,9 +993,14 @@ AI_Smart_Moonlight:
 	ldh [hBattleTurn], a
 	
 	push bc
+	ld a, [wHPBuffer1]
+	ld b, a
+	ld a, [wHPBuffer1 + 1]
+	ld c, a
+	push bc
 	push de
 	push hl
-	farcall GetTwoThirdsMaxHP
+	farcall GetHalfMaxHP
 	ld d, b
 	ld e, c
 	ld b, c
@@ -1004,6 +1011,11 @@ AI_Smart_Moonlight:
 	sbc b
 	pop hl
 	pop de
+	pop bc
+	ld a, c
+	ld [wHPBuffer1 + 1], a
+	ld a, b
+	ld [wHPBuffer1], a
 	pop bc
 	jp nc, AI_Discourage
 	
@@ -1014,13 +1026,22 @@ AI_Smart_Heal:
 ; than the amount of HP healed.
 ; Discourage otherwise.
 
+	ld a, [wEnemyMoveStruct]
+	cp REST
+	jr z, .rest
+
 	ld a, 1
 	ldh [hBattleTurn], a
 	
 	push bc
+	ld a, [wHPBuffer1]
+	ld b, a
+	ld a, [wHPBuffer1 + 1]
+	ld c, a
+	push bc
 	push de
 	push hl
-	farcall GetTwoThirdsMaxHP
+	farcall GetHalfMaxHP
 	ld d, b
 	ld e, c
 	ld b, c
@@ -1032,13 +1053,31 @@ AI_Smart_Heal:
 	pop hl
 	pop de
 	pop bc
+	ld a, c
+	ld [wHPBuffer1 + 1], a
+	ld a, b
+	ld [wHPBuffer1], a
+	pop bc
 	jp nc, AI_Discourage
 
+.check_hp
 	call AICheckEnemyQuarterHP
 	jr nc, .encourage
 	call AICheckEnemyHalfHP
 	jr nc, .low_hp
-	jp AI_Discourage
+	call AI_Discourage
+	call AI_60_40
+	ret nc
+	jp AI_Discourage_Greatly
+	
+.rest
+	push hl
+	farcall CheckPlayerMoveTypeMatchups
+	pop hl
+	ld a, [wEnemyAISwitchScore]
+	cp BASE_AI_SWITCH_SCORE - 1
+	jr nc, .check_hp
+	jp AI_Discourage_Greatly
 
 .low_hp
 	call AI_50_50
@@ -1053,6 +1092,15 @@ AI_Smart_Heal:
 
 AI_Smart_Toxic:
 AI_Smart_LeechSeed:
+; Encourage this move if enemy can't kill player easily with its moves.
+
+	push hl
+	farcall CheckOnlyEnemyMoveMatchups
+	pop hl 
+	ld a, [wEnemyAISwitchScore]
+	cp BASE_AI_SWITCH_SCORE
+	jp c, AI_Encourage_Greatly
+
 ; Discourage this move if player's HP is below 50%.
 
 	call AICheckPlayerHalfHP
@@ -1151,58 +1199,6 @@ AI_Smart_TrapTarget:
 	call AI_50_50
 	ret c
 	jp AI_Encourage_Greatly
-
-AI_Smart_RazorWind:
-	ld a, [wEnemySubStatus1]
-	bit SUBSTATUS_PERISH, a
-	jr z, .no_perish_count
-
-	ld a, [wEnemyPerishCount]
-	cp 3
-	jr c, .discourage
-
-.no_perish_count
-	push hl
-	ld hl, wPlayerUsedMoves
-	ld c, NUM_MOVES
-
-.checkmove
-	ld a, [hli]
-	and a
-	jr z, .movesdone
-
-	call AIGetEnemyMove
-
-	ld a, [wEnemyMoveStruct + MOVE_EFFECT]
-	cp EFFECT_PROTECT
-	jr z, .dismiss
-	dec c
-	jr nz, .checkmove
-
-.movesdone
-	pop hl
-	ld a, [wEnemySubStatus3]
-	bit SUBSTATUS_CONFUSED, a
-	jr nz, .maybe_discourage
-
-	call AICheckEnemyHalfHP
-	ret c
-
-.maybe_discourage
-	call Random
-	cp 79 percent - 1
-	ret c
-
-.discourage
-	inc [hl]
-	ret
-
-.dismiss
-	pop hl
-	ld a, [hl]
-	add 6
-	ld [hl], a
-	ret
 
 AI_Smart_Confuse:
 ; 90% chance to discourage this move if player's HP is between 25% and 50%.
@@ -1357,41 +1353,6 @@ AI_Smart_HyperBeam:
 	inc [hl]
 	call AI_50_50
 	ret c
-	jp AI_Discourage
-
-AI_Smart_Rage:
-	ld a, [wEnemySubStatus4]
-	bit SUBSTATUS_RAGE, a
-	jr z, .notbuilding
-
-; If enemy's Rage is building, 50% chance to encourage this move.
-	call AI_50_50
-	jr c, .skipencourage
-
-	dec [hl]
-
-; Encourage this move based on Rage's counter.
-.skipencourage
-	ld a, [wEnemyRageCounter]
-	cp 2
-	ret c
-	dec [hl]
-	ld a, [wEnemyRageCounter]
-	cp 3
-	ret c
-	jp AI_Encourage
-
-.notbuilding
-; If enemy's Rage is not building, discourage this move if enemy's HP is below 50%.
-	call AICheckEnemyHalfHP
-	jr nc, .discourage
-
-; 50% chance to encourage this move otherwise.
-	call AI_80_20
-	ret nc
-	jp AI_Encourage
-
-.discourage
 	jp AI_Discourage
 
 AI_Smart_Mimic:
@@ -1940,8 +1901,6 @@ AI_Smart_Curse:
 	jr c, .maybe_greatly_encourage
 	
 	call AI_Discourage_Greatly
-	call AI_80_20
-	ret c
 	jp AI_Discourage_Greatly
 	
 .rarely_greatly_encourage
@@ -2106,11 +2065,11 @@ AI_Smart_Sandstorm:
 	call AI_50_50
 	ret c
 
-	dec [hl]
+	call AI_Encourage
 	ret
 
 .greatly_discourage
-	inc [hl]
+	call AI_Discourage
 .discourage
 	jp AI_Discourage
 
@@ -2169,18 +2128,16 @@ AI_Smart_FuryCutter:
 	ld a, [wEnemyFuryCutterCount]
 	and a
 	jr z, AI_Smart_Rollout
-	dec [hl]
+	call AI_Encourage
 
 	cp 2
 	jr c, AI_Smart_Rollout
-	dec [hl]
-	dec [hl]
+	call AI_Encourage_Greatly
 
 	cp 3
 	jr c, AI_Smart_Rollout
-	dec [hl]
-	dec [hl]
-	dec [hl]
+	call AI_Encourage
+	call AI_Encourage_Greatly
 
 	; fallthrough
 
@@ -2318,7 +2275,7 @@ AI_Smart_Pursuit:
 	farcall CheckOnlyEnemyMoveMatchups
 	pop hl 
 	ld a, [wEnemyAISwitchScore]
-	cp BASE_AI_SWITCH_SCORE
+	cp BASE_AI_SWITCH_SCORE + 2
 	jr nc, .encourage
 	
 	jp AI_Discourage
@@ -3246,6 +3203,11 @@ AI_Status:
 
 	inc de
 	call AIGetEnemyMove
+	
+; Check if move is Leech Seed.
+	ld a, [wEnemyMoveStruct + MOVE_EFFECT]
+	cp EFFECT_LEECH_SEED
+	jr z, .grassimmunity
 
 ; Check if the opponent is immune to powder/spore moves.      
 	ld a, [wEnemyMoveStruct + MOVE_ANIM]
@@ -3259,6 +3221,7 @@ AI_Status:
 	pop bc
 	jr nc, .normal_status_check
 
+.grassimmunity
 	ld a, [wBattleMonType1]
 	cp GRASS
 	jp z, .immune
@@ -3279,11 +3242,9 @@ AI_Status:
 
 ; Discourage moves that inflict status ailments, confuse or lower stats 
 ; against a subtitute.
-; This check also applies for both Leech Seed and Swagger.
+; This check also applies for Leech Seed and Swagger.
 	cp EFFECT_LEECH_SEED
-	jr z, .subs_check
-	cp EFFECT_SWAGGER
-	jr z, .subs_check
+	jr z, .subs_check 
 	cp EFFECT_CONFUSE
 	jr z, .subs_check 
 
