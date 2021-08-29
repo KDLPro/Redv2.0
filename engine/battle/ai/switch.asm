@@ -11,10 +11,6 @@ CheckPlayerMoveTypeMatchups:
 	ld a, [hl]
 	and a
 	jp z, .unknown_moves
-	
-	ld a, [wEnemyTurnsTaken]
-	and a
-	jr z, .unknown_moves
 
 	ld d, NUM_MOVES
 	ld e, 0
@@ -116,6 +112,10 @@ CheckPlayerMoveTypeMatchups:
 	cp EFFECTIVE + 1 ; 1.0 + 0.1
 	jr c, .ok
 	call DecreaseScore
+	ld a, [wTypeMatchup]
+	cp SUPER_EFFECTIVE + 1
+	jr c, .ok
+	call DecreaseScore
 .ok
 	ld a, [wBattleMonType2]
 	cp b
@@ -123,6 +123,10 @@ CheckPlayerMoveTypeMatchups:
 	call AICheckTypeMatchup
 	ld a, [wTypeMatchup]
 	cp EFFECTIVE + 1 ; 1.0 + 0.1
+	jr c, .done
+	call DecreaseScore
+	ld a, [wTypeMatchup]
+	cp SUPER_EFFECTIVE + 1
 	jr c, .done
 	call DecreaseScore
 	jr .done
@@ -151,7 +155,7 @@ CheckEnemyMoveMatchups:
 	push hl
 	push de
 	push bc
-	call SwitchAIGetPlayerMove
+	call SwitchAIGetEnemyMove
 	call SwitchAIDamageCalc
 	pop bc
 	pop de
@@ -184,6 +188,12 @@ CheckEnemyMoveMatchups:
 	pop af
 	pop bc
 	
+	; very low damage
+	
+	cp $FF
+	jr nc, .loop
+	
+.damage_check
 	; small damage
 	
 	inc c
@@ -201,12 +211,28 @@ CheckEnemyMoveMatchups:
 	jr nc, .loop
 
 	; huge damage
-	ld c, 100
+	push af
+	ld a, c
+	add 25
+	ld c, a
+	pop af
+	cp 2
+	jr nc, .loop
+	
+	; ohko
+	ld c, 120
 	jr .loop
 	
 .player_low_hp
 	pop af
 	pop bc
+	
+	; very low damage
+	
+	cp $FF
+	jr nc, .loop
+	
+.damage_check_low_hp
 	
 	; small damage
 	
@@ -225,7 +251,7 @@ CheckEnemyMoveMatchups:
 	jr nc, .loop
 
 	; huge damage
-	ld c, 100
+	ld c, 120
 	jr .loop
 
 .exit
@@ -235,8 +261,10 @@ CheckEnemyMoveMatchups:
 	
 	ld a, c
 	and a
-	call z, DoubleDown ; double down
-	call z, DoubleDown ; double down
+	jr nz, .can_deal_decent_Damage
+	call DoubleDown ; double down
+	call DoubleDown ; double down
+.can_deal_decent_Damage
 	cp 5
 	call c, DecreaseScore ; down
 	ld a, [wEnemyTurnsTaken]
@@ -248,14 +276,24 @@ CheckEnemyMoveMatchups:
 	call DoubleDown
 .done_check_stall
 	ld a, c
-	cp 100
-
+	cp 25
+	jr c, .return
+	
+	call IncreaseScore
+	
+	ld a, c
+	cp 120
+	jr c, .return
 	pop bc
 	pop de
 	pop hl
-	
-	ret c
 	jr IncreaseSharply ; up
+	
+.return
+	pop bc
+	pop de
+	pop hl
+	ret
 
 DoubleDown:
 	call DecreaseScore
@@ -482,7 +520,7 @@ CheckAbleToSwitch:
 .checkperish
 	ld a, [wEnemySubStatus1]
 	bit SUBSTATUS_PERISH, a
-	jr z, .checkmatchups
+	jp z, .checkmatchups
 
 	ld a, [wEnemyPerishCount]
 	cp 1
@@ -504,6 +542,33 @@ CheckAbleToSwitch:
 	cp NIGHT_SHADE
 	jp z, .constant_damage_find_immune
 	
+.find_target_mon_to_switch
+	call CheckPlayerMoveTypeMatchups
+	ld a, [wEnemyAISwitchScore]
+	cp BASE_AI_SWITCH_SCORE - 1
+	jr c, .very_bad_matchup_find_target
+	call CheckOnlyEnemyMoveMatchups
+	ld a, [wEnemyAISwitchScore]
+	cp BASE_AI_SWITCH_SCORE - 3
+	jr nc, .randomize
+
+.very_bad_matchup_find_target	
+	call FindMonToSwitchResistSE
+	ld a, [wEnemyAISwitchScore]
+	cp $FF
+	jr nz, .do_switch
+	
+	call FindEnemyMonsImmuneToOrResistsLastCounterMove
+	ld a, [wEnemyAISwitchScore]
+	cp $FF
+	jr nz, .do_switch	
+	
+	call FindEnemyMonsImmuneToOrResistsLastCounterMoveBadDamage	
+	ld a, [wEnemyAISwitchScore]
+	cp $FF
+	jr nz, .do_switch
+	jp .no_switch
+	
 .randomize
 	call FiftyPercentRoll
 	jp nc, .find_immune
@@ -517,6 +582,8 @@ CheckAbleToSwitch:
 	ld a, [wEnemyAISwitchScore]
 	cp $FF
 	call z, FindEnemyMonsImmuneToOrResistsLastCounterMove
+	
+	
 .do_switch
 	ld a, [wEnemyAISwitchScore]
 	add $10
@@ -775,16 +842,16 @@ CheckAbleToSwitch:
 	jr c, .less_than_three
 	call SixtyFivePercentRoll
 	jr nc, .no_switch
-	jp .randomize
+	jp .find_target_mon_to_switch
 .less_than_three
 	call SixtyPercentRoll
 	jr c, .no_switch
-	jp .randomize
+	jp .find_target_mon_to_switch
 	
 .rare_switch
 	call SeventyPercentRoll
 	jr c, .no_switch
-	jp .randomize
+	jp .find_target_mon_to_switch
 	
 .no_switch
 	xor a
@@ -1204,7 +1271,7 @@ FindEnemyMonsImmuneToOrResistsLastCounterMoveReverse:
 	ld a, [wTypeMatchup]
 	cp EFFECTIVE
 	jr nc, .next
-	
+.encourage
 	; ... encourage that Pokemon.
 	ld a, d
 	dec a
@@ -1225,6 +1292,85 @@ FindEnemyMonsImmuneToOrResistsLastCounterMoveReverse:
 	pop bc
 
 	inc b
+	srl c
+	jr .loop
+	
+FindEnemyMonsImmuneToOrResistsLastCounterMoveBadDamage:
+	ld hl, wOTPartyMon1
+	ld a, [wOTPartyCount]
+	ld b, a
+	ld c, 1 << (PARTY_LENGTH - 1)
+	ld d, 0
+	ld a, $FF
+	ld [wEnemyAISwitchScore], a
+
+.loop
+	ld a, [wCurOTMon]
+	cp d
+	push hl
+	jr z, .next
+
+	push hl
+	push bc
+	; If the Pokemon has at least 1/2 max HP...
+	ld bc, MON_HP
+	add hl, bc
+	ld b, [hl]
+	inc hl
+	ld c, [hl]
+	sla c
+	rl b
+	inc hl
+	inc hl
+	ld a, [hld]
+	cp c
+	ld a, [hl]
+	sbc b
+	pop bc
+	pop hl
+	jr nc, .next
+	
+	ld a, [hl]
+	ld [wCurSpecies], a
+	call GetBaseData
+	; the player's last move is damaging...
+	; (otherwise, encourage that Pokémon randomly)
+	ld a, [wLastPlayerCounterMove]
+	dec a
+	ld hl, Moves + MOVE_POWER
+	call AIGetMoveAttr
+	and a
+	jr z, .encourage
+	; and the Pokemon is immune to it...
+	inc hl
+	call AIGetMoveByte
+	ld hl, wBaseType
+	call AICheckTypeMatchup
+	ld a, [wTypeMatchup]
+	cp EFFECTIVE + 1
+	jr nc, .next
+.encourage
+	; ... encourage that Pokemon randomly.
+	ld a, [wEnemyAISwitchScore]
+	cp $FF
+	jr z, .select
+	call SixtyPercentRoll
+	jr nc, .next
+.select
+	ld a, [wOTPartyCount]
+	sub b
+	ld [wEnemyAISwitchScore], a
+.next
+	pop hl
+	dec b
+	ret z
+
+	push bc
+	ld bc, PARTYMON_STRUCT_LENGTH
+	add hl, bc
+	pop bc
+
+	inc d
 	srl c
 	jr .loop
 
