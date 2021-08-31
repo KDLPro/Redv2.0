@@ -267,48 +267,48 @@ HandleBetweenTurnEffects:
 	cp ENEMY_FIRST
 	jr z, .CheckEnemyFirst
 	call CheckFaint_PlayerThenEnemy
-	ret c
+	jp c, .FinishedFainted
 	call HandleWeather
 	call CheckFaint_PlayerThenEnemy
-	ret c
+	jp c, .FinishedFainted
 	call HandleHPHealingItem
 	call HandleFutureSight
 	call CheckFaint_PlayerThenEnemy
-	ret c
+	jp c, .FinishedFainted
 	call HandleHealingItems
 	call HandleLeftovers
 	call ResidualDamage
 	call CheckFaint_PlayerThenEnemy
-	ret c
+	jr c, .FinishedFainted
 	call HandleHPHealingItem
 	call HandleWrap
 	call CheckFaint_PlayerThenEnemy
-	ret c
+	jr c, .FinishedFainted
 	call HandleHPHealingItem
 	call HandlePerishSong
 	call CheckFaint_PlayerThenEnemy
-	ret c
+	jr c, .FinishedFainted
 	jr .NoMoreFaintingConditions
 
 .CheckEnemyFirst:
 	call CheckFaint_EnemyThenPlayer
-	ret c
+	jr c, .FinishedFainted
 	call HandleWeather
 	call CheckFaint_EnemyThenPlayer
-	ret c
+	jr c, .FinishedFainted
 	call HandleHPHealingItem
 	call HandleFutureSight
 	call CheckFaint_EnemyThenPlayer
-	ret c
+	jr c, .FinishedFainted
 	call HandleHealingItems
 	call HandleLeftovers
 	call ResidualDamage
 	call CheckFaint_EnemyThenPlayer
-	ret c
+	jr c, .FinishedFainted
 	call HandleHPHealingItem
 	call HandleWrap
 	call CheckFaint_EnemyThenPlayer
-	ret c
+	jr c, .FinishedFainted
 	call HandleHPHealingItem
 	call HandlePerishSong
 	call CheckFaint_EnemyThenPlayer
@@ -323,6 +323,11 @@ HandleBetweenTurnEffects:
 	call UpdateBattleMonInParty
 	call LoadTilemapToTempTilemap
 	jp HandleEncore
+	
+.FinishedFainted:
+	call .NoMoreFaintingConditions
+	scf
+	ret
 	
 HasAnyoneFainted:
 	call HasPlayerFainted
@@ -1263,6 +1268,8 @@ HandlePerishSong:
 	call SetPlayerTurn
 
 .do_it
+	call HasUserFainted
+	ret z
 	ld hl, wPlayerPerishCount
 	ldh a, [hBattleTurn]
 	and a
@@ -1331,6 +1338,8 @@ HandleWrap:
 	call SetPlayerTurn
 
 .do_it
+	call HasUserFainted
+	ret z
 	ld hl, wPlayerWrapCount
 	ld de, wPlayerTrappingMove
 	ldh a, [hBattleTurn]
@@ -1400,7 +1409,8 @@ HandleLeftovers:
 	call .do_it
 	call SetPlayerTurn
 .do_it
-
+	call HasUserFainted
+	ret z
 	farcall GetUserItem
 	ld a, [hl]
 	ld [wNamedObjectIndex], a
@@ -1450,6 +1460,8 @@ HandleLeppaBerry:
 	call SetPlayerTurn
 
 .do_it
+	call HasUserFainted
+	ret z
 	farcall GetUserItem
 	ld a, b
 	cp HELD_RESTORE_PP
@@ -1612,6 +1624,8 @@ HandleFutureSight:
 	call SetPlayerTurn
 
 .do_it
+	call HasUserFainted
+	ret z
 	ld hl, wPlayerFutureSightCount
 	ldh a, [hBattleTurn]
 	and a
@@ -1665,6 +1679,8 @@ HandleDefrost:
 .enemy_first
 	call .do_enemy_turn
 .do_player_turn
+	call HasUserFainted
+	ret z
 	ld a, [wBattleMonStatus]
 	bit FRZ, a
 	ret z
@@ -1725,6 +1741,8 @@ HandleDefrost:
 	ret
 
 .do_enemy_turn
+	call HasUserFainted
+	ret z
 	ld a, [wEnemyMonStatus]
 	bit FRZ, a
 	ret z
@@ -1935,6 +1953,9 @@ HandleWeather:
 	call GetBattleVar
 	bit SUBSTATUS_UNDERGROUND, a
 	ret nz
+	
+	call HasUserFainted
+	ret z
 
 	ld hl, wBattleMonType1
 	ldh a, [hBattleTurn]
@@ -2577,14 +2598,7 @@ EnemyPartyMonEntrance:
 	call ResetEnemyStatLevels
 	call BreakAttraction
 	pop af
-	and a
-	jr nz, .set
-	call EnemySwitch
-	jr .done_switch
-
-.set
 	call EnemySwitch_SetMode
-.done_switch
 	call ResetBattleParticipants
 	call SetEnemyTurn
 	call SpikesDamage
@@ -4543,11 +4557,9 @@ RecallPlayerMon:
 	ret
 
 HandleHealingItems:
-	call HasPlayerFainted
-	ret z
-	call HasEnemyFainted
-	ret z
 rept 2
+	call HasUserFainted
+	ret z
 	call HandleHPHealingItem
 	call UseHeldStatusHealingItem
 	call UseConfusionHealingItem
@@ -4560,6 +4572,7 @@ HandleHPHealingItem:
 	ld a, b
 	cp HELD_BERRY
 	ret nz
+	
 	ld de, wEnemyMonHP + 1
 	ld hl, wEnemyMonMaxHP
 	ldh a, [hBattleTurn]
@@ -4569,6 +4582,8 @@ HandleHPHealingItem:
 	ld hl, wBattleMonMaxHP
 
 .go
+	call HasUserFainted
+	ret z
 ; If, and only if, Pokemon's HP is less than half max, use the item.
 ; Store current HP in Buffer 3/4
 	push bc
@@ -4775,71 +4790,7 @@ UseConfusionHealingItem:
 	ret
 
 HandleStatBoostingHeldItems:
-; The effects handled here are not used in-game.
-	ldh a, [hSerialConnectionStatus]
-	cp USING_EXTERNAL_CLOCK
-	jr z, .player_1
-	call .DoPlayer
-	jp .DoEnemy
-
-.player_1
-	call .DoEnemy
-	jp .DoPlayer
-
-.DoPlayer:
-	call GetPartymonItem
-	ld a, $0
-	jp .HandleItem
-
-.DoEnemy:
-	call GetOTPartymonItem
-	ld a, $1
-.HandleItem:
-	ldh [hBattleTurn], a
-	ld d, h
-	ld e, l
-	push de
-	push bc
-	ld a, [bc]
-	ld b, a
-	farcall GetItemHeldEffect
-	ld hl, HeldStatUpItems
-.loop
-	ld a, [hli]
-	cp -1
-	jr z, .finish
-	inc hl
-	inc hl
-	cp b
-	jr nz, .loop
-	pop bc
-	ld a, [bc]
-	ld [wNamedObjectIndex], a
-	push bc
-	dec hl
-	dec hl
-	ld a, [hli]
-	ld h, [hl]
-	ld l, a
-	ld a, BANK(BattleCommand_AttackUp)
-	rst FarCall
-	pop bc
-	pop de
-	ld a, [wFailedMessage]
-	and a
-	ret nz
-	xor a
-	ld [bc], a
-	ld [de], a
-	call GetItemName
-	ld hl, BattleText_UsersStringBuffer1Activated
-	call StdBattleTextbox
-	farcall BattleCommand_StatUpMessage
-	ret
-
-.finish
-	pop bc
-	pop de
+; Unused since the effects handled here are not used in-game.
 	ret
 
 INCLUDE "data/battle/held_stat_up.asm"
