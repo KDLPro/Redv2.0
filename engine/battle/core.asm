@@ -233,7 +233,6 @@ endr
 	jr nz, .quit
 
 	farcall DidEnemySwitch
-	call HandleBetweenTurnEffects
 	farcall CheckPlayerMoveTypeMatchups
 	farcall CheckAbleToSwitch
 	ld a, [wBattleEnded]
@@ -263,59 +262,39 @@ Stubbed_Increments5_a89a:
 	ret
 
 HandleBetweenTurnEffects:
+	call HandleWeather
+	call Fainting
+	call HandleHPHealingItem
+	call HandleFutureSight
+	call Fainting
+	call HandleHealingItems
+	call HandleLeftovers
+	call ResidualDamage
+	call Fainting
+	call HandleHPHealingItem
+	call HandleWrap
+	call Fainting
+	call HandleHPHealingItem
+	call HandlePerishSong
+	call Fainting
+	call HandleLeppaBerry
+	call HasAnyoneFainted
+	ret
+	
+Fainting:
+	call HasAnyoneFainted
+	ret nz
 	ld a, [wEnemyShouldGoFirst]
 	cp ENEMY_FIRST
-	jr z, .CheckEnemyFirst
-	call CheckFaint_PlayerThenEnemy
-	jp c, .FinishedFainted
-	call HandleWeather
-	call CheckFaint_PlayerThenEnemy
-	jp c, .FinishedFainted
-	call HandleHPHealingItem
-	call HandleFutureSight
-	call CheckFaint_PlayerThenEnemy
-	jp c, .FinishedFainted
-	call HandleHealingItems
-	call HandleLeftovers
-	call ResidualDamage
-	call CheckFaint_PlayerThenEnemy
-	jr c, .FinishedFainted
-	call HandleHPHealingItem
-	call HandleWrap
-	call CheckFaint_PlayerThenEnemy
-	jr c, .FinishedFainted
-	call HandleHPHealingItem
-	call HandlePerishSong
-	call CheckFaint_PlayerThenEnemy
-	jr c, .FinishedFainted
-	jr .NoMoreFaintingConditions
+	jr z, .DoEnemyFirst
+	call Faint_PlayerFirst
+	ret
+	
+.DoEnemyFirst
+	call Faint_EnemyFirst
+	ret
 
-.CheckEnemyFirst:
-	call CheckFaint_EnemyThenPlayer
-	jr c, .FinishedFainted
-	call HandleWeather
-	call CheckFaint_EnemyThenPlayer
-	jr c, .FinishedFainted
-	call HandleHPHealingItem
-	call HandleFutureSight
-	call CheckFaint_EnemyThenPlayer
-	jr c, .FinishedFainted
-	call HandleHealingItems
-	call HandleLeftovers
-	call ResidualDamage
-	call CheckFaint_EnemyThenPlayer
-	jr c, .FinishedFainted
-	call HandleHPHealingItem
-	call HandleWrap
-	call CheckFaint_EnemyThenPlayer
-	jr c, .FinishedFainted
-	call HandleHPHealingItem
-	call HandlePerishSong
-	call CheckFaint_EnemyThenPlayer
-	ret c
-
-.NoMoreFaintingConditions:
-	call HandleLeppaBerry
+NoMoreFaintingConditions:
 	call HandleDefrost
 	call HandleSafeguard
 	call HandleScreens
@@ -323,11 +302,6 @@ HandleBetweenTurnEffects:
 	call UpdateBattleMonInParty
 	call LoadTilemapToTempTilemap
 	jp HandleEncore
-	
-.FinishedFainted:
-	call .NoMoreFaintingConditions
-	scf
-	ret
 	
 HasAnyoneFainted:
 	call HasPlayerFainted
@@ -339,10 +313,23 @@ CheckFaint_PlayerThenEnemy:
 	call .Function
 	ret c
 	call HasAnyoneFainted
-	ret nz
+	jr nz, .no_one_faints
 	jr .faint_loop
+	
+.no_one_faints
+	call NoMoreFaintingConditions
+	ret
 
 .Function:
+	call Faint_PlayerFirst
+	ld a, [wBattleMode]
+	dec a
+	jr nz, .do_betweenturneffects
+	call HasEnemyFainted
+	jr z, .done_betweenturneffects
+.do_betweenturneffects
+	call HandleBetweenTurnEffects
+.done_betweenturneffects
 	call HasPlayerFainted
 	jr nz, .PlayerNotFainted
 	call HandlePlayerMonFaint
@@ -365,16 +352,43 @@ CheckFaint_PlayerThenEnemy:
 .BattleIsOver:
 	scf
 	ret
+	
+Faint_PlayerFirst:
+	ld a, [wBattleMonSpecies]
+	and a
+	jr z, .done_player_faint
+	call HasPlayerFainted
+	call z, FaintYourPokemon
+.done_player_faint
+	ld a, [wEnemyMonSpecies]
+	and a
+	ret z
+	call HasEnemyFainted
+	call z, FaintEnemyPokemon
+	ret
 
 CheckFaint_EnemyThenPlayer:
 .faint_loop
 	call .Function
 	ret c
 	call HasAnyoneFainted
-	ret nz
+	jr nz, .no_one_faints
 	jr .faint_loop
+	
+.no_one_faints
+	call NoMoreFaintingConditions
+	ret
 
 .Function:
+	call Faint_EnemyFirst
+	ld a, [wBattleMode]
+	dec a
+	jr nz, .do_betweenturneffects
+	call HasEnemyFainted
+	jr z, .done_betweenturneffects
+.do_betweenturneffects
+	call HandleBetweenTurnEffects
+.done_betweenturneffects
 	call HasEnemyFainted
 	jr nz, .EnemyNotFainted
 	call HandleEnemyMonFaint
@@ -396,6 +410,20 @@ CheckFaint_EnemyThenPlayer:
 
 .BattleIsOver:
 	scf
+	ret
+	
+Faint_EnemyFirst:
+	ld a, [wEnemyMonSpecies]
+	and a
+	jr z, .done_enemy_faint
+	call HasEnemyFainted
+	call z, FaintEnemyPokemon
+.done_enemy_faint	
+	ld a, [wBattleMonSpecies]
+	and a
+	ret z
+	call HasPlayerFainted
+	call z, FaintYourPokemon
 	ret
 
 HandleBerserkGene:
@@ -985,10 +1013,8 @@ Battle_EnemyFirst:
 	ld a, [wForcedSwitch]
 	and a
 	ret nz
-	call HasPlayerFainted
-	jp z, HandlePlayerMonFaint
-	call HasEnemyFainted
-	jp z, HandleEnemyMonFaint
+	call HasAnyoneFainted
+	jp z, CheckFaint_EnemyThenPlayer
 
 .switch_item
 	call SetEnemyTurn
@@ -1000,13 +1026,12 @@ Battle_EnemyFirst:
 	ld a, [wForcedSwitch]
 	and a
 	ret nz
-	call HasEnemyFainted
-	jp z, HandleEnemyMonFaint
-	call HasPlayerFainted
-	jp z, HandlePlayerMonFaint
+	call HasAnyoneFainted
+	jp z, CheckFaint_EnemyThenPlayer
 	call SetPlayerTurn
 	call HandleHealingItems
 	call RefreshBattleHuds
+	call CheckFaint_EnemyThenPlayer
 	xor a ; BATTLEPLAYERACTION_USEMOVE
 	ld [wBattlePlayerAction], a
 	ret
@@ -1024,10 +1049,8 @@ Battle_PlayerFirst:
 	ret nz
 	call CheckMobileBattleError
 	ret c
-	call HasEnemyFainted
-	jp z, HandleEnemyMonFaint
-	call HasPlayerFainted
-	jp z, HandlePlayerMonFaint
+	call HasAnyoneFainted
+	jp z, CheckFaint_PlayerThenEnemy
 	push bc
 	call SetPlayerTurn
 	pop bc
@@ -1046,15 +1069,14 @@ Battle_PlayerFirst:
 	ld a, [wForcedSwitch]
 	and a
 	ret nz
-	call HasPlayerFainted
-	jp z, HandlePlayerMonFaint
-	call HasEnemyFainted
-	jp z, HandleEnemyMonFaint
+	call HasAnyoneFainted
+	jp z, CheckFaint_PlayerThenEnemy
 
 .switched_or_used_item
 	call SetEnemyTurn
 	call HandleHealingItems
 	call RefreshBattleHuds
+	call CheckFaint_PlayerThenEnemy
 	xor a ; BATTLEPLAYERACTION_USEMOVE
 	ld [wBattlePlayerAction], a
 	ret
@@ -1175,6 +1197,8 @@ ResidualDamage:
 
 	call HasUserFainted
 	jp z, .fainted
+	call HasAnyoneFainted
+	jr z, .not_seeded
 
 	ld a, BATTLE_VARS_SUBSTATUS4
 	call GetBattleVarAddr
@@ -2263,7 +2287,6 @@ UpdateHPBar:
 	ret
 
 HandleEnemyMonFaint:
-	call FaintEnemyPokemon
 	ld a, [wBattleMode]
 	dec a
 	jr z, .wild
@@ -2275,8 +2298,6 @@ HandleEnemyMonFaint:
 	ld [hl], a
 
 .wild
-	call HasPlayerFainted
-	call z, FaintYourPokemon
 	call HasPlayerFainted
 	jr z, .faint_done
 	ld a, [wBattleMode]
@@ -2529,7 +2550,10 @@ FaintYourPokemon:
 	lb bc, 5, 11
 	call ClearBox
 	ld hl, BattleText_MonFainted
-	jp StdBattleTextbox
+	call StdBattleTextbox
+	xor a
+	ld [wBattleMonSpecies], a
+	ret
 
 FaintEnemyPokemon:
 	farcall SetEnemyMonJustFainted
@@ -2543,7 +2567,10 @@ FaintEnemyPokemon:
 	lb bc, 4, 10
 	call ClearBox
 	ld hl, BattleText_EnemyMonFainted
-	jp StdBattleTextbox
+	call StdBattleTextbox
+	xor a
+	ld [wEnemyMonSpecies], a
+	ret
 
 CheckEnemyTrainerDefeated:
 	ld a, [wOTPartyCount]
@@ -2866,9 +2893,6 @@ IsGymLeaderCommon:
 INCLUDE "data/trainers/leaders.asm"
 
 HandlePlayerMonFaint:
-	call FaintYourPokemon
-	call HasEnemyFainted
-	call z, FaintEnemyPokemon
 	call HasEnemyFainted
 	jr z, .faint_done
 	call CheckPlayerPartyForFitMon
@@ -3425,13 +3449,13 @@ EnemySwitch_SetMode:
 	jr nz, .test_switch
 	
 	push hl
-	farcall FindMonToSwitchSESwitch
+	farcall FindEnemyMonsImmuneToOrResistsLastCounterMove
 	pop hl
 	ld a, [wEnemyAISwitchScore]
-	cp $f4
+	cp $ff
 	jr nz, .test_switch
 	
-	farcall FindEnemyMonsImmuneToOrResistsLastCounterMove
+	farcall FindMonToSwitchSESwitch
 .test_switch
 	ld a, [wEnemyAISwitchScore]
 	dec a
@@ -4573,36 +4597,23 @@ HandleHPHealingItem:
 	cp HELD_BERRY
 	ret nz
 	
-	ld de, wEnemyMonHP + 1
-	ld hl, wEnemyMonMaxHP
 	ldh a, [hBattleTurn]
 	and a
-	jr z, .go
-	ld de, wBattleMonHP + 1
-	ld hl, wBattleMonMaxHP
-
-.go
-	call HasUserFainted
+	jr nz, .player
+	call HasEnemyFainted
 	ret z
-; If, and only if, Pokemon's HP is less than half max, use the item.
-; Store current HP in Buffer 3/4
-	push bc
-	ld a, [de]
-	ld [wHPBuffer2], a
-	add a
-	ld c, a
-	dec de
-	ld a, [de]
-	inc de
-	ld [wHPBuffer2 + 1], a
-	adc a
-	ld b, a
-	ld a, b
-	cp [hl]
-	ld a, c
-	pop bc
+	farcall CheckEnemyHalfHP
+	ld hl, wEnemyMonMaxHP
+	jr .go
+	
+.player	
+	call HasPlayerFainted
+	ret z
+	farcall CheckPlayerHalfHP
+	ld hl, wBattleMonMaxHP
+.go
 	jr z, .equal
-	jr c, .less
+	jr nc, .less
 	ret
 
 .equal
@@ -5126,7 +5137,6 @@ BattleMenu:
 	jr z, .ok
 	cp BATTLETYPE_TUTORIAL
 	jr z, .ok
-	call EmptyBattleTextbox
 	call UpdateBattleHuds
 	call EmptyBattleTextbox
 	call LoadTilemapToTempTilemap
