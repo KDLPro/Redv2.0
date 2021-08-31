@@ -218,28 +218,28 @@ HurtByBurnText:
 LeechSeedSapsText:
 	text "<USER>'s"
 	line "health is sapped"
-	scroll "by LEECH SEED!"
+	scroll "by Leech Seed!"
 	autodone
 
 HasANightmareText:
 	text "<USER>"
-	line "has a NIGHTMARE!"
+	line "has a Nightmare!"
 	autodone
 
 HurtByCurseText:
 	text "<USER>'s"
-	line "hurt by the CURSE!"
+	line "hurt by the Curse!"
 	autodone
 
 SandstormHitsText:
 	text "<USER>"
 	line "is buffeted by"
-	scroll "the SANDSTORM!"
+	scroll "the Sandstorm!"
 	autodone
 
 PerishCountText:
 	text "<USER>'s"
-	line "PERISH count is @"
+	line "Perish count is @"
 	text_decimal wTextDecimalByte, 1, 1
 	text "!"
 	autodone
@@ -262,25 +262,25 @@ BattleText_UserRecoveredPPUsing:
 
 BattleText_TargetWasHitByFutureSight:
 	text "<TARGET>"
-	line "was hit by FUTURE"
-	scroll "SIGHT!"
+	line "was hit by Future"
+	scroll "Sight!"
 	autodone
 
 BattleText_SafeguardFaded:
 	text "<USER>'s"
-	line "SAFEGUARD faded!"
+	line "Safeguard faded!"
 	autodone
 
 BattleText_MonsLightScreenFell:
 	text_ram wStringBuffer1
 	text " #MON's"
-	line "LIGHT SCREEN fell!"
+	line "Light Screen fell!"
 	autodone
 
 BattleText_MonsReflectFaded:
 	text_ram wStringBuffer1
 	text " #MON's"
-	line "REFLECT faded!"
+	line "Reflect faded!"
 	autodone
 
 BattleText_RainContinuesToFall:
@@ -294,7 +294,7 @@ BattleText_TheSunlightIsStrong:
 	autodone
 
 BattleText_TheSandstormRages:
-	text "The SANDSTORM"
+	text "The Sandstorm"
 	line "rages."
 	autodone
 
@@ -368,7 +368,7 @@ BattleText_MonHasNoMovesLeft:
 
 BattleText_TargetsEncoreEnded:
 	text "<TARGET>'s"
-	line "ENCORE ended!"
+	line "Encore ended!"
 	autodone
 
 BattleText_StringBuffer1GrewToLevel:
@@ -698,7 +698,7 @@ RageBuildingText:
 
 GotAnEncoreText:
 	text "<TARGET>"
-	line "got an ENCORE!"
+	line "got an Encore!"
 	autodone
 
 SharedPainText:
@@ -1007,7 +1007,7 @@ CantEscapeNowText:
 StartedNightmareText:
 	text "<TARGET>"
 	line "started to have a"
-	scroll "NIGHTMARE!"
+	scroll "Nightmare!"
 	autodone
 
 WasDefrostedText:
@@ -1019,7 +1019,7 @@ PutACurseText:
 	text "<USER>"
 	line "cut its own HP and"
 
-	autopara "put a CURSE on"
+	autopara "put a Curse on"
 	line "<TARGET>!"
 	autodone
 
