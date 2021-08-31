@@ -1029,7 +1029,7 @@ CooltrainerFGroup:
 	
 	db 29, STEELIX
 	db $aa, $aa
-	db $20, $80, $40, $00, $40, $00 ; hp, atk, def, spd, spa, spd
+	db $20, $80, $00, $00, $60, $20 ; hp, atk, def, spd, spa, spd
 	db QUICK_CLAW
 	db EARTHQUAKE, IRON_TAIL, ROCK_SLIDE, SELFDESTRUCT
 	
@@ -1047,7 +1047,7 @@ CooltrainerFGroup:
 	
 	db 29, GROWLITHE
 	db $aa, $a9
-	db $70, $30, $00, $30, $30, $00 ; hp, atk, def, spd, spa, spd
+	db $00, $50, $00, $50, $30, $00 ; hp, atk, def, spd, spa, spd
 	db LEFTOVERS
 	db FLAMETHROWER, EARTHQUAKE, BODY_SLAM, REST
 	
@@ -1055,7 +1055,7 @@ CooltrainerFGroup:
 	db $a9, $aa
 	db $20, $80, $40, $00, $40, $00 ; hp, atk, def, spd, spa, spd
 	db MIRACLEBERRY
-	db MEGAHORN, SEISMIC_TOSS, CROSS_CHOP, REST
+	db MEGAHORN, ROCK_SLIDE, ROCK_SMASH, REST
 	db -1 ; end
 
 	; COOLTRAINERF (6)
