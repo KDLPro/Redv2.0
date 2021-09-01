@@ -286,13 +286,8 @@ Fainting:
 	ret nz
 	ld a, [wEnemyShouldGoFirst]
 	cp ENEMY_FIRST
-	jr z, .DoEnemyFirst
-	call Faint_PlayerFirst
-	ret
-	
-.DoEnemyFirst
-	call Faint_EnemyFirst
-	ret
+	jp z, Faint_EnemyFirst 
+	jp Faint_PlayerFirst
 
 NoMoreFaintingConditions:
 	call HandleDefrost
@@ -309,6 +304,15 @@ HasAnyoneFainted:
 	ret
 
 CheckFaint_PlayerThenEnemy:
+	call Faint_PlayerFirst
+	ld a, [wBattleMode]
+	dec a
+	jr nz, .do_betweenturneffects
+	call HasEnemyFainted
+	jr z, .done_betweenturneffects
+.do_betweenturneffects
+	call HandleBetweenTurnEffects
+.done_betweenturneffects
 .faint_loop
 	call .Function
 	ret c
@@ -322,14 +326,6 @@ CheckFaint_PlayerThenEnemy:
 
 .Function:
 	call Faint_PlayerFirst
-	ld a, [wBattleMode]
-	dec a
-	jr nz, .do_betweenturneffects
-	call HasEnemyFainted
-	jr z, .done_betweenturneffects
-.do_betweenturneffects
-	call HandleBetweenTurnEffects
-.done_betweenturneffects
 	call HasPlayerFainted
 	jr nz, .PlayerNotFainted
 	call HandlePlayerMonFaint
@@ -368,6 +364,15 @@ Faint_PlayerFirst:
 	ret
 
 CheckFaint_EnemyThenPlayer:
+	call Faint_EnemyFirst
+	ld a, [wBattleMode]
+	dec a
+	jr nz, .do_betweenturneffects
+	call HasEnemyFainted
+	jr z, .done_betweenturneffects
+.do_betweenturneffects
+	call HandleBetweenTurnEffects
+.done_betweenturneffects
 .faint_loop
 	call .Function
 	ret c
@@ -381,14 +386,6 @@ CheckFaint_EnemyThenPlayer:
 
 .Function:
 	call Faint_EnemyFirst
-	ld a, [wBattleMode]
-	dec a
-	jr nz, .do_betweenturneffects
-	call HasEnemyFainted
-	jr z, .done_betweenturneffects
-.do_betweenturneffects
-	call HandleBetweenTurnEffects
-.done_betweenturneffects
 	call HasEnemyFainted
 	jr nz, .EnemyNotFainted
 	call HandleEnemyMonFaint
