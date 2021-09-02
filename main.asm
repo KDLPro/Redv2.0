@@ -685,6 +685,7 @@ INCLUDE "data/items/names.asm"
 INCLUDE "engine/items/print_item_description.asm"
 INCLUDE "data/moves/names.asm"
 INCLUDE "engine/overworld/landmarks.asm"
+INCLUDE "data/moves/attacks.asm"
 
 
 SECTION "bank78", ROMX

@@ -3665,7 +3665,7 @@ UpdateMoveData:
 
 	dec a
 	call GetMoveData
-	call GetMoveName
+	call GetAttackName
 	jp CopyName1
 	
 CheckForStatusIfAlreadyHasAny:
