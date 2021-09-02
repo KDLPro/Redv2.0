@@ -69,7 +69,7 @@ ReadTrainerParty:
 	cp "@"
 	jr nz, .skip_name
 
-	ld a, [hli]
+	call GetNextTrainerDataByte
 	ld [wOtherTrainerType], a
 	ld d, h
 	ld e, l
