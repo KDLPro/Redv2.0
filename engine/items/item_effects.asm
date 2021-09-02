@@ -1175,6 +1175,7 @@ VitaminEffect:
 .check_ev_overflow
 	pop hl 
 	pop bc 
+	pop de
 
     ld a, e
     and a
