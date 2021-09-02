@@ -113,7 +113,7 @@ MartGoldenrod2F2:
 	db -1 ; end
 
 MartGoldenrod3F:
-	db 7 ; # items
+	db 8 ; # items
 	db X_SPEED
 	db X_SP_ATK
 	db X_DEFEND
@@ -121,6 +121,7 @@ MartGoldenrod3F:
 	db DIRE_HIT
 	db GUARD_SPEC
 	db X_ACCURACY
+	db RARE_CANDY
 	db -1 ; end
 
 MartGoldenrod4F:
