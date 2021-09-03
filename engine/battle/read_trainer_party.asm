@@ -141,6 +141,8 @@ ReadTrainerPartyPieces:
 	
 .rollback
 	call GetPrevTrainerDataByte
+	call GetPrevTrainerDataByte
+	call GetNextTrainerDataByte
 
 .level
 ; level
