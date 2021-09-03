@@ -139,6 +139,11 @@ BattleText_EnemySentOut:
 	text_ram wEnemyMonNick
 	text "!"
 	done
+	
+EnemyIsThinkingText::
+	text "Enemy is"
+	line "thinking..."
+	autodone
 
 BattleText_TheresNoWillToBattle:
 	text "There's no will to"

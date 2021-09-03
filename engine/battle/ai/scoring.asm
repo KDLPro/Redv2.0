@@ -141,6 +141,10 @@ AI_Setup:
 
 
 AI_Types:
+; Don't do this if player is switching.
+	ld a, [wPlayerIsSwitching]
+	and a
+	ret nz
 ; Dismiss any move that the player is immune to.
 ; Encourage super-effective moves.
 ; Discourage not very effective moves unless
@@ -231,6 +235,10 @@ AI_Types:
 	
 
 AI_Offensive:
+; Don't do this if player is switching.
+	ld a, [wPlayerIsSwitching]
+	and a
+	ret nz
 ; Greatly discourage non-damaging moves.
 
 	ld hl, wEnemyAIMoveScores - 1
@@ -604,9 +612,9 @@ AI_Smart_Selfdestruct:
 	call AICheckEnemyHalfHP
 	jr c, .discourage
 
-; Do nothing if enemy's HP is below 25%.
+; Encourage if enemy's HP is below 25%.
 	call AICheckEnemyQuarterHP
-	ret nc
+	jp AI_Encourage
 
 ; If enemy's HP is between 25% and 50%,
 ; over 90% chance to greatly discourage this move.
@@ -3144,6 +3152,10 @@ AIAggessiveCheckTurnsToKOPlayer:
 	
 
 AI_Cautious:
+; Don't do this if player is switching.
+	ld a, [wPlayerIsSwitching]
+	and a
+	ret nz
 ; 90% chance to discourage moves with residual effects after the first turn.
 
 	ld a, [wEnemyTurnsTaken]
@@ -3186,6 +3198,10 @@ INCLUDE "data/battle/ai/residual_moves.asm"
 
 
 AI_Status:
+; Don't do this if player is switching.
+	ld a, [wPlayerIsSwitching]
+	and a
+	ret nz
 ; Dismiss status moves that don't affect the player.
 
 	ld hl, wEnemyAIMoveScores - 1

@@ -133,6 +133,9 @@ AIChooseMove:
 	ld a, [wLinkMode]
 	and a
 	ret nz
+	
+	ld hl, EnemyIsThinkingText
+	call StdBattleTextbox
 
 ; No use picking a move if there's no choice.
 	farcall CheckEnemyLockedIn
