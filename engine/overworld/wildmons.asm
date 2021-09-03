@@ -196,6 +196,7 @@ TryWildEncounter::
 	call GetMapEncounterRate
 	call ApplyMusicEffectOnEncounterRate
 	call ApplyCleanseTagEffectOnEncounterRate
+	call ApplyBikeOrRunEffectOnEncounterRate
 	call Random
 	cp b
 	ret
@@ -229,6 +230,20 @@ ApplyMusicEffectOnEncounterRate::
 .double
 	sla b
 	ret
+	
+ApplyBikeOrRunEffectOnEncounterRate::
+; Biking or running doubles encounter rate.
+	ld a, [wPlayerState]
+	cp PLAYER_BIKE
+	jr z, .double
+	ld a, [wCurInput]
+	bit B_BUTTON_F, a
+	jr z, .double
+	ret
+	
+.double
+	sla b
+	ret	
 
 ApplyCleanseTagEffectOnEncounterRate::
 ; Cleanse Tag halves encounter rate.
@@ -376,7 +391,22 @@ rept 4
 	dec hl
 endr
 
+	ld a, [wPlayerState]
+	cp PLAYER_BIKE
+	jr z, .bike
+
 	ld a, [wCurPartyLevel]
+	cp [hl]
+	jr nc, .encounter
+	and a
+	ret
+
+.bike	
+; Player can't encounter Pokémon that are up to 
+; 5 levels higher than the first Pokémon in party
+; while riding a bike.
+	ld a, [wCurPartyLevel]
+	sub 5
 	cp [hl]
 	jr nc, .encounter
 	and a
