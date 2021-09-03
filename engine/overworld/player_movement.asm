@@ -281,22 +281,25 @@ DoPlayerMovement::
 	jr nc, .ice
 
 ; Downhill riding is slower when not moving down.
+	call .RunCheck
+	jr z, .fast
 	call .BikeCheck
 	jr nz, .walk
 
 	ld hl, wBikeFlags
 	bit BIKEFLAGS_DOWNHILL_F, [hl]
-	jr z, .fast
+	jr z, .bike_fast
 
 	ld a, [wWalkingDirection]
 	cp DOWN
-	jr z, .fast
+	jr z, .bike_fast
 
 	ld a, STEP_WALK
 	call .DoStep
 	scf
 	ret
 
+.bike_fast
 .fast
 	ld a, STEP_BIKE
 	call .DoStep
@@ -347,6 +350,9 @@ DoPlayerMovement::
 	ld a, [wWalkingIntoLand]
 	and a
 	jr nz, .ExitWater
+	
+	call .RunCheck
+	jr z, .fast
 
 	ld a, STEP_WALK
 	call .DoStep
@@ -762,6 +768,21 @@ ENDM
 	cp PLAYER_BIKE
 	ret z
 	cp PLAYER_SKATE
+	ret
+	
+.RunCheck:
+	ld a, [wPlayerState]
+	cp PLAYER_NORMAL
+	jr z, .may_run
+	cp PLAYER_SURF
+	jr z, .may_run
+	cp PLAYER_SURF_PIKA
+	jr z, .may_run
+	ret
+.may_run
+	ldh a, [hJoypadDown]
+	and B_BUTTON
+	cp B_BUTTON
 	ret
 
 .CheckWalkable:
