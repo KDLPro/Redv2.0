@@ -1755,15 +1755,6 @@ ItemActionText:
 	push de
 	push bc
 	farcall WritePartyMenuTilemap
-	pop bc
-	pop de
-	pop hl
-	pop af
-	ld [wCurPartyMon], a
-	push af
-	push hl
-	push de
-	push bc
 	farcall PrintPartyMenuActionText
 	call WaitBGMap
 	call SetPalettes
