@@ -196,7 +196,7 @@ TryWildEncounter::
 	call GetMapEncounterRate
 	call ApplyMusicEffectOnEncounterRate
 	call ApplyCleanseTagEffectOnEncounterRate
-	call ApplyBikeOrRunEffectOnEncounterRate
+	call ApplyBikeEffectOnEncounterRate
 	call Random
 	cp b
 	ret
@@ -231,8 +231,8 @@ ApplyMusicEffectOnEncounterRate::
 	sla b
 	ret
 	
-ApplyBikeOrRunEffectOnEncounterRate::
-; Biking or running doubles encounter rate.
+ApplyBikeEffectOnEncounterRate::
+; Biking doubles encounter rate.
 	ld a, [wPlayerState]
 	cp PLAYER_BIKE
 	jr z, .double
@@ -405,9 +405,13 @@ endr
 ; Player can't encounter Pokémon that are up to 
 ; 5 levels higher than the first Pokémon in party
 ; while riding a bike.
+	push bc
+	ld a, [hl]
+	add 5
+	ld b, a
 	ld a, [wCurPartyLevel]
-	sub 5
-	cp [hl]
+	cp b
+	pop bc
 	jr nc, .encounter
 	and a
 	ret
