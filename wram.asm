@@ -2962,7 +2962,9 @@ wKenjiFightCount::   db ; unreferenced
 wParryFightCount::   db
 wErinFightCount::    db
 
-	ds 100
+wBikeSteps:: db		; to tell how fast the bike should be
+
+	ds 99
 
 wEventFlags:: flag_array NUM_EVENTS
 

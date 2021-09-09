@@ -37,12 +37,23 @@ CheckObjectStillVisible:
 	ld hl, OBJECT_FLAGS2
 	add hl, bc
 	res OBJ_FLAGS2_6, [hl]
+	ldh a, [hMapObjectIndex]
+	and a
+	jr nz, .notPlayer
+; hardcode for crossing over connections
+	ld a, [wYCoord]
+	inc a
+	jr z, .yes
+	ld a, [wXCoord]
+	inc a
+	jr z, .yes
+.notPlayer
 	ld a, [wXCoord]
 	ld e, a
 	ld hl, OBJECT_NEXT_MAP_X
 	add hl, bc
 	ld a, [hl]
-	add 1
+	inc a
 	sub e
 	jr c, .ok
 	cp MAPOBJECT_SCREEN_WIDTH
@@ -52,7 +63,7 @@ CheckObjectStillVisible:
 	ld hl, OBJECT_NEXT_MAP_Y
 	add hl, bc
 	ld a, [hl]
-	add 1
+	inc a
 	sub e
 	jr c, .ok
 	cp MAPOBJECT_SCREEN_HEIGHT
@@ -68,7 +79,7 @@ CheckObjectStillVisible:
 	ld hl, OBJECT_INIT_X
 	add hl, bc
 	ld a, [hl]
-	add 1
+	inc a
 	sub e
 	jr c, .ok2
 	cp MAPOBJECT_SCREEN_WIDTH
@@ -78,7 +89,7 @@ CheckObjectStillVisible:
 	ld hl, OBJECT_INIT_Y
 	add hl, bc
 	ld a, [hl]
-	add 1
+	inc a
 	sub e
 	jr c, .ok2
 	cp MAPOBJECT_SCREEN_HEIGHT
@@ -108,22 +119,22 @@ HandleStepType:
 	add hl, bc
 	ld a, [hl]
 	and a
-	jr z, .zero
+	jr z, .null_step_type
 	ld hl, OBJECT_FLAGS2
 	add hl, bc
 	bit FROZEN_F, [hl]
 	jr nz, .frozen
 	cp STEP_TYPE_FROM_MOVEMENT
-	jr z, .one
-	jr .ok3
+	jr z, .map_object_movement_pattern
+	jr .do_step_type
 
-.zero
+.null_step_type
 	call StepFunction_Reset
 	ld hl, OBJECT_FLAGS2
 	add hl, bc
 	bit FROZEN_F, [hl]
 	jr nz, .frozen
-.one
+.map_object_movement_pattern
 	call StepFunction_FromMovement
 	ld hl, OBJECT_STEP_TYPE
 	add hl, bc
@@ -132,7 +143,7 @@ HandleStepType:
 	ret z
 	cp STEP_TYPE_FROM_MOVEMENT
 	ret z
-.ok3
+.do_step_type
 	ld hl, StepTypesJumptable
 	rst JumpTable
 	ret
@@ -360,25 +371,45 @@ GetStepVector:
 	inc hl
 	ld a, [hli]
 	ld h, [hl]
+	push af
+	push hl
+	ld hl, OBJECT_DIRECTION_WALKING
+	add hl, bc
+	ld a, [hl]
+	cp (STEP_SLOW << 2 | RIGHT) + 1
+	jr c, .slowStep
+	pop hl
+	pop af
+	and a
+	ret
+.slowStep
+	pop hl
+	pop af
+	scf
 	ret
 
 StepVectors:
 ; x,  y, duration, speed
 	; slow
+	db  0,  1, 32, 1
+	db  0, -1, 32, 1
+	db -1,  0, 32, 1
+	db  1,  0, 32, 1
+	; normal
 	db  0,  1, 16, 1
 	db  0, -1, 16, 1
 	db -1,  0, 16, 1
 	db  1,  0, 16, 1
-	; normal
-	db  0,  2,  8, 2
-	db  0, -2,  8, 2
-	db -2,  0,  8, 2
-	db  2,  0,  8, 2
-	; fast
+	; fast/bike
 	db  0,  4,  4, 4
 	db  0, -4,  4, 4
 	db -4,  0,  4, 4
 	db  4,  0,  4, 4
+	; running shoes
+	db  0,  2,  8, 2
+	db  0, -2,  8, 2
+	db -2,  0,  8, 2
+	db  2,  0,  8, 2
 
 GetStepVectorSign:
 	add a
@@ -2443,8 +2474,12 @@ ResetStepVector:
 	xor a
 	ld [wPlayerStepVectorX], a
 	ld [wPlayerStepVectorY], a
+	ld a, [wPlayerStepFlags]
+	bit 6, a
+	ld a, $0
 	ld [wPlayerStepFlags], a
-	ld a, STANDING
+	ret nz
+	dec a
 	ld [wPlayerStepDirection], a
 	ret
 

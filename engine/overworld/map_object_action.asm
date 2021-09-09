@@ -1,23 +1,24 @@
 ObjectActionPairPointers:
 ; entries correspond to OBJECT_ACTION_* constants
 ; normal action, frozen action
-	dw SetFacingStanding,              SetFacingStanding
-	dw SetFacingStandAction,           SetFacingCurrent
-	dw SetFacingStepAction,            SetFacingCurrent
-	dw SetFacingBumpAction,            SetFacingCurrent
-	dw SetFacingCounterclockwiseSpin,  SetFacingCurrent
-	dw SetFacingCounterclockwiseSpin2, SetFacingStanding
-	dw SetFacingFish,                  SetFacingFish
-	dw SetFacingShadow,                SetFacingStanding
-	dw SetFacingEmote,                 SetFacingEmote
-	dw SetFacingBigDollSym,            SetFacingBigDollSym
-	dw SetFacingBounce,                SetFacingFreezeBounce
-	dw SetFacingWeirdTree,             SetFacingCurrent
-	dw SetFacingBigDollAsym,           SetFacingBigDollAsym
-	dw SetFacingBigDoll,               SetFacingBigDoll
-	dw SetFacingBoulderDust,           SetFacingStanding
-	dw SetFacingGrassShake,            SetFacingStanding
-	dw SetFacingSkyfall,               SetFacingCurrent
+	dw SetFacingStanding,              SetFacingStanding		; PERSON_ACTION_00
+	dw SetFacingStandAction,           SetFacingCurrent			; PERSON_ACTION_STAND
+	dw SetFacingStepAction,            SetFacingCurrent			; PERSON_ACTION_STEP
+	dw SetFacingBumpAction,            SetFacingCurrent			; PERSON_ACTION_BUMP
+	dw SetFacingCounterclockwiseSpin,  SetFacingCurrent			; PERSON_ACTION_SPIN
+	dw SetFacingCounterclockwiseSpin2, SetFacingStanding		; PERSON_ACTION_SPIN_FLICKER
+	dw SetFacingFish,                  SetFacingFish			; PERSON_ACTION_FISH
+	dw SetFacingShadow,                SetFacingStanding		; PERSON_ACTION_STANDING
+	dw SetFacingEmote,                 SetFacingEmote			; PERSON_ACTION_EMOTE
+	dw SetFacingBigDollSym,            SetFacingBigDollSym		; PERSON_ACTION_BIG_DOLL_SYM
+	dw SetFacingBounce,                SetFacingFreezeBounce	; PERSON_ACTION_BOUNCE
+	dw SetFacingWeirdTree,             SetFacingCurrent			; PERSON_ACTION_WEIRD_TREE
+	dw SetFacingBigDollAsym,           SetFacingBigDollAsym		; PERSON_ACTION_BIG_DOLL_ASYM
+	dw SetFacingBigDoll,               SetFacingBigDoll			; PERSON_ACTION_BIG_DOLL
+	dw SetFacingBoulderDust,           SetFacingStanding		; PERSON_ACTION_BOULDER_DUST
+	dw SetFacingGrassShake,            SetFacingStanding		; PERSON_ACTION_GRASS_SHAKE
+	dw SetFacingSkyfall,               SetFacingCurrent			; PERSON_ACTION_SKYFALL
+	dw SetFacingRun, 	               SetFacingCurrent			; PERSON_ACTION_SKYFALL
 
 SetFacingStanding:
 	ld hl, OBJECT_FACING_STEP
@@ -49,18 +50,19 @@ SetFacingStepAction:
 
 	ld hl, OBJECT_STEP_FRAME
 	add hl, bc
+	inc [hl]
 	ld a, [hl]
-	inc a
-	and %00001111
-	ld [hl], a
 
 	rrca
 	rrca
-	maskbits NUM_DIRECTIONS
+	rrca
+	and %11
 	ld d, a
 
-	call GetSpriteDirection
-	or FACING_STEP_DOWN_0 ; useless
+	ld hl, OBJECT_FACING
+	add hl, bc
+	ld a, [hl]
+	and %00001100
 	or d
 	ld hl, OBJECT_FACING_STEP
 	add hl, bc
@@ -77,12 +79,12 @@ SetFacingSkyfall:
 	add hl, bc
 	ld a, [hl]
 	add 2
-	and %00001111
 	ld [hl], a
 
 	rrca
 	rrca
-	maskbits NUM_DIRECTIONS
+	rrca
+	and %11
 	ld d, a
 
 	call GetSpriteDirection
@@ -148,7 +150,7 @@ CounterclockwiseSpinAction:
 	inc a
 	and %00001111
 	ld d, a
-	cp 4
+	cp 2
 	jr c, .ok
 
 	ld d, 0
@@ -292,5 +294,26 @@ SetFacingGrassShake:
 	inc a ; FACING_GRASS_2
 
 .ok
+	ld [hl], a
+	ret
+	
+SetFacingRun:
+	ld hl, OBJECT_FLAGS1
+	add hl, bc
+	bit SLIDING_F, [hl]
+	jp nz, SetFacingCurrent
+
+	ld hl, OBJECT_STEP_FRAME
+	add hl, bc
+	inc [hl]
+	ld a, [hl]
+	rrca
+	rrca
+	and %11
+	ld d, a
+	call GetSpriteDirection
+	or d
+	ld hl, OBJECT_FACING_STEP
+	add hl, bc
 	ld [hl], a
 	ret

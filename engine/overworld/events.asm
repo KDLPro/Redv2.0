@@ -151,6 +151,8 @@ HandleMap:
 	cp MAPSTATUS_HANDLE
 	ret nz
 
+	call .background_events
+.background_events
 	call HandleMapObjects
 	call NextOverworldFrame
 	call HandleMapBackground
@@ -177,20 +179,20 @@ MapEvents:
 .no_events
 	ret
 
-MaxOverworldDelay:
-	db 2
-
 ResetOverworldDelay:
-	ld a, [MaxOverworldDelay]
-	ld [wOverworldDelay], a
+	ld hl, wOverworldDelay
+	bit 7, [hl]
+	res 7, [hl]
+	ret nz
+	ld [hl], 2
 	ret
 
 NextOverworldFrame:
 	ld a, [wOverworldDelay]
 	and a
-	ret z
-	ld c, a
-	call DelayFrames
+	jp nz, DelayFrame
+	ld a, $82
+	ld [wOverworldDelay], a
 	ret
 
 HandleMapTimeAndJoypad:
