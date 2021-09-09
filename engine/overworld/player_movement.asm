@@ -265,7 +265,7 @@ DoPlayerMovement::
 	jp z, .TrySurf
 
 	call .CheckLandPerms
-	jr c, .bump
+	jp c, .bump
 
 	call .CheckNPC
 	and a
