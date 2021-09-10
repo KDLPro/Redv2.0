@@ -141,7 +141,6 @@ UnusedWait30Frames: ; unreferenced
 	ret
 
 HandleMap:
-	call ResetOverworldDelay
 	call HandleMapTimeAndJoypad
 	farcall HandleCmdQueue ; no need to farcall
 	call MapEvents
@@ -151,42 +150,20 @@ HandleMap:
 	cp MAPSTATUS_HANDLE
 	ret nz
 
-	call .background_events
-.background_events
 	call HandleMapObjects
 	call NextOverworldFrame
 	call HandleMapBackground
-	call CheckPlayerState
-	ret
-
+	jp CheckPlayerState
+	
 MapEvents:
 	ld a, [wMapEventStatus]
-	ld hl, .jumps
-	rst JumpTable
-	ret
-
-.jumps
-; entries correspond to MAPEVENTS_* constants
-	dw .events
-	dw .no_events
-
-.events
+	and a
+	ret nz
 	call PlayerEvents
 	call DisableEvents
 	farcall ScriptEvents
 	ret
-
-.no_events
-	ret
-
-ResetOverworldDelay:
-	ld hl, wOverworldDelay
-	bit 7, [hl]
-	res 7, [hl]
-	ret nz
-	ld [hl], 2
-	ret
-
+	
 NextOverworldFrame:
 	ld a, [wOverworldDelay]
 	and a

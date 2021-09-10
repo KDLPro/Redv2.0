@@ -88,7 +88,6 @@ SetFacingSkyfall:
 	ld d, a
 
 	call GetSpriteDirection
-	or FACING_STEP_DOWN_0 ; useless
 	or d
 	ld hl, OBJECT_FACING_STEP
 	add hl, bc
@@ -150,7 +149,7 @@ CounterclockwiseSpinAction:
 	inc a
 	and %00001111
 	ld d, a
-	cp 2
+	cp 4
 	jr c, .ok
 
 	ld d, 0

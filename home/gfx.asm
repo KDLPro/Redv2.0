@@ -267,6 +267,13 @@ Request2bpp::
 	ld c, a
 	jr .loop
 
+RequestOpaque1bpp:
+	ld a, 1
+	ldh [hRequestOpaque1bpp], a
+	jr _Request1bpp
+Request1bpp::
+	xor a
+	ldh [hRequestOpaque1bpp], a
 Request1bpp::
 ; Load 1bpp at b:de to occupy c tiles of hl.
 	ldh a, [hBGMapMode]
@@ -370,14 +377,33 @@ Copy2bpp:
 
 	jp FarCopyBytes
 
+GetOpaque1bppSpaceTile::
+	ld de, TextboxSpaceGFX2
+GetOpaque1bppFontTile::
+; Two bytes in VRAM define eight pixels (2 bits/pixel)
+; Bits are paired from the bytes, e.g. %ABCDEFGH %abcdefgh defines pixels
+; %Aa, %Bb, %Cc, %Dd, %Ee, %Ff, %Gg, %Hh
+; %00 = white, %11 = black, %10 = light, %01 = dark
+	lb bc, OverworldFontGFX
+GetOpaque1bpp::
+	ldh a, [rLCDC]
+	bit 7, a ; lcd on?
+	jr nz, RequestOpaque1bpp
+CopyOpaque1bpp:
+	ld a, 1
+	ldh [hRequestOpaque1bpp], a
+	jr _Copy1bpp
+
 Get1bpp::
 ; copy c 1bpp tiles from b:de to hl
 	ldh a, [rLCDC]
 	bit rLCDC_ENABLE, a
 	jp nz, Request1bpp
 	; fallthrough
-
 Copy1bpp::
+	xor a
+	ldh [hRequestOpaque1bpp], a
+_Copy1bpp::
 	push de
 	ld d, h
 	ld e, l

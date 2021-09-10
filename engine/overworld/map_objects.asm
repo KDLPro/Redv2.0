@@ -341,6 +341,14 @@ GetNextTile:
 
 AddStepVector:
 	call GetStepVector
+	jr nc, .ok
+	ld hl, OBJECT_STEP_DURATION
+	add hl, bc
+	ld a, [hl]
+	and %1
+	jr nz, .ok
+	lb de, 0, 0
+.ok
 	ld hl, OBJECT_SPRITE_X
 	add hl, bc
 	ld a, [hl]
@@ -839,10 +847,7 @@ _MovementSpinRepeat:
 	ld hl, OBJECT_ACTION
 	add hl, bc
 	ld [hl], OBJECT_ACTION_STAND
-	ld hl, OBJECT_RANGE
-	add hl, bc
-	ld a, [hl]
-	ld a, $10
+	ld a, $20
 	ld hl, OBJECT_STEP_DURATION
 	add hl, bc
 	ld [hl], a
@@ -878,7 +883,7 @@ _MovementSpinNextFacing:
 	ld hl, OBJECT_FACING
 	add hl, bc
 	ld a, [hl]
-	and %00001100
+	and %00011100
 	rrca
 	rrca
 	push hl
@@ -1048,6 +1053,7 @@ MovementFunction_ScreenShake:
 .GetDurationAndField1e:
 	ld d, a
 	and %00111111
+	add a
 	ld e, a
 	ld a, d
 	rlca
@@ -1093,13 +1099,15 @@ _RandomWalkContinue:
 RandomStepDuration_Slow:
 	call Random
 	ldh a, [hRandomAdd]
-	and %01111111
+	and $fe
 	jr _SetRandomStepDuration
 
 RandomStepDuration_Fast:
 	call Random
 	ldh a, [hRandomAdd]
-	and %00011111
+	and $5e
+	cp $18
+	jr c, RandomStepDuration_Fast
 _SetRandomStepDuration:
 	ld hl, OBJECT_STEP_DURATION
 	add hl, bc
@@ -1251,7 +1259,7 @@ StepFunction_TeleportFrom:
 	ld [hl], 0
 	ld hl, OBJECT_STEP_DURATION
 	add hl, bc
-	ld [hl], 16
+	ld [hl], 32
 	call Field1c_IncAnonJumptableIndex
 .DoSpin:
 	ld hl, OBJECT_ACTION
@@ -1270,10 +1278,10 @@ StepFunction_TeleportFrom:
 	ld [hl], 0
 	ld hl, OBJECT_1F
 	add hl, bc
-	ld [hl], $10
+	ld [hl], $20
 	ld hl, OBJECT_STEP_DURATION
 	add hl, bc
-	ld [hl], 16
+	ld [hl], 32
 	ld hl, OBJECT_FLAGS2
 	add hl, bc
 	res OVERHEAD_F, [hl]
@@ -1322,7 +1330,7 @@ StepFunction_TeleportTo:
 	ld [hl], OBJECT_ACTION_00
 	ld hl, OBJECT_STEP_DURATION
 	add hl, bc
-	ld [hl], 16
+	ld [hl], 32
 	call Field1c_IncAnonJumptableIndex
 	ret
 
@@ -1341,7 +1349,7 @@ StepFunction_TeleportTo:
 	ld [hl], 0
 	ld hl, OBJECT_STEP_DURATION
 	add hl, bc
-	ld [hl], 16
+	ld [hl], 32
 	call Field1c_IncAnonJumptableIndex
 	ret
 
@@ -1368,7 +1376,7 @@ StepFunction_TeleportTo:
 .InitFinalSpin:
 	ld hl, OBJECT_STEP_DURATION
 	add hl, bc
-	ld [hl], 16
+	ld [hl], 32
 	call Field1c_IncAnonJumptableIndex
 	ret
 
@@ -1641,10 +1649,10 @@ StepFunction_Turn:
 	ld hl, OBJECT_STEP_FRAME
 	add hl, bc
 	ld a, [hl]
-	ld [hl], 2
+	ld [hl], 4
 	ld hl, OBJECT_STEP_DURATION
 	add hl, bc
-	ld [hl], 2
+	ld [hl], 4
 	call Field1c_IncAnonJumptableIndex
 .step1
 	ld hl, OBJECT_STEP_DURATION
@@ -2518,11 +2526,8 @@ RefreshPlayerSprite:
 TryResetPlayerAction:
 	ld hl, wPlayerSpriteSetupFlags
 	bit PLAYERSPRITESETUP_RESET_ACTION_F, [hl]
-	jr nz, .ok
-	ret
-
-.ok
-	ld a, OBJECT_ACTION_00
+	ret z
+	xor a
 	ld [wPlayerAction], a
 	ret
 
@@ -2547,12 +2552,6 @@ _SetPlayerPalette:
 	ld a, d
 	and 1 << 7
 	ret z
-	ld bc, 0 ; debug?
-	ld hl, OBJECT_FACING
-	add hl, bc
-	ld a, [hl]
-	or d
-	ld [hl], a
 	ld a, d
 	swap a
 	and PALETTE_MASK
@@ -2615,7 +2614,7 @@ ResetFollower:
 	cp -1
 	ret z
 	call GetObjectStruct
-	farcall ResetObject ; no need to farcall
+	call ResetObject
 	ld a, -1
 	ld [wObjectFollow_Follower], a
 	ret

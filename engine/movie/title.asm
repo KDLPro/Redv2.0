@@ -237,8 +237,7 @@ SuicuneFrameIterator:
 	ldh [hBGMapMode], a
 	call LoadSuicuneFrame
 	ld a, $1
-	ldh [hBGMapMode], a
-	ld a, $3
+	ldh [hBGMapMode], a	
 	ldh [hBGMapThird], a
 	ret
 
