@@ -314,7 +314,7 @@ LoadMapPalettes:
 
 RefreshMapSprites:
 	call ClearSprites
-	farcall InitMapNameSign
+	farcall InitMapNameSign_Warp
 	call GetMovementPermissions
 	farcall RefreshPlayerSprite
 	farcall CheckUpdatePlayerSprite

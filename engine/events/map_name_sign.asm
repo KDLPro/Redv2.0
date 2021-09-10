@@ -13,8 +13,18 @@ MAPSIGNSTAGE_3_SLIDEIN  EQU $65
 MAPSIGNSTAGE_4_VISIBLE  EQU $59
 MAPSIGNSTAGE_5_SLIDEOUT EQU $0c
 
-
+InitMapNameSign_Warp::
+	ld hl, wEnteredMapFromContinue
+	bit 1, [hl]
+	jr nz, InitMapNameSign
+	ld a, 1
+	ld [wWarping], a
+	jr _InitMapNameSign
+	
 InitMapNameSign::
+	call ClearWarpingVariable
+	; fallthrough
+_InitMapNameSign::
 	xor a
 	ldh [hBGMapMode], a
 	ld a, [wMapGroup]
@@ -46,10 +56,11 @@ InitMapNameSign::
 	ld [wPrevLandmark], a
 
 	call .CheckSpecialMap
-	jr z, .dont_do_map_sign
+	jp z, .dont_do_map_sign
 	jr .do_map_sign
 	
 .may_do_map_sign_1
+	call ClearWarpingVariable
 	ld a, [wCurOverworldFlag]
 	ld [wPrevOverworldFlag], a
 	call CheckMapEnvironment
@@ -98,6 +109,9 @@ InitMapNameSign::
 	jr .value_ok
 
 .stage_1_sliding_out
+	ld a, [wWarping]
+	and a
+	jr nz, .immediate_visible
 	add MAPSIGNSTAGE_2_LOADGFX
 	jr .value_ok
 
@@ -111,6 +125,19 @@ InitMapNameSign::
 .value_ok
 	ld [wLandmarkSignTimer], a
 	ret
+	
+.immediate_visible
+	ld a, $90
+	ldh [rWY], a
+	ldh [hWY], a
+	xor a
+	ldh [hLCDCPointer], a
+	call ClearWarpingVariable
+	call InitMapNameFrame
+	call PlaceMapNameCenterAlign
+	farcall HDMATransfer_OnlyTopFourRows
+	ld a, MAPSIGNSTAGE_2_LOADGFX
+	jr .value_ok
 
 .dont_do_map_sign
 	ld a, [wCurLandmark]
@@ -150,6 +177,11 @@ InitMapNameSign::
 	cp MAP_ROUTE_35_NATIONAL_PARK_GATE
 	ret z
 	cp MAP_ROUTE_36_NATIONAL_PARK_GATE
+	ret
+	
+ClearWarpingVariable:
+	xor a
+	ld [wWarping], a
 	ret
 	
 CheckMovingWithinLandmark:
@@ -210,13 +242,13 @@ PlaceMapNameSign::
 	jr nc, .stage_3_sliding_in
 	cp MAPSIGNSTAGE_5_SLIDEOUT
 	jr c, .stage_5_sliding_out
-	ld a, SCREEN_HEIGHT_PX - 4 * TILE_WIDTH
+	ld a, SCREEN_HEIGHT_PX - 3 * TILE_WIDTH
 	jr .got_value
 
 .stage_3_sliding_in
 	sub MAPSIGNSTAGE_4_VISIBLE
 	add a
-	add SCREEN_HEIGHT_PX - 4 * TILE_WIDTH
+	add SCREEN_HEIGHT_PX - 3 * TILE_WIDTH
 	jr .got_value
 
 .stage_5_sliding_out
@@ -256,7 +288,7 @@ PlaceMapNameCenterAlign:
 	srl a
 	ld b, 0
 	ld c, a
-	hlcoord 0, 2
+	hlcoord 0, 1
 	add hl, bc
 	ld de, wStringBuffer1
 	call PlaceString
@@ -320,14 +352,6 @@ PlaceMapNameFrame:
 	; right, first line
 	ld a, MAP_NAME_SIGN_START + 11
 	ld [hli], a
-	; left, second line
-	ld a, MAP_NAME_SIGN_START + 6
-	ld [hli], a
-	; second line
-	call .FillMiddle
-	; right, second line
-	ld a, MAP_NAME_SIGN_START + 12
-	ld [hli], a
 	; bottom left
 	ld a, MAP_NAME_SIGN_START + 7
 	ld [hli], a
@@ -337,7 +361,7 @@ PlaceMapNameFrame:
 	; bottom right
 	ld a, MAP_NAME_SIGN_START + 10
 	ld [hl], a
-	ret
+	ret	
 
 .FillMiddle:
 	ld c, SCREEN_WIDTH - 2
@@ -364,3 +388,4 @@ PlaceMapNameFrame:
 	dec c
 	jr nz, .continueloop
 	ret
+	

@@ -164,7 +164,8 @@ wScriptVar:: db
 wPlayerNextMovement:: db
 wPlayerMovement:: db
 
-	ds 2
+wPrevOverworldFlag:: db
+wCurOverworldFlag:: db
 
 wMovementObject::
 	db
@@ -2172,7 +2173,7 @@ wSpriteFlags:: db
 
 wHandlePlayerStep:: db
 
-	ds 1
+wWarping:: db
 
 wPartyMenuActionText:: db
 
