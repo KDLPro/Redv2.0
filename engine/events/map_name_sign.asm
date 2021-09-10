@@ -1,13 +1,22 @@
 MAP_NAME_SIGN_START EQU $c0
 
+POPUP_MAP_NAME_START  EQU $e0
+POPUP_MAP_NAME_SIZE   EQU 18
+POPUP_MAP_FRAME_START EQU $f3
+POPUP_MAP_FRAME_SIZE  EQU 8
+POPUP_MAP_FRAME_SPACE EQU $fb
+
+; wLandmarkSignTimer
+MAPSIGNSTAGE_1_SLIDEOLD EQU $74
+MAPSIGNSTAGE_2_LOADGFX  EQU $68
+MAPSIGNSTAGE_3_SLIDEIN  EQU $65
+MAPSIGNSTAGE_4_VISIBLE  EQU $59
+MAPSIGNSTAGE_5_SLIDEOUT EQU $0c
+
+
 InitMapNameSign::
 	xor a
 	ldh [hBGMapMode], a
-	farcall .inefficient_farcall ; this is a waste of 6 ROM bytes and 6 stack bytes
-	ret
-
-; should have just been a fallthrough
-.inefficient_farcall
 	ld a, [wMapGroup]
 	ld b, a
 	ld a, [wMapNumber]
@@ -29,21 +38,78 @@ InitMapNameSign::
 	ld hl, wEnteredMapFromContinue
 	bit 1, [hl]
 	res 1, [hl]
-	jr nz, .dont_do_map_sign
+	jr nz, .may_do_map_sign_2
 
-	call .CheckMovingWithinLandmark
-	jr z, .dont_do_map_sign
+	call CheckMovingWithinLandmark
+	jr z, .may_do_map_sign_1
 	ld a, [wCurLandmark]
 	ld [wPrevLandmark], a
 
 	call .CheckSpecialMap
 	jr z, .dont_do_map_sign
+	jr .do_map_sign
+	
+.may_do_map_sign_1
+	ld a, [wCurOverworldFlag]
+	ld [wPrevOverworldFlag], a
+	call CheckMapEnvironment
+	ld a, [wPrevOverworldFlag]
+	and a
+	jr z, .dont_do_map_sign
+	ld c, a
+	ld a, [wCurOverworldFlag]
+	cp c
+	jr nz, .do_map_sign
+	
+	ld a, [wCurLandmark]
+	call .CheckSpecialMap
+	jr z, .dont_do_map_sign
+	jr .dont_do_map_sign
+	
+.may_do_map_sign_2
+	ld a, [wCurLandmark]
+	ld [wPrevLandmark], a
+	call CheckMapEnvironment
+	jr c, .dont_do_map_sign
 
-; Display for 60 frames
-	ld a, 60
+	ld a, [wCurLandmark]
+	call .CheckSpecialMap
+	jr z, .dont_do_map_sign
+	
+.do_map_sign
+; Landmark sign timer: descends $74-$00
+; $73-$68: Sliding out (old sign)
+; $67-$65: Loading new graphics
+; $64-$59: Sliding in
+; $58-$0c: Remains visible
+; $0b-$00: Sliding out
+	ld a, [wLandmarkSignTimer]
+	sub MAPSIGNSTAGE_2_LOADGFX
+	jr nc, .stage_1_sliding_out
+	add MAPSIGNSTAGE_2_LOADGFX
+	cp MAPSIGNSTAGE_5_SLIDEOUT
+	jr c, .stage_1_sliding_out
+	sub MAPSIGNSTAGE_4_VISIBLE
+	jr c, .stage_4_visible
+	cp MAPSIGNSTAGE_5_SLIDEOUT
+	jr c, .stage_3_sliding_in
+	; was in stage 2, loading new graphics; just reload them again
+	ld a, MAPSIGNSTAGE_2_LOADGFX
+	jr .value_ok
+
+.stage_1_sliding_out
+	add MAPSIGNSTAGE_2_LOADGFX
+	jr .value_ok
+
+.stage_3_sliding_in
+	cpl
+	add MAPSIGNSTAGE_1_SLIDEOLD + 1 ; a = MAPSIGNSTAGE_1_SLIDEOLD - a
+	jr .value_ok
+
+.stage_4_visible
+	ld a, MAPSIGNSTAGE_1_SLIDEOLD
+.value_ok
 	ld [wLandmarkSignTimer], a
-	call InitMapNameFrame
-	farcall HDMATransfer_OnlyTopFourRows
 	ret
 
 .dont_do_map_sign
@@ -54,15 +120,6 @@ InitMapNameSign::
 	ldh [hWY], a
 	xor a
 	ldh [hLCDCPointer], a
-	ret
-
-.CheckMovingWithinLandmark:
-	ld a, [wCurLandmark]
-	ld c, a
-	ld a, [wPrevLandmark]
-	cp c
-	ret z
-	cp LANDMARK_SPECIAL
 	ret
 
 .CheckSpecialMap:
@@ -94,33 +151,91 @@ InitMapNameSign::
 	ret z
 	cp MAP_ROUTE_36_NATIONAL_PARK_GATE
 	ret
+	
+CheckMovingWithinLandmark:
+	ld a, [wCurLandmark]
+	ld c, a
+	ld a, [wPrevLandmark]
+	cp c
+	ret z
+	cp LANDMARK_SPECIAL
+	ret
+	
+CheckMapEnvironment:
+	call GetMapEnvironment
+	call CheckOutdoorMap
+	jr z, .ok
+	cp CAVE
+	jr z, .ok
+	jr .nope
+
+.ok
+	call GetPlayerStandingTile
+	and $f ; lo nybble only
+	jr nz, .nope ; not FLOOR_TILE
+	xor a
+	ld [wCurOverworldFlag], a
+	ret
+
+.nope
+	ld a, 1
+	ld [wCurOverworldFlag], a
+	scf
+	ret
 
 PlaceMapNameSign::
+	; Sign is slightly delayed to move it away from the map connection setup
 	ld hl, wLandmarkSignTimer
 	ld a, [hl]
 	and a
-	jr z, .disappear
+	jr z, .stage_5_sliding_out
 	dec [hl]
-	cp 60
-	ret z
-	cp 59
-	jr nz, .already_initialized
+	sub MAPSIGNSTAGE_2_LOADGFX
+	jr nc, .stage_5_sliding_out
+	add MAPSIGNSTAGE_2_LOADGFX
+	cp MAPSIGNSTAGE_2_LOADGFX - 1
+	ret nc
+	sub MAPSIGNSTAGE_3_SLIDEIN
+	jr c, .graphics_ok
+	jp nz, LoadMapNameSignGFX
+	push hl
 	call InitMapNameFrame
 	call PlaceMapNameCenterAlign
 	farcall HDMATransfer_OnlyTopFourRows
-.already_initialized
-	ld a, $80
-	ld a, $70
+	pop hl
+
+.graphics_ok
+	ld a, [hl]
+	cp MAPSIGNSTAGE_4_VISIBLE
+	jr nc, .stage_3_sliding_in
+	cp MAPSIGNSTAGE_5_SLIDEOUT
+	jr c, .stage_5_sliding_out
+	ld a, SCREEN_HEIGHT_PX - 4 * TILE_WIDTH
+	jr .got_value
+
+.stage_3_sliding_in
+	sub MAPSIGNSTAGE_4_VISIBLE
+	add a
+	add SCREEN_HEIGHT_PX - 4 * TILE_WIDTH
+	jr .got_value
+
+.stage_5_sliding_out
+	add a
+	cpl
+	add SCREEN_HEIGHT_PX + TILE_WIDTH + 1 ; a = SCREEN_HEIGHT_PX + TILE_WIDTH - a
+.got_value
 	ldh [rWY], a
 	ldh [hWY], a
+	sub SCREEN_HEIGHT_PX
+	ret nz
+	ldh [hLCDCPointer], a
 	ret
 
-.disappear
-	ld a, $90
-	ldh [rWY], a
-	ldh [hWY], a
-	xor a
-	ldh [hLCDCPointer], a
+LoadMapNameSignGFX:
+	ld de, MapEntryFrameGFX
+	ld hl, vTiles2 tile MAP_NAME_SIGN_START
+	lb bc, BANK(MapEntryFrameGFX), 14
+	call Get2bpp
 	ret
 
 InitMapNameFrame:
@@ -129,7 +244,7 @@ InitMapNameFrame:
 	ld c, 18
 	call InitMapSignAttrmap
 	call PlaceMapNameFrame
-	ret
+	ret 
 
 PlaceMapNameCenterAlign:
 	ld a, [wCurLandmark]

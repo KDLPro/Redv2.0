@@ -15,6 +15,9 @@ INCBIN "gfx/frames/7.1bpp"
 INCBIN "gfx/frames/8.1bpp"
 INCBIN "gfx/frames/9.1bpp"
 
+MapEntryFrameGFX:
+INCBIN "gfx/frames/map_entry_sign.2bpp"
+
 StatsScreenPageTilesGFX:
 INCBIN "gfx/stats/stats_tiles.2bpp"
 
@@ -36,9 +39,12 @@ INCBIN "gfx/font/unused_weekday_kanji.2bpp"
 UnusedBoldFontGFX: ; unreferenced
 INCBIN "gfx/font/unused_bold_font.1bpp"
 
-TextboxSpaceGFX:
+TextboxSpaceGFX::
 ; StatsScreen_LoadTextboxSpaceGFX reads 2bpp; LoadFrame reads first half as 1bpp
 INCBIN "gfx/font/space.2bpp"
+
+TextboxSpaceGFX2::
+INCBIN "gfx/font/space.1bpp"
 
 UnusedUpArrowGFX: ; unreferenced
 INCBIN "gfx/font/unused_up_arrow.1bpp"
