@@ -293,7 +293,7 @@ DoPlayerMovement::
 
 	ld a, [wWalkingDirection]
 	cp DOWN
-	jr z, .bike_fast
+	jr z, .bike_speed
 
 	call ResetBikeSteps
 	ld a, STEP_WALK
@@ -575,7 +575,7 @@ DoPlayerMovement::
 	turn_in_right
  
 .StandInPlace:
-	call ResetBikeSteps
+	call ReduceBikeSteps
 	ld a, 0
 	ld [wPlayerTurningDirection], a
 	ld a, movement_step_sleep
@@ -940,3 +940,17 @@ ResetBikeSteps:
 	ld [wBikeSteps], a
 	ret
 
+ReduceBikeSteps:
+	ld a, [wBikeSteps]
+	cp 71
+	jr nc, .more_than_70
+	cp 10
+	jr c, ResetBikeSteps
+	sub 10
+	ld [wBikeSteps], a
+	ret
+	
+.more_than_70
+	sub 35
+	ld [wBikeSteps], a
+	ret
