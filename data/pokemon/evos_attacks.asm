@@ -2991,6 +2991,15 @@ OctilleryEvosAttacks:
 DelibirdEvosAttacks:
 	db 0 ; no more evolutions
 	db 1, PRESENT
+	db 1, SPLASH
+	db 8, QUICK_ATTACK
+	db 12, PECK
+	db 17, WING_ATTACK
+	db 22, ICY_WIND
+	db 27, DRILL_PECK
+	db 33, ICE_BEAM
+	db 38, BLIZZARD
+
 	db 0 ; no more level-up moves
 
 MantineEvosAttacks:

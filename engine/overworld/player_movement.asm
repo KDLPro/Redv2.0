@@ -93,7 +93,6 @@ DoPlayerMovement::
 	ret
 
 .NotMoving:
-	call ResetBikeSteps
 	ld a, [wWalkingDirection]
 	cp STANDING
 	jr z, .Standing
@@ -260,12 +259,12 @@ DoPlayerMovement::
 ; Surfing actually calls .TrySurf directly instead of passing through here.
 	ld a, [wPlayerState]
 	cp PLAYER_SURF
-	jp z, .TrySurf
+	jr z, .TrySurf
 	cp PLAYER_SURF_PIKA
-	jp z, .TrySurf
+	jr z, .TrySurf
 
 	call .CheckLandPerms
-	jp c, .bump
+	jr c, .bump
 
 	call .CheckNPC
 	and a
@@ -283,7 +282,7 @@ DoPlayerMovement::
 
 ; Downhill riding is slower when not moving down.
 	call .RunCheck
-	jr z, .run
+	jr z, .fast
 	call .BikeCheck
 	jr nz, .walk
 
@@ -293,47 +292,27 @@ DoPlayerMovement::
 
 	ld a, [wWalkingDirection]
 	cp DOWN
-	jr z, .bike_speed
+	jr z, .bike_fast
 
-	call ResetBikeSteps
 	ld a, STEP_WALK
 	call .DoStep
 	scf
 	ret
 
 .bike_fast
-	ld a, [wBikeSteps]
-	inc a
-	ld [wBikeSteps], a
-	cp 5
-	jr c, .run_speed
-	cp $ff
-	jr nz, .bike_speed
-	ld a, 05
-	ld [wBikeSteps], a
-.bike_speed
+.fast
 	ld a, STEP_BIKE
-	call .DoStep
-	scf
-	ret
-	
-.run
-	call ResetBikeSteps
-.run_speed
-	ld a, STEP_RUN
 	call .DoStep
 	scf
 	ret
 
 .walk
-	call ResetBikeSteps
 	ld a, STEP_WALK
 	call .DoStep
 	scf
 	ret
 
 .ice
-	call ResetBikeSteps
 	ld a, STEP_ICE
 	call .DoStep
 	scf
@@ -344,7 +323,6 @@ DoPlayerMovement::
 	ret
 
 .spin
-	call ResetBikeSteps
 	ld de, SFX_SQUEAK
 	call PlaySFX
 	ld a, STEP_SPIN
@@ -353,7 +331,7 @@ DoPlayerMovement::
 	ret
 
 .bump
-	call ResetBikeSteps
+	xor a
 	ld [wSpinning], a
 	ret
 
@@ -374,7 +352,7 @@ DoPlayerMovement::
 	jr nz, .ExitWater
 	
 	call .RunCheck
-	jr z, .run
+	jr z, .fast
 
 	ld a, STEP_WALK
 	call .DoStep
@@ -391,7 +369,6 @@ DoPlayerMovement::
 	ret
 
 .surf_bump
-	call ResetBikeSteps
 	xor a
 	ret
 
@@ -515,7 +492,6 @@ DoPlayerMovement::
 	dw .SlowStep
 	dw .NormalStep
 	dw .FastStep
-	dw .RunStep
 	dw .JumpStep
 	dw .SlideStep
 	dw .TurningStep
@@ -538,11 +514,6 @@ DoPlayerMovement::
 	big_step UP
 	big_step LEFT
 	big_step RIGHT
-.RunStep:
-	run_step_down
-	run_step_up
-	run_step_left
-	run_step_right
 .JumpStep:
 	jump_step DOWN
 	jump_step UP
@@ -574,8 +545,8 @@ DoPlayerMovement::
 	turn_in_left
 	turn_in_right
  
+
 .StandInPlace:
-	call ReduceBikeSteps
 	ld a, 0
 	ld [wPlayerTurningDirection], a
 	ld a, movement_step_sleep
@@ -933,24 +904,4 @@ StopPlayerForEvent::
 	ld [hl], a
 	ld a, 0
 	ld [wPlayerTurningDirection], a
-	ret
-	
-ResetBikeSteps:
-	xor a
-	ld [wBikeSteps], a
-	ret
-
-ReduceBikeSteps:
-	ld a, [wBikeSteps]
-	cp 71
-	jr nc, .more_than_70
-	cp 10
-	jr c, ResetBikeSteps
-	sub 10
-	ld [wBikeSteps], a
-	ret
-	
-.more_than_70
-	sub 35
-	ld [wBikeSteps], a
 	ret

@@ -1,6 +1,3 @@
-Delay2::
-; TODO: optimize to the point where this can do what it claims
-	ld c, 3
 DelayFrame::
 ; Wait for one frame
 	ld a, 1

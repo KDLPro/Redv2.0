@@ -218,23 +218,3 @@ ENDM
 skyfall_top: MACRO
 	db movement_skyfall_top
 ENDM
-
-	const movement_run_step_down
-run_step_down: MACRO
-	db movement_run_step_down ; $5a
-ENDM
-
-	const movement_run_step_up
-run_step_up: MACRO
-	db movement_run_step_up ; $5b
-ENDM
-
-	const movement_run_step_left
-run_step_left: MACRO
-	db movement_run_step_left ; $5c
-ENDM
-
-	const movement_run_step_right
-run_step_right: MACRO
-	db movement_run_step_right ; $5d
-ENDM

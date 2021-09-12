@@ -1,5 +1,11 @@
 INCLUDE "constants.asm"
 
+; wLandmarkSignTimer
+MAPSIGNSTAGE_1_SLIDEOLD EQU $74
+MAPSIGNSTAGE_2_LOADGFX  EQU $68
+MAPSIGNSTAGE_3_SLIDEIN  EQU $65
+MAPSIGNSTAGE_4_VISIBLE  EQU $59
+MAPSIGNSTAGE_5_SLIDEOUT EQU $0c
 
 SECTION "Events", ROMX
 
@@ -141,6 +147,7 @@ UnusedWait30Frames: ; unreferenced
 	ret
 
 HandleMap:
+	call ResetOverworldDelay
 	call HandleMapTimeAndJoypad
 	farcall HandleCmdQueue ; no need to farcall
 	call MapEvents
@@ -153,23 +160,43 @@ HandleMap:
 	call HandleMapObjects
 	call NextOverworldFrame
 	call HandleMapBackground
-	jp CheckPlayerState
-	
+	call CheckPlayerState
+	ret
+
 MapEvents:
 	ld a, [wMapEventStatus]
-	and a
-	ret nz
+	ld hl, .jumps
+	rst JumpTable
+	ret
+
+.jumps
+; entries correspond to MAPEVENTS_* constants
+	dw .events
+	dw .no_events
+
+.events
 	call PlayerEvents
 	call DisableEvents
 	farcall ScriptEvents
 	ret
-	
+
+.no_events
+	ret
+
+MaxOverworldDelay:
+	db 2
+
+ResetOverworldDelay:
+	ld a, [MaxOverworldDelay]
+	ld [wOverworldDelay], a
+	ret
+
 NextOverworldFrame:
 	ld a, [wOverworldDelay]
 	and a
-	jp nz, DelayFrame
-	ld a, $82
-	ld [wOverworldDelay], a
+	ret z
+	ld c, a
+	call DelayFrames
 	ret
 
 HandleMapTimeAndJoypad:
@@ -191,6 +218,11 @@ HandleMapObjects:
 HandleMapBackground:
 	farcall _UpdateSprites
 	farcall ScrollScreen
+	farcall PlaceMapNameSign
+	ld hl, wLandmarkSignTimer
+	ld a, [hl]
+	cp MAPSIGNSTAGE_4_VISIBLE
+	ret c
 	farcall PlaceMapNameSign
 	ret
 

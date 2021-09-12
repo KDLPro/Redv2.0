@@ -342,13 +342,6 @@ endr
 	ld sp, hl
 	ret
 
-Serve2bppRequest_NoVBlankCheck::
-	ld a, [wRequested2bppSize]
-	and a
-	ret z
-	call _Serve2bppRequest
-	ret
-	
 Serve2bppRequest::
 ; Only call during the first fifth of VBlank
 
