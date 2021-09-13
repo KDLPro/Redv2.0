@@ -787,7 +787,7 @@ WasBurnedText:
 	
 AlreadyBurnedText:
 	text "<TARGET>'s"
-	line "already frozen!"
+	line "already burned!"
 	autodone
 
 DefrostedOpponentText:
