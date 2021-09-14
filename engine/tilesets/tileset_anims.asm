@@ -37,16 +37,21 @@ Tileset0Anim:
 TilesetJohtoModernAnim:
 TilesetKantoAnim:
 TilesetPalletTownAnim:
-	dw vTiles2 tile $14, AnimateWaterTile
-	dw NULL,  WaitTileAnimation
-	dw NULL,  WaitTileAnimation
-	dw NULL,  WaitTileAnimation
 	dw NULL,  AnimateWaterPalette
+	dw vTiles2 tile $14, WriteTileToBuffer
+	dw NULL,  WaitTileAnimation
+	dw wTileAnimBuffer, ScrollTileRightLeft
+	dw NULL,  WaitTileAnimation
+	dw vTiles2 tile $14, WriteTileFromBuffer
 	dw NULL,  WaitTileAnimation
 	dw NULL,  AnimateFlowerTile
 	dw NULL,  WaitTileAnimation
+	dw wTileAnimBuffer, ScrollTileDown
 	dw NULL,  WaitTileAnimation
-	dw NULL,  StandingTileFrame8
+	dw wTileAnimBuffer, ScrollTileDown
+	dw NULL,  WaitTileAnimation
+	dw wTileAnimBuffer, ScrollTileDown
+	dw NULL,  WaitTileAnimation
 	dw NULL,  DoneTileAnimation
 
 TilesetParkAnim:
@@ -77,18 +82,22 @@ TilesetForestAnim:
 	dw NULL,  DoneTileAnimation
 
 TilesetJohtoAnim:
-	dw vTiles2 tile $14, AnimateWaterTile
-	dw NULL,  WaitTileAnimation
-	dw NULL,  WaitTileAnimation
 	dw NULL,  AnimateWaterPalette
+	dw vTiles2 tile $14, WriteTileToBuffer
+	dw NULL,  WaitTileAnimation
+	dw wTileAnimBuffer, ScrollTileRightLeft
+	dw NULL,  WaitTileAnimation
+	dw vTiles2 tile $14, WriteTileFromBuffer
 	dw NULL,  WaitTileAnimation
 	dw NULL,  AnimateFlowerTile
-	dw WhirlpoolFrames1, AnimateWhirlpoolTile
-	dw WhirlpoolFrames2, AnimateWhirlpoolTile
-	dw WhirlpoolFrames3, AnimateWhirlpoolTile
-	dw WhirlpoolFrames4, AnimateWhirlpoolTile
 	dw NULL,  WaitTileAnimation
-	dw NULL,  StandingTileFrame8
+	dw WhirlpoolFrames1, AnimateWhirlpoolTile
+	dw NULL,  WaitTileAnimation
+	dw WhirlpoolFrames2, AnimateWhirlpoolTile
+	dw NULL,  WaitTileAnimation
+	dw WhirlpoolFrames3, AnimateWhirlpoolTile
+	dw NULL,  WaitTileAnimation
+	dw WhirlpoolFrames4, AnimateWhirlpoolTile
 	dw NULL,  DoneTileAnimation
 
 UnusedTilesetAnim1: ; unreferenced
@@ -177,13 +186,13 @@ UnusedTilesetAnim4: ; unreferenced
 
 TilesetCaveAnim:
 TilesetDarkCaveAnim:
-	dw vTiles2 tile $14, WriteTileToBuffer
+	dw NULL,  WaitTileAnimation
 	dw NULL,  FlickeringCaveEntrancePalette
-	dw wTileAnimBuffer, ScrollTileRightLeft
+	dw NULL,  WaitTileAnimation
 	dw NULL,  FlickeringCaveEntrancePalette
-	dw vTiles2 tile $14, WriteTileFromBuffer
+	dw NULL,  WaitTileAnimation
 	dw NULL,  FlickeringCaveEntrancePalette
-	dw NULL,  AnimateWaterPalette
+	dw vTiles2 tile $14, AnimateWaterTile
 	dw NULL,  FlickeringCaveEntrancePalette
 	dw vTiles2 tile $40, WriteTileToBuffer
 	dw NULL,  FlickeringCaveEntrancePalette
