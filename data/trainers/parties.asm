@@ -1574,11 +1574,13 @@ SkierGroup:
 	; SKIER (1)
 	db "ROXANNE@", TRAINERTYPE_NORMAL
 	db 28, JYNX
+	db 30, CLOYSTER
 	db -1 ; end
 
 	; SKIER (2)
 	db "CLARISSA@", TRAINERTYPE_NORMAL
-	db 28, DEWGONG
+	db 29, DEWGONG
+	db 31, PILOSWINE
 	db -1 ; end
 
 TeacherGroup:
@@ -3317,22 +3319,23 @@ MediumGroup:
 BoarderGroup:
 	; BOARDER (1)
 	db "RONALD@", TRAINERTYPE_NORMAL
-	db 24, SEEL
-	db 25, DEWGONG
-	db 24, SEEL
+	db 28, DELIBIRD
+	db 29, DEWGONG
+	db 32, SEEL
 	db -1 ; end
 
 	; BOARDER (2)
 	db "BRAD@", TRAINERTYPE_NORMAL
-	db 26, SWINUB
-	db 26, SWINUB
+	db 28, SWINUB
+	db 29, DELIBIRD
+	db 31, LAPRAS
 	db -1 ; end
 
 	; BOARDER (3)
 	db "DOUGLAS@", TRAINERTYPE_NORMAL
-	db 24, SHELLDER
-	db 25, CLOYSTER
-	db 24, SHELLDER
+	db 29, DEWGONG
+	db 33, CLOYSTER
+	db 34, PILOSWINE
 	db -1 ; end
 
 PokefanMGroup:
