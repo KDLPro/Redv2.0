@@ -196,7 +196,6 @@ TryWildEncounter::
 	call GetMapEncounterRate
 	call ApplyMusicEffectOnEncounterRate
 	call ApplyCleanseTagEffectOnEncounterRate
-	call ApplyBikeEffectOnEncounterRate
 	call Random
 	cp b
 	ret
@@ -231,19 +230,7 @@ ApplyMusicEffectOnEncounterRate::
 	sla b
 	ret
 	
-ApplyBikeEffectOnEncounterRate::
-; Biking doubles encounter rate.
-	ld a, [wPlayerState]
-	cp PLAYER_BIKE
-	jr z, .double
-	ld a, [wCurInput]
-	bit B_BUTTON_F, a
-	jr z, .double
-	ret
-	
-.double
-	sla b
-	ret	
+
 
 ApplyCleanseTagEffectOnEncounterRate::
 ; Cleanse Tag halves encounter rate.
