@@ -2698,6 +2698,8 @@ AICheckMaxHP:
 
 AICheckPlayerHalfHP:
 	push hl
+	push de
+	push bc
 	ld hl, wBattleMonHP
 	ld b, [hl]
 	inc hl
@@ -2710,6 +2712,8 @@ AICheckPlayerHalfHP:
 	cp c
 	ld a, [hl]
 	sbc b
+	pop bc
+	pop de
 	pop hl
 	ret
 
@@ -2759,6 +2763,8 @@ AICheckEnemyQuarterHP:
 
 AICheckPlayerQuarterHP:
 	push hl
+	push de
+	push bc
 	ld hl, wBattleMonHP
 	ld b, [hl]
 	inc hl
@@ -2773,6 +2779,8 @@ AICheckPlayerQuarterHP:
 	cp c
 	ld a, [hl]
 	sbc b
+	pop bc
+	pop de
 	pop hl
 	ret
 
