@@ -9,22 +9,23 @@ _AnimateHPBar:
 .ShortAnimLoop:
 	push bc
 	push hl
-	call HPBarAnim_UpdateVariables
+	call ShortAnim_UpdateVariables
 	pop hl
 	pop bc
 	push af
 	push bc
 	push hl
-	call HPBarAnim_UpdateTiles
+	call ShortHPBarAnim_UpdateTiles
 	call HPBarAnim_BGMapUpdate
 	pop hl
 	pop bc
 	pop af
 	jr nc, .ShortAnimLoop
 	ret
-	
+
+.MoreThan48Pixels:
+	call .ComputePixels
 .LongAnimLoop:
-	; faster animation for huge damage
 	push bc
 	push hl
 	call LongAnim_UpdateVariables
@@ -41,7 +42,7 @@ _AnimateHPBar:
 	pop af
 	jr nc, .LongAnimLoop
 	ret
-	
+
 .CheckDamage:
 	push hl
 	push de
@@ -97,7 +98,7 @@ _AnimateHPBar:
 	sbc b
 	jr .return
 
-.ComputePixels
+.ComputePixels:
 	push hl
 	ld hl, wCurHPAnimMaxHP
 	ld a, [hli]
@@ -109,16 +110,8 @@ _AnimateHPBar:
 	ld a, [hli]
 	ld b, a
 	pop hl
-	sla c
-	rl b
 	call ComputeHPBarPixels
 	ld a, e
-	; because HP bar calculations are doubled for 60 to 30fps conversion,
-	; the last pixel is set to 2px/2, not 1px/2
-	cp 1
-	jr nz, .ok
-	inc a
-.ok
 	ld [wCurHPBarPixels], a
 
 	ld a, [wCurHPAnimNewHP]
@@ -129,14 +122,8 @@ _AnimateHPBar:
 	ld e, a
 	ld a, [wCurHPAnimMaxHP + 1]
 	ld d, a
-	sla c
-	rl b
 	call ComputeHPBarPixels
 	ld a, e
-	cp 1
-	jr nz, .ok2
-	inc a
-.ok2
 	ld [wNewHPBarPixels], a
 
 	push hl
@@ -156,85 +143,50 @@ _AnimateHPBar:
 	ld a, d
 	sbc b
 	ld d, a
-	jr c, .Damage
+	jr c, .negative
 	ld a, [wCurHPAnimOldHP]
 	ld [wCurHPAnimLowHP], a
 	ld a, [wCurHPAnimNewHP]
 	ld [wCurHPAnimHighHP], a
-	ld c, 1
-	jr .Okay
+	ld bc, 1
+	jr .got_direction
 
-.Damage
+.negative
 	ld a, [wCurHPAnimOldHP]
 	ld [wCurHPAnimHighHP], a
 	ld a, [wCurHPAnimNewHP]
 	ld [wCurHPAnimLowHP], a
 	ld a, e
-	cpl
+	xor $ff
 	inc a
 	ld e, a
 	ld a, d
-	cpl
+	xor $ff
 	ld d, a
-	ld c, 0
-.Okay
+	ld bc, -1
+.got_direction
 	ld a, d
 	ld [wCurHPAnimDeltaHP], a
 	ld a, e
 	ld [wCurHPAnimDeltaHP + 1], a
 	ret
 
-HPBarAnim_UpdateVariables:
+ShortAnim_UpdateVariables:
 	ld hl, wCurHPBarPixels
-	ld a, c
-	and a
-	jr nz, .inc
-	ld a, [hli]
-	dec a
+	ld a, [wNewHPBarPixels]
 	cp [hl]
-	jr c, .animdone
-	jr z, .animdone
-	jr .incdecdone
-
-.inc
-	ld a, [hli]
-	inc a
-	cp [hl]
-	jr nc, .animdone
-.incdecdone
-	dec hl
-	ld [hl], a
-; wCurHPAnimOldHP = a * wCurHPAnimMaxHP / (HP_BAR_LENGTH_PX * 2)
-	ldh [hMultiplier], a
-	xor a
-	ldh [hMultiplicand], a
-	ld a, [wCurHPAnimMaxHP + 1]
-	ldh [hMultiplicand + 1], a
-	ld a, [wCurHPAnimMaxHP]
-	ldh [hMultiplicand + 2], a
-	call Multiply
-	ld a, HP_BAR_LENGTH_PX * 2
-	ldh [hDivisor], a
-	ld b, 4
-	call Divide
-	ldh a, [hQuotient + 2]
-	ld [wCurHPAnimOldHP + 1], a
-	ldh a, [hQuotient + 3]
-	ld [wCurHPAnimOldHP], a
-	xor a ; clear carry flag
-	ret
-
-.animdone
-	ld a, [hld]
-	ld [hl], a
-	ld hl, wCurHPAnimNewHP
-	ld a, [hli]
-	ld [wCurHPAnimOldHP], a
-	ld a, [hl]
-	ld [wCurHPAnimOldHP + 1], a
+	jr nz, .not_finished
 	scf
 	ret
-	
+
+.not_finished
+	ld a, c
+	add [hl]
+	ld [hl], a
+	call ShortHPBar_CalcPixelFrame
+	and a
+	ret
+
 LongAnim_UpdateVariables:
 .loop
 	ld hl, wCurHPAnimOldHP
@@ -253,18 +205,6 @@ LongAnim_UpdateVariables:
 	ret
 
 .next
-	push bc
-	ld a, c
-	and a
-	jr nz, .heal
-	dec a
-.heal
-	pop bc
-	ld c, a
-	cp 1
-	jr z, .heal_2
-	ld b, a
-.heal_2
 	ld l, e
 	ld h, d
 	add hl, bc
@@ -296,15 +236,21 @@ LongAnim_UpdateVariables:
 	and a
 	ret
 
-HPBarAnim_UpdateTiles:
+ShortHPBarAnim_UpdateTiles:
 	call HPBarAnim_UpdateHPRemaining
-.show_hp_bar
+	ld d, HP_BAR_LENGTH
+	ld a, [wWhichHPBar]
+	and $1
+	ld b, a
 	ld a, [wCurHPBarPixels]
-	srl a
-	ld c, a
 	ld e, a
-	jr DrawHPBar
-	
+	ld c, a
+	push de
+	call HPBarAnim_RedrawHPBar
+	pop de
+	call HPBarAnim_PaletteUpdate
+	ret
+
 LongHPBarAnim_UpdateTiles:
 	call HPBarAnim_UpdateHPRemaining
 	ld a, [wCurHPAnimOldHP]
@@ -317,38 +263,42 @@ LongHPBarAnim_UpdateTiles:
 	ld d, a
 	call ComputeHPBarPixels
 	ld c, e
-	; fallthrough
-	
-DrawHPBar:
 	ld d, HP_BAR_LENGTH
 	ld a, [wWhichHPBar]
-	and 1
+	and $1
 	ld b, a
-	ld a, [wWhichHPBar]
-	cp 2
-	jr nz, .skip
 	push de
-	ld de, SCREEN_WIDTH * 2
-	add hl, de
+	call HPBarAnim_RedrawHPBar
 	pop de
+	call HPBarAnim_PaletteUpdate
+	ret
+
+HPBarAnim_RedrawHPBar:
+	ld a, [wWhichHPBar]
+	cp $2
+	jr nz, .skip
+	ld a, 2 * SCREEN_WIDTH
+	add l
+	ld l, a
+	ld a, 0
+	adc h
+	ld h, a
 .skip
 	call DrawBattleHPBar
-	ld hl, wCurHPAnimPal
-	call SetHPPal
-	ld c, d
-	farcall ApplyHPBarPals
 	ret
-	
+
 HPBarAnim_UpdateHPRemaining:
 	ld a, [wWhichHPBar]
 	and a
 	ret z
-
+	cp $1
+	jr z, .load_15
 	ld de, SCREEN_WIDTH + 2
-	dec a
-	jr nz, .update_hp_number
-	dec de
-.update_hp_number
+	jr .loaded_de
+
+.load_15
+	ld de, SCREEN_WIDTH + 1
+.loaded_de
 	push hl
 	add hl, de
 	ld a, " "
@@ -366,11 +316,23 @@ HPBarAnim_UpdateHPRemaining:
 	pop hl
 	ret
 
+HPBarAnim_PaletteUpdate:
+	ldh a, [hCGB]
+	and a
+	ret z
+	ld hl, wCurHPAnimPal
+	call SetHPPal
+	ld a, [wCurHPAnimPal]
+	ld c, a
+	farcall ApplyHPBarPals
+	ret
+
 HPBarAnim_BGMapUpdate:
 	ldh a, [hCGB]
 	and a
 	jr nz, .cgb
-	jr .delay
+	call DelayFrame
+	jp .delay
 
 .cgb
 	ld a, [wWhichHPBar]
@@ -396,18 +358,19 @@ HPBarAnim_BGMapUpdate:
 	ldh [hBGMapMode], a
 	ld a, c
 	ldh [hBGMapThird], a
-.skip_delay
 	call DelayFrame
+.skip_delay
 	ld a, $1
 	ldh [hBGMapMode], a
 	ld a, c
 	ldh [hBGMapThird], a
+	call DelayFrame
 	pop af
 	cp $2
 	jr z, .two_frames
 	cp $5
 	jr z, .two_frames
-	jr .delay
+	ret
 
 .two_frames
 	inc c
@@ -415,6 +378,7 @@ HPBarAnim_BGMapUpdate:
 	ldh [hBGMapMode], a
 	ld a, c
 	ldh [hBGMapThird], a
+	call DelayFrame
 	ld a, $1
 	ldh [hBGMapMode], a
 	ld a, c
@@ -433,4 +397,63 @@ HPBarAnim_BGMapUpdate:
 	ldh [hBGMapThird], a
 .delay
 	call DelayFrame
+	ret
+
+ShortHPBar_CalcPixelFrame:
+	ld a, [wCurHPAnimMaxHP]
+	ld c, a
+	ld b, 0
+	ld hl, 0
+	ld a, [wCurHPBarPixels]
+	cp HP_BAR_LENGTH_PX
+	jr nc, .return_max
+	and a
+	jr z, .return_zero
+	call AddNTimes
+	ld b, 0
+.loop
+	ld a, l
+	sub HP_BAR_LENGTH_PX
+	ld l, a
+	ld a, h
+	sbc $0
+	ld h, a
+	jr z, .done
+	jr c, .done
+	inc b
+	jr .loop
+
+.done
+	push bc
+	ld bc, $80
+	add hl, bc
+	pop bc
+	ld a, l
+	sub HP_BAR_LENGTH_PX
+	ld l, a
+	ld a, h
+	sbc $0
+	ld h, a
+	jr c, .no_carry
+	inc b
+.no_carry
+	ld a, [wCurHPAnimLowHP]
+	cp b
+	jr nc, .finish
+	ld a, [wCurHPAnimHighHP]
+	cp b
+	jr c, .finish
+	ld a, b
+.finish
+	ld [wCurHPAnimOldHP], a
+	ret
+
+.return_zero
+	xor a
+	ld [wCurHPAnimOldHP], a
+	ret
+
+.return_max
+	ld a, [wCurHPAnimMaxHP]
+	ld [wCurHPAnimOldHP], a
 	ret

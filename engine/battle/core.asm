@@ -4600,6 +4600,7 @@ HandleHPHealingItem:
 	call HasEnemyFainted
 	ret z
 	farcall CheckEnemyHalfHP
+	ld de, wEnemyMonHP + 1
 	ld hl, wEnemyMonMaxHP
 	jr .go
 	
@@ -4607,6 +4608,7 @@ HandleHPHealingItem:
 	call HasPlayerFainted
 	ret z
 	farcall CheckPlayerHalfHP
+	ld de, wBattleMonHP + 1
 	ld hl, wBattleMonMaxHP
 .go
 	jr z, .equal
