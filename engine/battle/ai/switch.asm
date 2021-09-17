@@ -1931,6 +1931,8 @@ CheckEnemyQuarterHP:
 	
 CheckPlayerHalfHP:
 	push hl
+	push de
+	push bc
 	ld hl, wBattleMonHP
 	ld b, [hl]
 	inc hl
@@ -1943,6 +1945,8 @@ CheckPlayerHalfHP:
 	cp c
 	ld a, [hl]
 	sbc b
+	pop bc
+	pop de
 	pop hl
 	ret
 
