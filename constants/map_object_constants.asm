@@ -115,6 +115,10 @@ ABSOLUTE_TILE_ID    EQU 1 << ABSOLUTE_TILE_ID_F
 	const_skip 2 ; unused
 MAPOBJECT_LENGTH EQU const_value
 
+; wMapObjects::
+PLAYER_OBJECT EQU 0
+NUM_OBJECTS   EQU 19
+
 ; SpriteMovementData struct members (see data/sprites/map_objects.asm)
 	const_def
 	const SPRITEMOVEATTR_MOVEMENT ; 0

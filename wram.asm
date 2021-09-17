@@ -2757,6 +2757,10 @@ wMap12Object::  map_object wMap12
 wMap13Object::  map_object wMap13
 wMap14Object::  map_object wMap14
 wMap15Object::  map_object wMap15
+wMap16Object::  map_object wMap16
+wMap17Object::  map_object wMap17
+wMap18Object::  map_object wMap18
+wMap19Object::  map_object wMap19
 
 wObjectMasks:: ds NUM_OBJECTS
 
@@ -2964,8 +2968,9 @@ wParryFightCount::   db
 wErinFightCount::    db
 
 wBikeSteps:: db		; to tell how fast the bike should be
+wChangedBattleAnimPalette:: db
 
-	ds 99
+	ds 40
 
 wEventFlags:: flag_array NUM_EVENTS
 
