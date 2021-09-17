@@ -197,6 +197,15 @@ BattleAnimOAMUpdate:
 	pop bc
 	scf
 	ret
+	
+ChangePalette:
+	farcall _CGB_FinishBattleScreenLayout
+	ld a, [wBGP]
+	push af
+	call BattleAnimAssignPals
+	pop af
+	ld [wBGP], a
+	jp BattleAnimRequestPals
 
 InitBattleAnimBuffer:
 	ld hl, BATTLEANIMSTRUCT_OAMFLAGS
@@ -209,8 +218,32 @@ InitBattleAnimBuffer:
 	ld [wBattleAnimTempFrameOAMFlags], a
 	ld hl, BATTLEANIMSTRUCT_PALETTE
 	add hl, bc
+	
 	ld a, [hl]
 	ld [wBattleAnimTempPalette], a
+	cp PAL_BATTLE_OB_VIOLET
+	jr c, .not_violet
+	
+	push af
+	ld a, [wChangedBattleAnimPalette]
+	and a
+	call z, ChangePalette
+	pop af
+	
+	sub 6
+	jr .done_palette_change
+	
+.not_violet
+
+	push af
+	ld a, [wChangedBattleAnimPalette]
+	and a
+	call nz, ChangePalette
+	pop af
+	
+.done_palette_change
+	ld [wBattleAnimTempPalette], a
+	
 	ld hl, BATTLEANIMSTRUCT_FIX_Y
 	add hl, bc
 	ld a, [hl]

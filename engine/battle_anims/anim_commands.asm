@@ -1,6 +1,9 @@
 ; Battle animation command interpreter.
 
 PlayBattleAnim:
+	xor a
+	ld [wChangedBattleAnimPalette], a
+	
 	ldh a, [rSVBK]
 	push af
 

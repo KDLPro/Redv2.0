@@ -140,11 +140,30 @@ _CGB_FinishBattleScreenLayout:
 	ld bc, 6 * SCREEN_WIDTH
 	ld a, PAL_BATTLE_BG_TEXT
 	call ByteFill
+	
+	ld a, [wBattleAnimTempPalette]
+	cp PAL_BATTLE_OB_VIOLET
+	jr c, .not_violet
+		
+	ld a, 1
+	ld [wChangedBattleAnimPalette], a
+	
+	ld hl, UnusedBattleObjectPals
+	ld de, wOBPals1 palette PAL_BATTLE_OB_GRAY
+	ld bc, 6 palettes
+	ld a, BANK(wOBPals1)
+	call FarCopyWRAM
+	jr .done
+	
+.not_violet
+	xor a
+	ld [wChangedBattleAnimPalette], a
 	ld hl, BattleObjectPals
 	ld de, wOBPals1 palette PAL_BATTLE_OB_GRAY
 	ld bc, 6 palettes
 	ld a, BANK(wOBPals1)
 	call FarCopyWRAM
+.done
 	call ApplyAttrmap
 	ret
 

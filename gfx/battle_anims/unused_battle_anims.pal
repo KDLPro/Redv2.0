@@ -1,25 +1,25 @@
-; gray
+; violet
 	RGB 31, 31, 31
-	RGB 21, 21, 21
-	RGB 13, 13, 13
-	RGB 07, 07, 07
-; yellow
+	RGB 23, 10, 26
+	RGB 18, 05, 22
+	RGB 14, 03, 18
+; red-violet (dragon)
 	RGB 31, 31, 31
-	RGB 31, 31, 07
-	RGB 31, 16, 01
-	RGB 07, 07, 07
-; red
+	RGB 30, 09, 18
+	RGB 28, 02, 18
+	RGB 24, 01, 14
+; yellow-green (bug)
 	RGB 31, 31, 31
-	RGB 31, 19, 24
-	RGB 30, 10, 06
-	RGB 07, 07, 07
+	RGB 31, 31, 01
+	RGB 12, 25, 01
+	RGB 00, 00, 00
 ; green
 	RGB 31, 31, 31
 	RGB 12, 25, 01
 	RGB 05, 14, 00
 	RGB 07, 07, 07
-; blue
-	RGB 31, 31, 31
+; fuchsia pink
+	RGB 31, 00, 31
 	RGB 08, 12, 31
 	RGB 01, 04, 31
 	RGB 07, 07, 07
