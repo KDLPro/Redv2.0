@@ -421,7 +421,7 @@ BattleAnim_SendOutMon:
 	anim_call BattleAnim_TargetObj_1Row
 	anim_bgeffect ANIM_BG_BETA_SEND_OUT_MON2, $0, BG_EFFECT_USER, $0
 	anim_sound 0, 0, SFX_BALL_POOF
-	anim_obj ANIM_OBJ_BETA_BALL_POOF, 48, 96, $0
+	anim_obj ANIM_OBJ_BALL_POOF, 48, 96, $0
 	anim_bgeffect ANIM_BG_ENTER_MON, $0, BG_EFFECT_USER, $0
 	anim_wait 128
 	anim_wait 4
@@ -436,7 +436,7 @@ BattleAnim_SendOutMon:
 	anim_bgeffect ANIM_BG_SHOW_MON, $0, BG_EFFECT_USER, $0
 	anim_wait 4
 	anim_sound 0, 0, SFX_BALL_POOF
-	anim_obj ANIM_OBJ_BETA_BALL_POOF, 48, 96, $0
+	anim_obj ANIM_OBJ_SHADOW_BALL_POOF, 48, 96, $0
 	anim_incbgeffect ANIM_BG_BETA_SEND_OUT_MON1
 	anim_wait 96
 	anim_incbgeffect ANIM_BG_BETA_SEND_OUT_MON1
@@ -1242,7 +1242,7 @@ BattleAnim_Solarbeam:
 	anim_1gfx ANIM_GFX_BEAM
 	anim_bgeffect ANIM_BG_CYCLE_OBPALS_GRAY_AND_YELLOW, $0, $2, $0
 	anim_call BattleAnimSub_Beam
-	anim_wait 48
+	anim_wait 12
 	anim_ret
 
 BattleAnim_Thunderpunch:
@@ -4118,9 +4118,7 @@ BattleAnim_Dragonbreath:
 .loop
 	anim_obj ANIM_OBJ_DRAGONBREATH, 64, 92, $4
 	anim_wait 5
-	anim_obj ANIM_OBJ_DRAGONBREATH_2, 64, 92, $4
-	anim_wait 5
-	anim_loop 5, .loop
+	anim_loop 10, .loop
 	anim_wait 64
 	anim_ret
 
@@ -4551,8 +4549,9 @@ BattleAnim_ShadowBall:
 	anim_bgp $1b
 	anim_sound 6, 2, SFX_SLUDGE_BOMB
 	anim_obj ANIM_OBJ_SHADOW_BALL, 64, 92, $2
+	anim_bgp $1b
 	anim_wait 32
-	anim_obj ANIM_OBJ_BALL_POOF, 132, 56, $10
+	anim_obj ANIM_OBJ_SHADOW_BALL_POOF, 132, 56, $10
 	anim_wait 24
 	anim_ret
 

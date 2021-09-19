@@ -56,7 +56,7 @@ BATTLEANIM_BASE_TILE EQU 7 * 7  ; Maximum size of a pokemon picture
 	const ANIM_OBJ_EXPLOSION2
 	const ANIM_OBJ_ACID
 	const ANIM_OBJ_SLUDGE
-	const ANIM_OBJ_BETA_BALL_POOF
+	const ANIM_OBJ_SHADOW_BALL_POOF
 	const ANIM_OBJ_BALL_POOF
 	const ANIM_OBJ_BIG_ROCK
 	const ANIM_OBJ_SMALL_ROCK
@@ -219,7 +219,6 @@ BATTLEANIM_BASE_TILE EQU 7 * 7  ; Maximum size of a pokemon picture
 	const ANIM_OBJ_WATERFALL
 	const ANIM_OBJ_WATERFALL_YFIX
 	const ANIM_OBJ_WHIRLPOOL
-	const ANIM_OBJ_DRAGONBREATH_2
 	const ANIM_OBJ_SUNNY_DAY
 	const ANIM_OBJ_WATER_PULSE
 	const ANIM_OBJ_VOICE_HIT
@@ -844,11 +843,14 @@ NUM_BG_EFFECTS EQU 5 ; see wActiveBGEffects
 
 ; animation object palettes
 	const_def
-	const PAL_BATTLE_OB_ENEMY  ; 0
-	const PAL_BATTLE_OB_PLAYER ; 1
-	const PAL_BATTLE_OB_GRAY   ; 2
-	const PAL_BATTLE_OB_YELLOW ; 3
-	const PAL_BATTLE_OB_RED    ; 4
-	const PAL_BATTLE_OB_GREEN  ; 5
-	const PAL_BATTLE_OB_BLUE   ; 6
-	const PAL_BATTLE_OB_BROWN  ; 7
+	const PAL_BATTLE_OB_ENEMY      		; 0
+	const PAL_BATTLE_OB_PLAYER    		; 1
+	const PAL_BATTLE_OB_GRAY      		; 2
+	const PAL_BATTLE_OB_YELLOW     		; 3
+	const PAL_BATTLE_OB_RED        		; 4
+	const PAL_BATTLE_OB_GREEN      		; 5
+	const PAL_BATTLE_OB_BLUE       		; 6
+	const PAL_BATTLE_OB_BROWN      		; 7
+	const PAL_BATTLE_OB_VIOLET     		; 8
+	const PAL_BATTLE_OB_RED_VIOLET 		; 9
+	const PAL_BATTLE_OB_YELLOW_GREEN 	; 10
