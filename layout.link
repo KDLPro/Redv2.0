@@ -135,6 +135,7 @@ ROMX $31
 	"bank31"
 ROMX $32
 	"Phone Scripts 2"
+	"Extra Songs 2"
 ROMX $33
 	"Sprites 1"
 ROMX $34
@@ -143,7 +144,6 @@ ROMX $35
 	"bank35"
 ROMX $36
 	"Move Animations"
-	"Extra Songs 2"
 ROMX $37
 	"Pic Animations 1"
 ROMX $38

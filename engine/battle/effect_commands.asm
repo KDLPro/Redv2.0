@@ -2042,6 +2042,8 @@ BattleCommand_MoveAnimNoSub:
 	jr z, .alternate_anim
 	cp EFFECT_POISON_MULTI_HIT
 	jr z, .alternate_anim
+	cp EFFECT_MAGNITUDE
+	jr z, .continue_anim
 	cp EFFECT_TRIPLE_KICK
 	jr z, .triplekick
 	xor a
@@ -2068,6 +2070,7 @@ BattleCommand_MoveAnimNoSub:
 	and 1
 	xor 1
 	ld [wBattleAnimParam], a
+.continue_anim
 	ld a, [de]
 	cp 1
 	push af
@@ -3459,6 +3462,8 @@ PlayFXAnimID:
 	ret
 
 DoEnemyDamage:
+	ld a, [wEnemyMonLevel]
+	ld [wTempLevel], a
 	ld hl, wCurDamage
 	ld a, [hli]
 	ld b, a
@@ -3536,6 +3541,8 @@ endc
 	jp RefreshBattleHuds
 
 DoPlayerDamage:
+	ld a, [wBattleMonLevel]
+	ld [wTempLevel], a
 	ld hl, wCurDamage
 	ld a, [hli]
 	ld b, a

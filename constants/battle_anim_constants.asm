@@ -70,6 +70,7 @@ BATTLEANIM_BASE_TILE EQU 7 * 7  ; Maximum size of a pokemon picture
 	const ANIM_OBJ_HYDRO_PUMP
 	const ANIM_OBJ_POWDER
 	const ANIM_OBJ_POWDER_S
+	const ANIM_OBJ_POWDER_V
 	const ANIM_OBJ_BEAM
 	const ANIM_OBJ_BEAM_TIP
 	const ANIM_OBJ_ICE_BUILDUP
@@ -173,6 +174,7 @@ BATTLEANIM_BASE_TILE EQU 7 * 7  ; Maximum size of a pokemon picture
 	const ANIM_OBJ_SPIKES
 	const ANIM_OBJ_POWDER_SNOW
 	const ANIM_OBJ_DRAGONBREATH
+	const ANIM_OBJ_DRAGONBREATH_FIRE
 	const ANIM_OBJ_CONVERSION
 	const ANIM_OBJ_SPIDER_WEB
 	const ANIM_OBJ_LEER_SHINE
@@ -851,6 +853,10 @@ NUM_BG_EFFECTS EQU 5 ; see wActiveBGEffects
 	const PAL_BATTLE_OB_GREEN      		; 5
 	const PAL_BATTLE_OB_BLUE       		; 6
 	const PAL_BATTLE_OB_BROWN      		; 7
-	const PAL_BATTLE_OB_VIOLET     		; 8
+	const PAL_BATTLE_OB_POISON     		; 8
 	const PAL_BATTLE_OB_RED_VIOLET 		; 9
 	const PAL_BATTLE_OB_YELLOW_GREEN 	; 10
+	const PAL_BATTLE_OB_GHOST    		; 11
+	const PAL_BATTLE_OB_FLYING    		; 12
+	const PAL_BATTLE_OB_GRAY_2    		; 13
+	const PAL_BATTLE_OB_DRAGON    		; 14

@@ -742,6 +742,12 @@ CGBCopyBattleObjectPals: ; unreferenced
 BattleObjectPals:
 INCLUDE "gfx/battle_anims/battle_anims.pal"
 
+BattleObjectPals2: 
+INCLUDE "gfx/battle_anims/unused_battle_anims.pal"
+
+BattleObjectPals3: 
+INCLUDE "gfx/battle_anims/battle_anims_page_3.pal"
+
 CGBCopyTwoPredefObjectPals: ; unreferenced
 	call CheckCGB
 	ret z
@@ -1316,9 +1322,6 @@ INCLUDE "gfx/diploma/diploma.pal"
 
 PartyMenuOBPals:
 INCLUDE "gfx/stats/party_menu_ob.pal"
-
-UnusedBattleObjectPals: 
-INCLUDE "gfx/battle_anims/unused_battle_anims.pal"
 
 UnusedGSTitleBGPals:
 INCLUDE "gfx/title/unused_gs_bg.pal"
