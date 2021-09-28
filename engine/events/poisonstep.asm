@@ -87,6 +87,8 @@ DoPoisonStep::
 ; the mon has fainted, reset its HP to 1 and its status to OK
 	inc hl
 	inc [hl]
+	ld a, MON_STATUS
+ 	call GetPartyParamLocation
 	ld [hl], 0
 	ld c, %10
 	scf
