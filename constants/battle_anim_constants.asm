@@ -35,6 +35,7 @@ BATTLEANIM_BASE_TILE EQU 7 * 7  ; Maximum size of a pokemon picture
 	const ANIM_OBJ_HIT_BIG
 	const ANIM_OBJ_HIT
 	const ANIM_OBJ_HIT_SMALL
+	const ANIM_OBJ_POISON_STING
 	const ANIM_OBJ_PUNCH
 	const ANIM_OBJ_KICK
 	const ANIM_OBJ_PALM
@@ -56,6 +57,7 @@ BATTLEANIM_BASE_TILE EQU 7 * 7  ; Maximum size of a pokemon picture
 	const ANIM_OBJ_EXPLOSION2
 	const ANIM_OBJ_ACID
 	const ANIM_OBJ_SLUDGE
+	const ANIM_OBJ_SLUDGE_2
 	const ANIM_OBJ_SHADOW_BALL_POOF
 	const ANIM_OBJ_BALL_POOF
 	const ANIM_OBJ_BIG_ROCK
@@ -65,7 +67,9 @@ BATTLEANIM_BASE_TILE EQU 7 * 7  ; Maximum size of a pokemon picture
 	const ANIM_OBJ_SEISMIC_TOSS
 	const ANIM_OBJ_BUBBLE
 	const ANIM_OBJ_SURF
-	const ANIM_OBJ_SING
+	const ANIM_OBJ_SING_1
+	const ANIM_OBJ_SING_2
+	const ANIM_OBJ_SING_3
 	const ANIM_OBJ_WATER_GUN
 	const ANIM_OBJ_HYDRO_PUMP
 	const ANIM_OBJ_POWDER
@@ -111,6 +115,7 @@ BATTLEANIM_BASE_TILE EQU 7 * 7  ; Maximum size of a pokemon picture
 	const ANIM_OBJ_LEER
 	const ANIM_OBJ_LEER_TIP
 	const ANIM_OBJ_SCREEN
+	const ANIM_OBJ_SCREEN_WALL
 	const ANIM_OBJ_HARDEN
 	const ANIM_OBJ_CHICK
 	const ANIM_OBJ_AMNESIA
@@ -127,6 +132,7 @@ BATTLEANIM_BASE_TILE EQU 7 * 7  ; Maximum size of a pokemon picture
 	const ANIM_OBJ_POISON_GAS
 	const ANIM_OBJ_HORN
 	const ANIM_OBJ_NEEDLE
+	const ANIM_OBJ_NEEDLE_2
 	const ANIM_OBJ_PETAL_DANCE
 	const ANIM_OBJ_SLUDGE_BOMB
 	const ANIM_OBJ_PAY_DAY
@@ -224,6 +230,7 @@ BATTLEANIM_BASE_TILE EQU 7 * 7  ; Maximum size of a pokemon picture
 	const ANIM_OBJ_SUNNY_DAY
 	const ANIM_OBJ_WATER_PULSE
 	const ANIM_OBJ_VOICE_HIT
+	const ANIM_OBJ_PSYCHIC
 
 ; DoBattleAnimFrame arguments (see engine/battle_anims/functions.asm)
 	const_def
@@ -497,6 +504,8 @@ BATTLEANIM_BASE_TILE EQU 7 * 7  ; Maximum size of a pokemon picture
 	const BATTLEANIMFRAMESET_B7
 	const BATTLEANIMFRAMESET_B8
 	const BATTLEANIMFRAMESET_B9
+	const BATTLEANIMFRAMESET_BA
+	const BATTLEANIMFRAMESET_BB
 
 ; BattleAnimOAMData indexes (see data/battle_anims/oam.asm)
 	const_def
@@ -716,6 +725,7 @@ BATTLEANIM_BASE_TILE EQU 7 * 7  ; Maximum size of a pokemon picture
 	const BATTLEANIMOAMSET_D5
 	const BATTLEANIMOAMSET_D6
 	const BATTLEANIMOAMSET_D7
+	const BATTLEANIMOAMSET_D8
 
 ; BattleBGEffects indexes (see engine/battle_anims/bg_effects.asm)
 	const_def 1
@@ -857,6 +867,10 @@ NUM_BG_EFFECTS EQU 5 ; see wActiveBGEffects
 	const PAL_BATTLE_OB_RED_VIOLET 		; 9
 	const PAL_BATTLE_OB_YELLOW_GREEN 	; 10
 	const PAL_BATTLE_OB_GHOST    		; 11
-	const PAL_BATTLE_OB_FLYING    		; 12
+	const PAL_BATTLE_OB_SKY_BLUE  		; 12
 	const PAL_BATTLE_OB_GRAY_2    		; 13
 	const PAL_BATTLE_OB_DRAGON    		; 14
+	const PAL_BATTLE_OB_PINK			; 15
+	const PAL_BATTLE_OB_OTHERS_1        	; 16
+	const PAL_BATTLE_OB_OTHERS_2     	; 17
+	const PAL_BATTLE_OB_OTHERS_3      	; 18

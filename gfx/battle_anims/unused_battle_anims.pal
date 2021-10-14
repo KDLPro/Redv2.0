@@ -20,9 +20,9 @@
 	RGB 09, 04, 15
 ; sky blue (flying)
     RGB 31, 31, 31
-    RGB 11, 15, 20
-    RGB 12, 19, 27
     RGB 17, 26, 30
+    RGB 12, 19, 27
+    RGB 11, 15, 20
 ; gray (2)
 	RGB 31, 31, 31
 	RGB 25, 25, 25
