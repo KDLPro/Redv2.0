@@ -379,6 +379,7 @@ PokeBallEffect:
 .not_kurt_ball
 	ld [wBattleAnimParam], a
 
+	farcall ResetBattlePalettes
 	ld de, ANIM_THROW_POKE_BALL
 	ld a, e
 	ld [wFXAnimID], a
@@ -2617,6 +2618,7 @@ UseDisposableItem:
 	jp TossItem
 
 UseBallInTrainerBattle:
+	farcall ResetBattlePalettes
 	call ReturnToBattle_UseBall
 	ld de, ANIM_THROW_POKE_BALL
 	ld a, e

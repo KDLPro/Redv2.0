@@ -871,6 +871,6 @@ NUM_BG_EFFECTS EQU 5 ; see wActiveBGEffects
 	const PAL_BATTLE_OB_GRAY_2    		; 13
 	const PAL_BATTLE_OB_DRAGON    		; 14
 	const PAL_BATTLE_OB_PINK			; 15
-	const PAL_BATTLE_OB_OTHERS_1        	; 16
+	const PAL_BATTLE_OB_OTHERS_1        ; 16
 	const PAL_BATTLE_OB_OTHERS_2     	; 17
 	const PAL_BATTLE_OB_OTHERS_3      	; 18

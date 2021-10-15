@@ -54,3 +54,14 @@ INCBIN "gfx/mobile/phone_tiles.2bpp"
 
 Footprints:
 INCLUDE "gfx/footprints.asm"
+
+
+CategoryImages::
+PhysicalIconGFX:
+INCBIN "gfx/battle/physical.2bpp"
+
+SpecialIconGFX:
+INCBIN "gfx/battle/special.2bpp"
+
+StatusIconGFX:
+INCBIN "gfx/battle/status.2bpp"

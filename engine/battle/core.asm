@@ -209,7 +209,12 @@ endr
 	jr nz, .quit
 .skip_iteration
 	call ParsePlayerAction
+	push af
+	call ClearSprites
+	pop af
 	jr nz, .loop1
+	
+	call ResetBattlePalettes
 
 	call EnemyTriesToFlee
 	jr c, .quit
@@ -241,6 +246,7 @@ endr
 	jp .loop
 
 .quit
+	call ResetBattlePalettes
 	ret
 
 Stubbed_Increments5_a89a:
@@ -5126,6 +5132,8 @@ Battle_DummyFunction:
 	ret
 
 BattleMenu:
+	ld a, PAL_BATTLE_OB_DRAGON
+	call BattleChangePalette
 	call LoadBattleCoreFont
 	xor a
 	ldh [hBGMapMode], a
@@ -5202,6 +5210,13 @@ LoadBattleMenu2:
 	call DelayFrames
 .error
 	scf
+	ret
+	
+ResetBattlePalettes:
+	ld a, PAL_BATTLE_OB_RED
+BattleChangePalette:
+	ld [wBattleAnimTempPalette], a
+	farcall ChangePalette
 	ret
 
 BattleMenu_Pack:
@@ -5775,6 +5790,9 @@ MoveSelectionScreen:
 	ld hl, BattleText_TheresNoPPLeftForThisMove
 
 .place_textbox_start_over
+	push hl
+	call ClearSprites
+	pop hl
 	call StdBattleTextbox
 	call SafeLoadTempTilemapToTilemap
 	jp MoveSelectionScreen
@@ -5942,6 +5960,10 @@ MoveInfoBox:
 	ld [wStringBuffer1], a
 	call .PrintPP
 
+	callfar UpdateMoveData
+	ld a, [wPlayerMoveStruct + MOVE_ANIM]
+	ld b, a
+	farcall GetMoveCategoryIcon
 	hlcoord 1, 9
 	ld de, .Type
 	call PlaceString

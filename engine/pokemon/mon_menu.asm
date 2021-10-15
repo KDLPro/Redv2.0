@@ -908,7 +908,7 @@ MoveScreenLoop:
 .moving_move
 	ld a, " "
 	hlcoord 1, 11
-	ld bc, 5
+	ld bc, 8
 	call ByteFill
 	hlcoord 1, 12
 	lb bc, 5, SCREEN_WIDTH - 2
@@ -1185,12 +1185,20 @@ PlaceMoveData:
 	hlcoord 0, 11
 	ld de, String_MoveType_Bottom
 	call PlaceString
-	hlcoord 12, 12
-	ld de, String_MoveAtk
+	hlcoord 14, 12
+	ld de, String_MoveType_AccPercent
 	call PlaceString
 	ld a, [wCurSpecies]
 	ld b, a
-	hlcoord 2, 12
+	farcall GetMoveCategoryName
+	hlcoord 1, 11
+	ld de, wStringBuffer1
+	call PlaceString
+	ld a, [wCurSpecies]
+	ld b, a
+	hlcoord 1, 12
+	ld [hl], "/"
+	inc hl
 	predef PrintMoveType
 	ld a, [wCurSpecies]
 	dec a
@@ -1206,9 +1214,51 @@ PlaceMoveData:
 	ld de, wTextDecimalByte
 	lb bc, 1, 3
 	call PrintNum
-	jr .description
+	jr .find_acc
 
 .no_power
+	ld de, String_MoveNoPower
+	call PlaceString
+
+.find_acc	
+	ld a, [wCurSpecies]
+	dec a
+	ld hl, Moves + MOVE_ACC
+	ld bc, MOVE_LENGTH
+	call AddNTimes
+	ld a, BANK(Moves)
+	call GetFarByte
+	ldh [hMultiplicand], a
+	ld a, 100
+	ldh [hMultiplier], a
+	ld b, 1
+	call Multiply
+	ldh a, [hProduct + 2]
+	ldh [hDividend + 3], a
+	ldh a, [hProduct + 1]
+	ldh [hDividend + 2], a
+	ld a, $ff
+	ldh [hDivisor], a
+	ld b, 2
+	call Divide
+	ldh a, [hQuotient + 3]
+	ld b, a
+	ldh a, [hRemainder]
+	cp 50 percent + 1
+	jr c, .display_acc
+	inc b
+.display_acc
+	ld a, b
+	hlcoord 11, 12
+	cp 2
+	jr c, .no_acc
+	ld [wTextDecimalByte], a
+	ld de, wTextDecimalByte
+	lb bc, 1, 3
+	call PrintNum
+	jr .description
+
+.no_acc
 	ld de, String_MoveNoPower
 	call PlaceString
 
@@ -1220,11 +1270,11 @@ PlaceMoveData:
 	ret
 
 String_MoveType_Top:
-	db "┌─────┐@"
+	db "┌────────┐@"
 String_MoveType_Bottom:
-	db "│TYPE/└@"
-String_MoveAtk:
-	db "ATK/@"
+	db "│        └@"
+String_MoveType_AccPercent:
+	db "<PERCENT>/@"
 String_MoveNoPower:
 	db "---@"
 

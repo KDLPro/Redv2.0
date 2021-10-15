@@ -270,7 +270,6 @@ INCLUDE "engine/gfx/load_pics.asm"
 INCLUDE "engine/pokemon/move_mon_wo_mail.asm"
 INCLUDE "data/pokemon/base_stats.asm"
 INCLUDE "data/pokemon/names.asm"
-INCLUDE "data/pokemon/unused_pic_banks.asm"
 
 UnusedEggPic::
 ; The G/S Egg pic. This is shifted up a few pixels.
@@ -342,6 +341,7 @@ INCLUDE "engine/rtc/timeset.asm"
 INCLUDE "engine/pokegear/pokegear.asm"
 INCLUDE "engine/events/fish.asm"
 INCLUDE "engine/games/slot_machine.asm"
+INCLUDE "engine/pokemon/categories.asm"
 
 
 SECTION "Phone Scripts 1", ROMX
@@ -585,6 +585,7 @@ SECTION "bank5B", ROMX
 
 INCLUDE "mobile/mobile_5b.asm"
 INCLUDE "engine/link/link_trade.asm"
+INCLUDE "data/pokemon/unused_pic_banks.asm"
 
 
 SECTION "mobile5C", ROMX

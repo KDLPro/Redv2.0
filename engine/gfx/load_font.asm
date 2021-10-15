@@ -26,7 +26,7 @@ _LoadBattleCoreFont::
 	call Get1bppViaHDMA
 	ld de, English + 64 * LEN_1BPP_TILE
 	ld hl, vTiles1 tile $40
-	lb bc, BANK(English), 32 ; $c0 to "←"
+	lb bc, BANK(English), 31 ; "%" to "←"
 	call Get1bppViaHDMA
 	ld de, English + 96 * LEN_1BPP_TILE
 	ld hl, vTiles1 tile $60
@@ -45,7 +45,7 @@ _LoadStandardFont::
 	call Get1bppViaHDMA
 	ld de, Font + 64 * LEN_1BPP_TILE
 	ld hl, vTiles1 tile $40
-	lb bc, BANK(Font), 32 ; $c0 to "←"
+	lb bc, BANK(Font), 31 ; "%" to "←"
 	call Get1bppViaHDMA
 	ld de, Font + 96 * LEN_1BPP_TILE
 	ld hl, vTiles1 tile $60
@@ -64,7 +64,7 @@ _LoadInversedFont::
 	call Get1bppViaHDMA
 	ld de, FontInversed + 64 * LEN_1BPP_TILE
 	ld hl, vTiles1 tile $40
-	lb bc, BANK(FontInversed), 32 ; $c0 to "←"
+	lb bc, BANK(FontInversed), 31 ; "%" to "←"
 	call Get1bppViaHDMA
 	ld de, FontInversed + 96 * LEN_1BPP_TILE
 	ld hl, vTiles1 tile $60
