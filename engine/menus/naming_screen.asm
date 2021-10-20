@@ -141,7 +141,7 @@ NamingScreen:
 	ret
 
 .RivalNameString:
-	db "RIVAL'S NAME?@"
+	db "Rival's name?@"
 
 .Mom:
 	ld de, MomSpriteGFX
@@ -154,7 +154,7 @@ NamingScreen:
 	ret
 
 .MomNameString:
-	db "MOTHER'S NAME?@"
+	db "Mother's Name?@"
 
 .Box:
 	ld de, PokeBallSpriteGFX
@@ -450,15 +450,27 @@ NamingScreenJoypadLoop:
 .select
 	ld hl, wNamingScreenLetterCase
 	ld a, [hl]
-	xor 1
+	inc a
+	cp 3
+	jr c, .done
+	ld a, 0
+.done
 	ld [hl], a
-	jr z, .upper
+	cp 2
+	jr z, .other
+	xor 1
+	jr nz, .upper
 	ld de, NameInputLower
 	call NamingScreen_ApplyTextInputMode
 	ret
 
 .upper
 	ld de, NameInputUpper
+	call NamingScreen_ApplyTextInputMode
+	ret
+	
+.other
+	ld de, NameInputOther
 	call NamingScreen_ApplyTextInputMode
 	ret
 
