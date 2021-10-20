@@ -44,6 +44,10 @@ INCLUDE "engine/items/item_effects.asm"
 INCLUDE "engine/battle_anims/pokeball_wobble.asm"
 INCLUDE "engine/pokemon/knows_move.asm"
 
+SECTION "Battle Weather Images", ROMX
+
+INCLUDE "gfx/weather_images.asm"
+
 
 SECTION "bank4", ROMX
 
@@ -341,7 +345,11 @@ INCLUDE "engine/rtc/timeset.asm"
 INCLUDE "engine/pokegear/pokegear.asm"
 INCLUDE "engine/events/fish.asm"
 INCLUDE "engine/games/slot_machine.asm"
+
+SECTION "Battle Images", ROMX
+
 INCLUDE "engine/pokemon/categories.asm"
+INCLUDE "engine/battle/load_weather_images.asm"
 
 
 SECTION "Phone Scripts 1", ROMX

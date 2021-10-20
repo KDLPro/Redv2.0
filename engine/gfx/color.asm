@@ -748,6 +748,25 @@ INCLUDE "gfx/battle_anims/unused_battle_anims.pal"
 BattleObjectPals3: 
 INCLUDE "gfx/battle_anims/battle_anims_page_3.pal"
 
+
+ClearDayPals:
+INCLUDE "gfx/battle/weather/clear_day.pal"
+
+ClearNightPals:
+INCLUDE "gfx/battle/weather/clear_night.pal"
+
+SunPals:
+INCLUDE "gfx/battle/weather/sun.pal"
+
+RainPals:
+INCLUDE "gfx/battle/weather/rain.pal"
+
+HailPals:
+INCLUDE "gfx/battle/weather/hail.pal"
+
+SandPals:
+INCLUDE "gfx/battle/weather/sand.pal"
+
 CGBCopyTwoPredefObjectPals: ; unreferenced
 	call CheckCGB
 	ret z

@@ -180,6 +180,43 @@ _CGB_FinishBattleScreenLayout:
 .done
 	call ApplyAttrmap
 	ret
+	
+SetPalettes_ClearDay:
+	ld hl, ClearDayPals
+	ld de, wOBPals1 palette PAL_BATTLE_OB_BROWN 
+	jr WeatherIcon_CGB_ChangePalettes
+	
+SetPalettes_ClearNight:
+	ld hl, ClearNightPals
+	ld de, wOBPals1 palette PAL_BATTLE_OB_BROWN 
+	jr WeatherIcon_CGB_ChangePalettes
+	
+SetPalettes_Sun:
+	ld hl, SunPals
+	ld de, wOBPals1 palette PAL_BATTLE_OB_BROWN 
+	jr WeatherIcon_CGB_ChangePalettes
+	
+SetPalettes_Rain:
+	ld hl, RainPals
+	ld de, wOBPals1 palette PAL_BATTLE_OB_BROWN 
+	jr WeatherIcon_CGB_ChangePalettes
+	
+SetPalettes_Hail:
+	ld hl, HailPals
+	ld de, wOBPals1 palette PAL_BATTLE_OB_BROWN 
+	jr WeatherIcon_CGB_ChangePalettes
+	
+SetPalettes_Sand:
+	ld hl, SandPals
+	ld de, wOBPals1 palette PAL_BATTLE_OB_BROWN 
+	; fallthrough
+WeatherIcon_CGB_ChangePalettes:
+	ld bc, 1 palettes
+	ld a, BANK(wOBPals1)
+	call FarCopyWRAM
+	farcall BattleAnimAssignPals
+	farcall BattleAnimRequestPals
+	ret
 
 InitPartyMenuBGPal7:
 	farcall Function100dc0
