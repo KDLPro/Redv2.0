@@ -16,45 +16,45 @@ GetWeatherImage:
 .rain
 	farcall SetPalettes_Rain
 	ld de, RainWeatherImage
-	lb bc, PAL_BATTLE_OB_BROWN, 8
+	lb bc, PAL_BATTLE_OB_BROWN, 6
 	jr z, .done	
 	
 .sun
 	farcall SetPalettes_Sun
 	ld de, SunWeatherImage
-	lb bc, PAL_BATTLE_OB_BROWN, 8
+	lb bc, PAL_BATTLE_OB_BROWN, 6
 	jr z, .done	
 	
-;.hail
-;	farcall SetPalettes_Hail
-;	ld de, HailWeatherImage
-;	lb bc, PAL_BATTLE_OB_BROWN, 8
-;	jr z, .done	
+.hail
+	farcall SetPalettes_Hail
+	ld de, HailWeatherImage
+	lb bc, PAL_BATTLE_OB_BROWN, 6
+	jr z, .done	
 	
 .sand
 	farcall SetPalettes_Sand
 	ld de, SandstormWeatherImage
-	lb bc, PAL_BATTLE_OB_BROWN, 8
+	lb bc, PAL_BATTLE_OB_BROWN, 6
 	jr z, .done
 	
 .clear_day
 	farcall SetPalettes_ClearDay
 	ld de, ClearDayWeatherImage
-	lb bc, PAL_BATTLE_OB_BROWN, 8
+	lb bc, PAL_BATTLE_OB_BROWN, 6
 	jr z, .done
 
 .clear_night
 	farcall SetPalettes_ClearNight
 	ld de, ClearNightWeatherImage
-	lb bc, PAL_BATTLE_OB_BROWN, 8
+	lb bc, PAL_BATTLE_OB_BROWN, 6
 	
 .done
 	push bc
-	ld b, BANK(WeatherImages) ; c = 4
-	ld hl, vTiles0 tile $04
+	ld b, BANK(WeatherImages) ; c = 6
+	ld hl, vTiles0 tile $02
 	call Request2bpp
 	pop bc
-	ld hl, wVirtualOAMSprite04
+	ld hl, wVirtualOAMSprite02
 	ld de, .WeatherImageOAMData
 .loop
 	ld a, [de]

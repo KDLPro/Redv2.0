@@ -26,7 +26,7 @@ _LoadBattleCoreFont::
 	call Get1bppViaHDMA
 	ld de, English + 64 * LEN_1BPP_TILE
 	ld hl, vTiles1 tile $40
-	lb bc, BANK(English), 31 ; "%" to "←"
+	lb bc, BANK(English), 32 ; "SLP" to "←"
 	call Get1bppViaHDMA
 	ld de, English + 96 * LEN_1BPP_TILE
 	ld hl, vTiles1 tile $60
@@ -45,7 +45,7 @@ _LoadStandardFont::
 	call Get1bppViaHDMA
 	ld de, Font + 64 * LEN_1BPP_TILE
 	ld hl, vTiles1 tile $40
-	lb bc, BANK(Font), 31 ; "%" to "←"
+	lb bc, BANK(Font), 32 ; "SLP" to "←"
 	call Get1bppViaHDMA
 	ld de, Font + 96 * LEN_1BPP_TILE
 	ld hl, vTiles1 tile $60
@@ -64,7 +64,7 @@ _LoadInversedFont::
 	call Get1bppViaHDMA
 	ld de, FontInversed + 64 * LEN_1BPP_TILE
 	ld hl, vTiles1 tile $40
-	lb bc, BANK(FontInversed), 31 ; "%" to "←"
+	lb bc, BANK(FontInversed), 32 ; "SLP" to "←"
 	call Get1bppViaHDMA
 	ld de, FontInversed + 96 * LEN_1BPP_TILE
 	ld hl, vTiles1 tile $60
@@ -124,11 +124,7 @@ LoadHPBar:
 	call Get1bppViaHDMA
 	ld de, ExpBarGFX
 	ld hl, vTiles2 tile $55
-	lb bc, BANK(ExpBarGFX), 9
-	call Get2bppViaHDMA
-	ld de, MobilePhoneTilesGFX + 7 tiles ; mobile phone icon
-	ld hl, vTiles2 tile $5e
-	lb bc, BANK(MobilePhoneTilesGFX), 2
+	lb bc, BANK(ExpBarGFX), 11
 	call Get2bppViaHDMA
 	ret
 
@@ -148,7 +144,7 @@ StatsScreen_LoadFont:
 	call Get1bppViaHDMA
 	ld de, ExpBarGFX
 	ld hl, vTiles2 tile $55
-	lb bc, BANK(ExpBarGFX), 8
+	lb bc, BANK(ExpBarGFX), 10
 	call Get2bppViaHDMA
 LoadStatsScreenPageTilesGFX:
 	ld de, StatsScreenPageTilesGFX

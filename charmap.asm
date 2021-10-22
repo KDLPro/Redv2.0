@@ -123,6 +123,19 @@
 	charmap "└",         $be
 	charmap "┘",         $bf
 
+	charmap "<SLP1>",    $c3
+	charmap "<SLP2>",    $c4
+	charmap "<FRZ1>",    $c3
+	charmap "<FRZ2>",    $c4
+	charmap "<PAR1>",    $c5
+	charmap "<PAR2>",    $c6
+	charmap "<PSN1>",    $c7
+	charmap "<PSN2>",    $c8
+	charmap "<BRN1>",    $c9
+	charmap "<BRN2>",    $ca
+	charmap "<FNT1>",    $cb
+	charmap "<FNT2>",    $cc
+	
 	charmap "<PERCENT>", $cd
 	charmap "′",         $ce
 	charmap "″",         $cf
