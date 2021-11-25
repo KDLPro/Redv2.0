@@ -636,15 +636,9 @@ CheckAbleToSwitch:
 	cp EFFECTIVE + 1
 	jp c, .checkmatchups2
 	
-.switching
-	 ; Switch out depending on how many times
-	 ; AI switched already. Return z if stay in
-	call .smartcheck_revealed_moves
-	jp z, .no_switch
 	
 .no_need_big_brain
-	call FiftyPercentRoll
-	jp c, .find_super_effective
+.switching
 	 ; Switch out depending on how many times
 	 ; AI switched already. Return z if stay in
 	call .smartcheck_revealed_moves
@@ -699,19 +693,6 @@ CheckAbleToSwitch:
 	jp z, .find_super_effective
 	
 	jp .do_switch
-
-.immune_resist_switch
-	call FindEnemyMonsImmuneToOrResistsLastCounterMove
-	ld a, [wEnemyAISwitchScore]
-	cp $ff
-	jp nz, .do_switch
-	
-	call FindMonToSwitchResistSE
-	; Check if target switch Pokémon has a super effective move
-	ld a, e
-	cp 2
-	jp z, .do_switch
-	jp .no_switch
 
 .checkmatchups2
 	ld a, [wPlayerIsSwitching]

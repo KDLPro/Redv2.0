@@ -111,7 +111,7 @@ SwitchOften:
 	jp z, AI_TryItem
 	
 	call Random
-	cp 30 percent - 1
+	cp 20 percent - 1
 	jp c, AI_TryItem
 	jp LoadMonToSwitchTo
 	
