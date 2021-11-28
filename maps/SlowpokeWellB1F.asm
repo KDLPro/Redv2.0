@@ -159,7 +159,7 @@ SlowpokeWellB1FKurtText:
 	cont "so I can't move."
 
 	para "Rats! If I were"
-	line "fit, my #MON"
+	line "fit, my #mon"
 
 	para "would've punished"
 	line "them…"

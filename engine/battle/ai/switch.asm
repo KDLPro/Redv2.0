@@ -1102,24 +1102,8 @@ FindEnemyMonsImmuneToOrResistsLastCounterMove:
 	push hl
 	jr z, .next
 
-	push hl
-	push bc
 	; If the Pokemon has at least 1/2 max HP...
-	ld bc, MON_HP
-	add hl, bc
-	ld b, [hl]
-	inc hl
-	ld c, [hl]
-	sla c
-	rl b
-	inc hl
-	inc hl
-	ld a, [hld]
-	cp c
-	ld a, [hl]
-	sbc b
-	pop bc
-	pop hl
+	call CheckCurrentMonIfAtLeastHalfHP2
 	jr nc, .next
 	
 	ld a, [wPlayerTurnsTaken]
@@ -1197,24 +1181,8 @@ FindEnemyMonsImmuneToOrResistsLastCounterMoveReverse:
 	push hl
 	jr z, .next
 
-	push hl
-	push bc
 	; If the Pokemon has at least 1/2 max HP...
-	ld bc, MON_HP
-	add hl, bc
-	ld b, [hl]
-	inc hl
-	ld c, [hl]
-	sla c
-	rl b
-	inc hl
-	inc hl
-	ld a, [hld]
-	cp c
-	ld a, [hl]
-	sbc b
-	pop bc
-	pop hl
+	call CheckCurrentMonIfAtLeastHalfHP2
 	jr nc, .next
 	
 	
@@ -1298,25 +1266,9 @@ FindEnemyMonsImmuneToOrResistsLastCounterMoveBadDamage:
 	cp d
 	push hl
 	jr z, .next
-
-	push hl
-	push bc
+	
 	; If the Pokemon has at least 1/2 max HP...
-	ld bc, MON_HP
-	add hl, bc
-	ld b, [hl]
-	inc hl
-	ld c, [hl]
-	sla c
-	rl b
-	inc hl
-	inc hl
-	ld a, [hld]
-	cp c
-	ld a, [hl]
-	sbc b
-	pop bc
-	pop hl
+	call CheckCurrentMonIfAtLeastHalfHP2
 	jr nc, .next
 	
 	ld a, [hl]
@@ -1362,6 +1314,7 @@ FindEnemyMonsImmuneToOrResistsLastCounterMoveBadDamage:
 	inc d
 	srl c
 	jr .loop
+	
 
 FindAliveEnemyMonsWithASuperEffectiveMove:
 	push bc
@@ -1372,21 +1325,8 @@ FindAliveEnemyMonsWithASuperEffectiveMove:
 	ld c, 0
 .loop
 	; Check the Pokemon has at least 1/2 max HP...
-	push hl
-	push bc
-	ld b, [hl]
-	inc hl
-	ld c, [hl]
-	sla c
-	rl b
-	inc hl
-	inc hl
-	ld a, [hld]
-	cp c
-	ld a, [hl]
-	sbc b
-	pop bc
-	pop hl
+	; Check if the Pokemon has at least 1/2 max HP...
+	call CheckCurrentMonIfAtLeastHalfHP
 	jr nc, .next
 
 	ld a, b
@@ -1522,22 +1462,8 @@ FindAliveEnemyMonsWithASuperEffectiveMoveSwitch:
 	ld b, 1 << (PARTY_LENGTH - 1)
 	ld c, 0
 .loop
-	; Check the Pokemon has at least 1/2 max HP...
-	push hl
-	push bc
-	ld b, [hl]
-	inc hl
-	ld c, [hl]
-	sla c
-	rl b
-	inc hl
-	inc hl
-	ld a, [hld]
-	cp c
-	ld a, [hl]
-	sbc b
-	pop bc
-	pop hl
+	; Check if the Pokemon has at least 1/2 max HP...
+	call CheckCurrentMonIfAtLeastHalfHP
 	jr nc, .next
 
 	ld a, b
@@ -1957,5 +1883,43 @@ CheckEnemyHalfHP:
 	sbc b
 	pop bc
 	pop de
+	pop hl
+	ret
+	
+CheckCurrentMonIfAtLeastHalfHP:
+	push hl
+	push bc
+	ld b, [hl]
+	inc hl
+	ld c, [hl]
+	sla c
+	rl b
+	inc hl
+	inc hl
+	ld a, [hld]
+	cp c
+	ld a, [hl]
+	sbc b
+	pop bc
+	pop hl
+	ret
+	
+CheckCurrentMonIfAtLeastHalfHP2:
+	push hl
+	push bc
+	ld bc, MON_HP
+	add hl, bc
+	ld b, [hl]
+	inc hl
+	ld c, [hl]
+	sla c
+	rl b
+	inc hl
+	inc hl
+	ld a, [hld]
+	cp c
+	ld a, [hl]
+	sbc b
+	pop bc
 	pop hl
 	ret

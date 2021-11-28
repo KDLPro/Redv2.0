@@ -405,18 +405,18 @@ PsychicRodneyAfterBattleText:
 
 PokefanmJeremySeenText:
 	text "What do you think?"
-	line "My #MON are"
+	line "My #mon are"
 	cont "beautiful, yes?"
 	done
 
 PokefanmJeremyBeatenText:
 	text "Oh, no! My beauti-"
-	line "ful #MON!"
+	line "ful #mon!"
 	done
 
 PokefanmJeremyAfterBattleText:
 	text "I must go to the"
-	line "#MON SALON and"
+	line "#mon SALON and"
 	cont "fix them up nice!"
 	done
 
@@ -433,7 +433,7 @@ PokefanfGeorgiaBeatenText:
 
 PokefanfGeorgiaAfterBattleText:
 	text "Oh, yes! I have to"
-	line "get my #MON out"
+	line "get my #mon out"
 	cont "of DAY-CARE!"
 	done
 

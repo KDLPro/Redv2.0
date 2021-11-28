@@ -1,13 +1,13 @@
 ChadAskNumber1Text:
 	text "Huh? Is that thing"
-	line "a #DEX? Have"
+	line "a #dex? Have"
 	cont "you met PROF.OAK?"
 
 	para "Huh? You have? "
 	line "That's way cool!"
 
 	para "I have a dream of"
-	line "becoming a #MON"
+	line "becoming a #mon"
 
 	para "researcher like"
 	line "PROF.OAK."
@@ -35,7 +35,7 @@ ChadAskNumber2Text:
 
 ChadNumberAcceptedText:
 	text "You must listen to"
-	line "PROF.OAK'S #MON"
+	line "PROF.OAK'S #mon"
 	cont "TALK, right?"
 	done
 

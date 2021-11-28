@@ -245,6 +245,10 @@ CheckPlayerRechageOrLockedOn:
 	ld hl, wPlayerSubStatus3
 	bit SUBSTATUS_RAMPAGE, [hl]
 	jr nz, .switch
+	bit SUBSTATUS_FLYING, [hl]
+	jr nz, .switch
+	bit SUBSTATUS_UNDERGROUND, [hl]
+	jr nz, .switch
 	ld hl, wPlayerSubStatus4
 	bit SUBSTATUS_RECHARGE, [hl]
 	jr nz, .switch

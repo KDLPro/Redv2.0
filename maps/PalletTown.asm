@@ -43,7 +43,7 @@ PalletTownFisherText:
 	line "incredible!"
 
 	para "You can now trade"
-	line "#MON across"
+	line "#mon across"
 	cont "time like e-mail."
 	done
 
@@ -59,7 +59,7 @@ RedsHouseSignText:
 	done
 
 OaksLabSignText:
-	text "OAK #MON"
+	text "OAK #mon"
 	line "RESEARCH LAB"
 	done
 

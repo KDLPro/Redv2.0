@@ -57,7 +57,7 @@ AnthonyGreetNiteText:
 	done
 
 AnthonyGenericText:
-	text "Are your #MON"
+	text "Are your #mon"
 	line "as feisty as ever?"
 
 	para "My @"

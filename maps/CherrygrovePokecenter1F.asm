@@ -38,7 +38,7 @@ CherrygrovePokecenter1FFisherText:
 	text "It's great. I can"
 	line "store any number"
 
-	para "of #MON, and"
+	para "of #mon, and"
 	line "it's all free."
 	done
 
@@ -62,7 +62,7 @@ CherrygrovePokecenter1FTeacherText_CommCenterOpen:
 	line "CENTER upstairs"
 	cont "was just built."
 
-	para "I traded #MON"
+	para "I traded #mon"
 	line "there already!"
 	done
 

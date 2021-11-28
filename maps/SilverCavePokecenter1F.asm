@@ -21,7 +21,7 @@ SilverCavePokecenter1FGrannyText:
 	line "many dangers…"
 
 	para "With their trusted"
-	line "#MON, they must"
+	line "#mon, they must"
 
 	para "feel they can go"
 	line "anywhere…"

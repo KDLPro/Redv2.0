@@ -34,7 +34,7 @@ IrwinJasmineReturnedGossipText:
 	line "you!"
 
 	para "You saved that"
-	line "#MON at the"
+	line "#mon at the"
 
 	para "LIGHTHOUSE, didn't"
 	line "you?"
@@ -276,7 +276,7 @@ IrwinSoMuchToChatAboutText:
 	para "How's your mom?"
 
 	para "Have you got lots"
-	line "of #MON?"
+	line "of #mon?"
 
 	para "Is it going to be"
 	line "sunny tomorrow?"

@@ -35,7 +35,7 @@ AzaleaMartCooltrainerMText:
 AzaleaMartBugCatcherText:
 	text "A GREAT BALL is"
 	line "better for catch-"
-	cont "ing #MON than a"
+	cont "ing #mon than a"
 	cont "# BALL."
 
 	para "But KURT's might"

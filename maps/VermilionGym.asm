@@ -114,7 +114,7 @@ LtSurgeIntroText:
 	cont "it takes guts!"
 
 	para "When it comes to"
-	line "electric #MON,"
+	line "electric #mon,"
 	cont "I'm number one!"
 
 	para "I've never lost on"
@@ -141,7 +141,7 @@ ReceivedThunderBadgeText:
 LtSurgeThunderBadgeText:
 	text "SURGE: THUNDER-"
 	line "BADGE increases"
-	cont "#MON's speed. "
+	cont "#mon's speed. "
 
 	para "Consider it proof"
 	line "that you defeated"
@@ -155,7 +155,7 @@ LtSurgeFightDoneText:
 	line "Still slugging and"
 	cont "chugging away?"
 
-	para "My #MON and I"
+	para "My #mon and I"
 	line "are still at it!"
 	done
 
@@ -186,7 +186,7 @@ GuitaristVincentSeenText:
 	line "nized my potential"
 
 	para "with electric"
-	line "#MON."
+	line "#mon."
 
 	para "Think you can beat"
 	line "me?"

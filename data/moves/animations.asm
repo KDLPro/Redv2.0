@@ -2776,6 +2776,7 @@ BattleAnim_LeechLife:
 	anim_sound 6, 3, SFX_WATER_GUN
 	anim_call BattleAnimSub_Drain
 	anim_wait 128
+	anim_wait 48
 	anim_ret
 
 BattleAnim_Harden:

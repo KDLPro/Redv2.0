@@ -137,7 +137,7 @@ DanceTheatreFancyPanel:
 
 KimonoGirlNaokoSeenText:
 	text "You have lovely"
-	line "#MON. May I see"
+	line "#mon. May I see"
 	cont "them in battle?"
 	done
 
@@ -154,7 +154,7 @@ KimonoGirlNaokoAfterBattleText:
 
 KimonoGirlSayoSeenText:
 	text "I always dance"
-	line "with my #MON."
+	line "with my #mon."
 
 	para "Of course, I also"
 	line "train them."
@@ -177,13 +177,13 @@ KimonoGirlZukiSeenText:
 	text "Isn't my barrette"
 	line "pretty?"
 
-	para "Oh. A #MON"
+	para "Oh. A #mon"
 	line "battle?"
 	done
 
 KimonoGirlZukiBeatenText:
 	text "I don't have any"
-	line "#MON left…"
+	line "#mon left…"
 	done
 
 KimonoGirlZukiAfterBattleText:
@@ -214,12 +214,12 @@ KimonoGirlKuniAfterBattleText:
 KimonoGirlMikiSeenText:
 	text "Do you like my"
 	line "dancing? I'm good"
-	cont "at #MON too."
+	cont "at #mon too."
 	done
 
 KimonoGirlMikiBeatenText:
 	text "Ooh, you're good"
-	line "at #MON too."
+	line "at #mon too."
 	done
 
 KimonoGirlMikiAfterBattleText:
@@ -229,7 +229,7 @@ KimonoGirlMikiAfterBattleText:
 	para "people who enjoy"
 	line "what I do."
 
-	para "My #MON keep my"
+	para "My #mon keep my"
 	line "spirits up too."
 	done
 
@@ -239,7 +239,7 @@ SurfGuyNeverLeftAScratchText:
 
 	para "dancers, they're"
 	line "also skilled at"
-	cont "#MON."
+	cont "#mon."
 
 	para "I always challenge"
 	line "them, but I've"
@@ -281,12 +281,12 @@ SurfGuySurfExplanationText:
 	text "That's SURF."
 
 	para "It's a move that"
-	line "lets #MON swim"
+	line "lets #mon swim"
 	cont "across water."
 	done
 
 SurfGuyElegantKimonoGirlsText:
-	text "I wish my #MON"
+	text "I wish my #mon"
 	line "were as elegant as"
 	cont "the KIMONO GIRLS…"
 	done
@@ -301,13 +301,13 @@ DanceTheatreCooltrainerMText:
 	line "with his RHYDON."
 
 	para "Says he wants a"
-	line "#MON that can"
+	line "#mon that can"
 	cont "SURF and dance."
 
 	para "Is he trying to"
 	line "make a synchro-"
 	cont "nized swimming"
-	cont "#MON?"
+	cont "#mon?"
 	done
 
 DanceTheatreGrannyText:

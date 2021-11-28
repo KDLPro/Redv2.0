@@ -96,7 +96,7 @@ MountMoonSilverTextBefore:
 
 	para "about what I was"
 	line "lacking with my"
-	cont "#MON…"
+	cont "#mon…"
 
 	para "And we came up"
 	line "with an answer."
@@ -109,7 +109,7 @@ MountMoonSilverTextWin:
 	text "<……> <……> <……>"
 
 	para "I thought I raised"
-	line "my #MON to be"
+	line "my #mon to be"
 
 	para "the best they"
 	line "could be…"
@@ -150,7 +150,7 @@ MountMoonSilverTextLoss:
 	para "I've repaid my"
 	line "debt to you."
 
-	para "With my #MON,"
+	para "With my #mon,"
 	line "I'm going to beat"
 
 	para "the CHAMPION and"

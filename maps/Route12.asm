@@ -73,7 +73,7 @@ Route12HiddenElixer:
 FisherMartinSeenText:
 	text "Patience is the"
 	line "key to both fish-"
-	cont "ing and #MON."
+	cont "ing and #mon."
 	done
 
 FisherMartinBeatenText:

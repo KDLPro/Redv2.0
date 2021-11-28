@@ -150,7 +150,7 @@ GoldenrodDeptStoreRoofTeacherText:
 	done
 
 GoldenrodDeptStoreRoofBugCatcherText:
-	text "My #MON always"
+	text "My #mon always"
 	line "get paralyzed or"
 
 	para "poisoned when the"
@@ -179,7 +179,7 @@ Binoculars2Text:
 	line "are battling on"
 	cont "the road!"
 
-	para "A #MON fired a"
+	para "A #mon fired a"
 	line "flurry of leaves!"
 
 	para "That makes me feel"
@@ -200,7 +200,7 @@ Binoculars3Text:
 
 PokeDollVendingMachineText:
 	text "A vending machine"
-	line "for #MON dolls?"
+	line "for #mon dolls?"
 
 	para "Insert money, then"
 	line "turn the crank…"

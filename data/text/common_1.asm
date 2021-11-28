@@ -508,7 +508,7 @@ _OPT_IntroText1::
 
 _OPT_IntroText2::
 	text_start
-	line "#MON TALK!"
+	line "#mon TALK!"
 	done
 
 _OPT_IntroText3::
@@ -704,7 +704,7 @@ _OPT_SpeedyText::
 	done
 
 _OPT_PokemonChannelText::
-	text "#MON"
+	text "#mon"
 	done
 
 _PokedexShowText::
@@ -719,7 +719,7 @@ _PokedexShowText::
 
 _BenIntroText1::
 	text_start
-	line "BEN: #MON MUSIC"
+	line "BEN: #mon MUSIC"
 	done
 
 _BenIntroText2::
@@ -761,12 +761,12 @@ _BenFernText2B::
 
 _BenFernText3A::
 	text_start
-	line "#MON March!"
+	line "#mon March!"
 	done
 
 _BenFernText3B::
 	text_start
-	line "#MON Lullaby!"
+	line "#mon Lullaby!"
 	done
 
 ; Lucky Channel
@@ -1143,7 +1143,7 @@ _RemainingTimeText:: ; unreferenced
 	done
 
 _YourMonsHPWasHealedText:: ; unreferenced
-	text "Your #MON's HP"
+	text "Your #mon's HP"
 	line "was healed."
 	prompt
 
@@ -1338,7 +1338,7 @@ _JustSawSomeRareMonText::
 
 	para "I'll call you if I"
 	line "see another rare"
-	cont "#MON, OK?"
+	cont "#mon, OK?"
 	prompt
 
 _SavingRecordText::
@@ -1390,7 +1390,7 @@ _NPCTradeFanfareText::
 	text_end ; unreferenced
 
 _NPCTradeIntroText1::
-	text "I collect #MON."
+	text "I collect #mon."
 	line "Do you have"
 	cont "@"
 	text_ram wStringBuffer1
@@ -1432,7 +1432,7 @@ _NPCTradeAfterText1::
 
 _NPCTradeIntroText2::
 	text "Hi, I'm looking"
-	line "for this #MON."
+	line "for this #mon."
 
 	para "If you have"
 	line "@"
@@ -1543,7 +1543,7 @@ _NPCTradeAfterText4::
 
 _MomLeavingText1::
 	text "Wow, that's a cute"
-	line "#MON."
+	line "#mon."
 
 	para "Where did you get"
 	line "it?"
@@ -1579,7 +1579,7 @@ _MomLeavingText2::
 _MomLeavingText3::
 	text "Be careful."
 
-	para "#MON are your"
+	para "#mon are your"
 	line "friends. You need"
 	cont "to work as a team."
 
@@ -1668,7 +1668,7 @@ _DaycareDummyText::
 _DayCareManIntroText::
 	text "I'm the DAY-CARE"
 	line "MAN. Want me to"
-	cont "raise a #MON?"
+	cont "raise a #mon?"
 	done
 
 _DayCareManIntroEggText::
@@ -1677,7 +1677,7 @@ _DayCareManIntroEggText::
 	cont "about EGGS?"
 
 	para "I was raising"
-	line "#MON with my"
+	line "#mon with my"
 	cont "wife, you see."
 
 	para "We were shocked to"
@@ -1687,7 +1687,7 @@ _DayCareManIntroEggText::
 	line "that?"
 
 	para "So, want me to"
-	line "raise a #MON?"
+	line "raise a #mon?"
 	done
 
 _DayCareLadyIntroText::
@@ -1695,7 +1695,7 @@ _DayCareLadyIntroText::
 	line "LADY."
 
 	para "Should I raise a"
-	line "#MON for you?"
+	line "#mon for you?"
 	done
 
 _DayCareLadyIntroEggText::
@@ -1705,7 +1705,7 @@ _DayCareLadyIntroEggText::
 
 	para "My husband and I"
 	line "were raising some"
-	cont "#MON, you see."
+	cont "#mon, you see."
 
 	para "We were shocked to"
 	line "find an EGG!"
@@ -1714,7 +1714,7 @@ _DayCareLadyIntroEggText::
 	line "could that be?"
 
 	para "Should I raise a"
-	line "#MON for you?"
+	line "#mon for you?"
 	done
 
 _WhatShouldIRaiseText::
@@ -1724,7 +1724,7 @@ _WhatShouldIRaiseText::
 
 _OnlyOneMonText::
 	text "Oh? But you have"
-	line "just one #MON."
+	line "just one #mon."
 	prompt
 
 _CantAcceptEggText::
@@ -1775,7 +1775,7 @@ _YourMonHasGrownText::
 	text "."
 
 	para "If you want your"
-	line "#MON back, it"
+	line "#mon back, it"
 	cont "will cost ¥@"
 	text_decimal wStringBuffer2 + 2, 3, 4
 	text "."
@@ -1783,7 +1783,7 @@ _YourMonHasGrownText::
 
 _PerfectHeresYourMonText::
 	text "Perfect! Here's"
-	line "your #MON."
+	line "your #mon."
 	prompt
 
 _GotBackMonText::
@@ -1802,7 +1802,7 @@ _BackAlreadyText::
 	line "more time with us."
 
 	para "If you want your"
-	line "#MON back, it"
+	line "#mon back, it"
 	cont "will cost ¥100."
 	done
 
@@ -1832,18 +1832,18 @@ _FoundAnEggText::
 	text "Ah, it's you!"
 
 	para "We were raising"
-	line "your #MON, and"
+	line "your #mon, and"
 
 	para "my goodness, were"
 	line "we surprised!"
 
-	para "Your #MON had"
+	para "Your #mon had"
 	line "an EGG!"
 
 	para "We don't know how"
 	line "it got there, but"
 
-	para "your #MON had"
+	para "your #mon had"
 	line "it. You want it?"
 	done
 
@@ -1869,7 +1869,7 @@ _NoRoomForEggText::
 	done
 
 _WhichMonPhotoText::
-	text "Which #MON"
+	text "Which #mon"
 	line "should I photo-"
 	cont "graph?"
 	prompt

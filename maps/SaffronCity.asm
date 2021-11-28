@@ -163,7 +163,7 @@ SaffronCityCooltrainerMText:
 
 SaffronCityCooltrainerFText:
 	text "This is SILPH CO.,"
-	line "famous for #MON"
+	line "famous for #mon"
 	cont "merchandise."
 
 	para "In the past, TEAM"
@@ -235,11 +235,11 @@ SaffronCitySignText:
 
 SaffronGymSignText:
 	text "SAFFRON CITY"
-	line "#MON GYM"
+	line "#mon GYM"
 	cont "LEADER: SABRINA"
 
 	para "The Master of"
-	line "Psychic #MON!"
+	line "Psychic #mon!"
 	done
 
 FightingDojoSignText:

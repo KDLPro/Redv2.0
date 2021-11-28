@@ -327,7 +327,7 @@ RadioTower5FDirectorThankYouText:
 	para "Your courageous"
 	line "actions have saved"
 
-	para "#MON nation-"
+	para "#mon nation-"
 	line "wide."
 
 	para "I know it's not"
@@ -352,7 +352,7 @@ RadioTower5FDirectorDescribeClearBellText:
 	cont "construction."
 
 	para "I heard that all"
-	line "sorts of #MON"
+	line "sorts of #mon"
 
 	para "lived in GOLDENROD"
 	line "in the past."
@@ -391,13 +391,13 @@ RadioTower5FDirectorText:
 	line "<PLAY_G>!"
 
 	para "You know, I love"
-	line "#MON."
+	line "#mon."
 
 	para "I built this RADIO"
 	line "TOWER so I could"
 
 	para "express my love"
-	line "of #MON."
+	line "of #mon."
 
 	para "It would be nice"
 	line "if people enjoyed"

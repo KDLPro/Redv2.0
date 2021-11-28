@@ -1026,39 +1026,39 @@ CooltrainerFGroup:
 	; COOLTRAINERF (5)
 	db "KATE@", TRAINERTYPE_COMPETITIVE_BASIC_NO_NICK
 	
-	db 29, BAYLEEF
+	db 30, BAYLEEF
 	db $aa, $aa
-	db $20, $00, $40, $80, $40, $00 ; hp, atk, def, spd, spa, spd
+	db $20, $00, $40, $80, $40, $00 ; hp, atk, def, speed, spatk, spdef
 	db NO_ITEM
 	db GIGA_DRAIN, SYNTHESIS, LIGHT_SCREEN, LEECH_SEED
 	
-	db 29, STEELIX
+	db 31, STEELIX
 	db $aa, $aa
-	db $20, $80, $00, $00, $60, $20 ; hp, atk, def, spd, spa, spd
+	db $20, $80, $00, $80, $00, $00 ; hp, atk, def, speed, spatk, spdef
 	db QUICK_CLAW
 	db EARTHQUAKE, IRON_TAIL, ROCK_SLIDE, SELFDESTRUCT
 	
-	db 29, SLOWBRO
+	db 30, SLOWBRO
 	db $aa, $a9
-	db $70, $00, $00, $70, $30, $00 ; hp, atk, def, spd, spa, spd
+	db $70, $00, $00, $70, $30, $00 ; hp, atk, def, speed, spatk, spdef
 	db GOLD_BERRY
 	db SURF, PSYCHIC_M, ICE_BEAM, RECOVER
 	
-	db 28, TYRANITAR
+	db 31, TYRANITAR
 	db $a9, $9a
-	db $20, $20, $20, $20, $20, $00 ; hp, atk, def, spd, spa, spd
+	db $20, $20, $20, $20, $20, $00 ; hp, atk, def, speed, spatk, spdef
 	db NO_ITEM
 	db ROCK_SLIDE, CRUNCH, PURSUIT, EARTHQUAKE
 	
-	db 29, GROWLITHE
+	db 32, GROWLITHE
 	db $aa, $a9
-	db $00, $50, $00, $50, $30, $00 ; hp, atk, def, spd, spa, spd
+	db $00, $50, $00, $50, $30, $00 ; hp, atk, def, speed, spatk, spdef
 	db LEFTOVERS
 	db FLAMETHROWER, EARTHQUAKE, BODY_SLAM, REST
 	
-	db 29, HERACROSS
+	db 30, HERACROSS
 	db $a9, $aa
-	db $20, $80, $40, $00, $40, $00 ; hp, atk, def, spd, spa, spd
+	db $20, $80, $40, $00, $40, $00 ; hp, atk, def, speed, spatk, spdef
 	db MIRACLEBERRY
 	db MEGAHORN, ROCK_SLIDE, ROCK_SMASH, REST
 	db -1 ; end

@@ -13,14 +13,14 @@ _NameRaterHelloText::
 	line "the NAME RATER."
 
 	para "I rate the names"
-	line "of #MON."
+	line "of #mon."
 
 	para "Would you like me"
 	line "to rate names?"
 	done
 
 _NameRaterWhichMonText::
-	text "Which #MON's"
+	text "Which #mon's"
 	line "nickname should I"
 	cont "rate for you?"
 	prompt
@@ -88,7 +88,7 @@ _NameRaterSameNameText::
 
 _NameRaterNamedText::
 	text "All right. This"
-	line "#MON is now"
+	line "#mon is now"
 	cont "named @"
 	text_ram wStringBuffer1
 	text "."
@@ -115,11 +115,11 @@ _ExpPointsText::
 	prompt
 	
 _ExpPointsFromShareText::
-	text_start
-	line "@"
+	text "Exp. Share holders"
+	line "gained"
+	cont "@"
 	text_decimal wStringBuffer2, 2, 4
-	text " Exp. Points"
-	cont "from Exp. Share!"
+	text " Exp. Points!"
 	prompt
 
 _GoMonText::
@@ -187,7 +187,7 @@ _ContainedMoveText::
 	para "Teach @"
 	text_ram wStringBuffer2
 	text_start
-	line "to a #MON?"
+	line "to a #mon?"
 	done
 
 _TMHMNotCompatibleText::
@@ -231,7 +231,7 @@ _MysteryGiftCommErrorText::
 
 _RetrieveMysteryGiftText::
 	text "Must retrieve GIFT"
-	line "at #MON CENTER."
+	line "at #mon CENTER."
 	prompt
 
 _YourFriendIsNotReadyText::
@@ -382,7 +382,7 @@ _CantUseDigText::
 
 _TeleportReturnText::
 	text "Return to the last"
-	line "#MON CENTER."
+	line "#mon CENTER."
 	done
 
 _CantUseTeleportText::
@@ -393,7 +393,7 @@ _CantUseTeleportText::
 	done
 
 _AlreadyUsingStrengthText::
-	text "A #MON is using"
+	text "A #mon is using"
 	line "STRENGTH already."
 	prompt
 
@@ -410,7 +410,7 @@ _MoveBoulderText::
 	prompt
 
 _AskStrengthText::
-	text "A #MON may be"
+	text "A #mon may be"
 	line "able to move this."
 
 	para "Want to use"
@@ -423,7 +423,7 @@ _BouldersMoveText::
 	done
 
 _BouldersMayMoveText::
-	text "A #MON may be"
+	text "A #mon may be"
 	line "able to move this."
 	done
 
@@ -437,7 +437,7 @@ _MayPassWhirlpoolText::
 	text "It's a vicious"
 	line "whirlpool!"
 
-	para "A #MON may be"
+	para "A #mon may be"
 	line "able to pass it."
 	done
 
@@ -460,7 +460,7 @@ _HeadbuttNothingText::
 	done
 
 _AskHeadbuttText::
-	text "A #MON could be"
+	text "A #mon could be"
 	line "in this tree."
 
 	para "Want to HEADBUTT"
@@ -474,7 +474,7 @@ _UseRockSmashText::
 	prompt
 
 _MaySmashText::
-	text "Maybe a #MON"
+	text "Maybe a #mon"
 	line "can break this."
 	done
 
@@ -546,7 +546,7 @@ _CantCarryItemText::
 
 _WhitedOutText::
 	text "<PLAYER> is out of"
-	line "useable #MON!"
+	line "useable #mon!"
 
 	para "<PLAYER> whited"
 	line "out!"
@@ -554,7 +554,7 @@ _WhitedOutText::
 
 _WhitedOutToWildMonText::
 	text "<PLAYER> is out of"
-	line "useable #MON!"
+	line "useable #mon!"
 
 	para "<PLAYER> panicked"
 	line "and dropped"
@@ -571,7 +571,7 @@ _WhitedOutToWildMonText::
 
 _WhitedOutToTrainerText::
 	text "<PLAYER> is out of"
-	line "useable #MON!"
+	line "useable #mon!"
 
 	para "<PLAYER> paid"
 	line "¥@"
@@ -606,7 +606,7 @@ _PoisonFaintText::
 
 _PoisonWhiteoutText::
 	text "<PLAYER> is out of"
-	line "useable #MON!"
+	line "useable #mon!"
 
 	para "<PLAYER> whited"
 	line "out!"
@@ -632,7 +632,7 @@ _SquirtbottleNothingText::
 	done
 
 _UseSacredAshText::
-	text "<PLAYER>'s #MON"
+	text "<PLAYER>'s #mon"
 	line "were all healed!"
 	done
 
@@ -674,7 +674,7 @@ _OakThisIsntTheTimeText::
 
 _YouDontHaveAMonText::
 	text "You don't have a"
-	line "#MON!"
+	line "#mon!"
 	prompt
 
 _RegisteredItemText::
@@ -951,7 +951,7 @@ _AnimationTypeText:: ; unreferenced
 	text_end ; unreferenced
 
 _MonNumberText:: ; unreferenced
-	text "#MON number?"
+	text "#mon number?"
 	done
 
 _WasSentToBillsPCText::
@@ -962,7 +962,7 @@ _WasSentToBillsPCText::
 
 _PCGottaHavePokemonText::
 	text "You gotta have"
-	line "#MON to call!"
+	line "#mon to call!"
 	prompt
 
 _PCWhatText::
@@ -970,7 +970,7 @@ _PCWhatText::
 	done
 
 _PCMonHoldingMailText::
-	text "There is a #MON"
+	text "There is a #mon"
 	line "holding MAIL."
 
 	para "Please remove the"
@@ -979,17 +979,17 @@ _PCMonHoldingMailText::
 
 _PCNoSingleMonText::
 	text "You don't have a"
-	line "single #MON!"
+	line "single #mon!"
 	prompt
 
 _PCCantDepositLastMonText::
 	text "You can't deposit"
-	line "your last #MON!"
+	line "your last #mon!"
 	prompt
 
 _PCCantTakeText::
 	text "You can't take any"
-	line "more #MON."
+	line "more #mon."
 	prompt
 
 _ContestCaughtMonText::
@@ -999,7 +999,7 @@ _ContestCaughtMonText::
 	prompt
 
 _ContestAskSwitchText::
-	text "Switch #MON?"
+	text "Switch #mon?"
 	done
 
 _ContestAlreadyCaughtText::
@@ -1132,7 +1132,7 @@ _CaughtAskNicknameText::
 
 _PokecenterPCCantUseText::
 	text "Bzzzzt! You must"
-	line "have a #MON to"
+	line "have a #mon to"
 	cont "use this!"
 	prompt
 
@@ -1201,7 +1201,7 @@ _PokecenterBillsPCText::
 	text "BILL's PC"
 	line "accessed."
 
-	para "#MON Storage"
+	para "#mon Storage"
 	line "System opened."
 	prompt
 
@@ -1216,7 +1216,7 @@ _PokecenterOaksPCText::
 	text "PROF.OAK's PC"
 	line "accessed."
 
-	para "#DEX Rating"
+	para "#dex Rating"
 	line "System opened."
 	prompt
 
@@ -1227,27 +1227,27 @@ _PokecenterPCOaksClosedText::
 
 _OakPCText1::
 	text "Want to get your"
-	line "#DEX rated?"
+	line "#dex rated?"
 	done
 
 _OakPCText2::
-	text "Current #DEX"
+	text "Current #dex"
 	line "completion level:"
 	prompt
 
 _OakPCText3::
 	text_ram wStringBuffer3
-	text " #MON seen"
+	text " #mon seen"
 	line "@"
 	text_ram wStringBuffer4
-	text " #MON owned"
+	text " #mon owned"
 
 	para "PROF.OAK's"
 	line "Rating:"
 	done
 
 _OakRating01::
-	text "Look for #MON"
+	text "Look for #mon"
 	line "in grassy areas!"
 	done
 
@@ -1267,23 +1267,23 @@ _OakRating03::
 
 _OakRating04::
 	text "You need to fill"
-	line "up the #DEX."
+	line "up the #dex."
 
 	para "Catch different"
-	line "kinds of #MON!"
+	line "kinds of #mon!"
 	done
 
 _OakRating05::
 	text "You're trying--I"
 	line "can see that."
 
-	para "Your #DEX is"
+	para "Your #dex is"
 	line "coming together."
 	done
 
 _OakRating06::
 	text "To evolve, some"
-	line "#MON grow,"
+	line "#mon grow,"
 
 	para "others use the"
 	line "effects of STONES."
@@ -1293,7 +1293,7 @@ _OakRating07::
 	text "Have you gotten a"
 	line "fishing ROD? You"
 
-	para "can catch #MON"
+	para "can catch #mon"
 	line "by fishing."
 	done
 
@@ -1304,7 +1304,7 @@ _OakRating08::
 	done
 
 _OakRating09::
-	text "Some #MON only"
+	text "Some #mon only"
 	line "appear during"
 
 	para "certain times of"
@@ -1312,7 +1312,7 @@ _OakRating09::
 	done
 
 _OakRating10::
-	text "Your #DEX is"
+	text "Your #dex is"
 	line "filling up. Keep"
 	cont "up the good work!"
 	done
@@ -1321,7 +1321,7 @@ _OakRating11::
 	text "I'm impressed."
 	line "You're evolving"
 
-	para "#MON, not just"
+	para "#mon, not just"
 	line "catching them."
 	done
 
@@ -1333,15 +1333,15 @@ _OakRating12::
 
 _OakRating13::
 	text "Wow. You've found"
-	line "more #MON than"
+	line "more #mon than"
 
-	para "the last #DEX"
+	para "the last #dex"
 	line "research project."
 	done
 
 _OakRating14::
 	text "Are you trading"
-	line "your #MON?"
+	line "your #mon?"
 
 	para "It's tough to do"
 	line "this alone!"
@@ -1349,13 +1349,13 @@ _OakRating14::
 
 _OakRating15::
 	text "Wow! You've hit"
-	line "200! Your #DEX"
+	line "200! Your #dex"
 	cont "is looking great!"
 	done
 
 _OakRating16::
 	text "You've found so"
-	line "many #MON!"
+	line "many #mon!"
 
 	para "You've really"
 	line "helped my studies!"
@@ -1365,12 +1365,12 @@ _OakRating17::
 	text "Magnificent! You"
 	line "could become a"
 
-	para "#MON professor"
+	para "#mon professor"
 	line "right now!"
 	done
 
 _OakRating18::
-	text "Your #DEX is"
+	text "Your #dex is"
 	line "amazing! You're"
 
 	para "ready to turn"
@@ -1379,7 +1379,7 @@ _OakRating18::
 
 _OakRating19::
 	text "Whoa! A perfect"
-	line "#DEX! I've"
+	line "#dex! I've"
 
 	para "dreamt about this!"
 	line "Congratulations!"
@@ -1571,19 +1571,19 @@ _OakText1::
 	line "keep you waiting!"
 
 	para "Welcome to the"
-	line "world of #MON!"
+	line "world of #mon!"
 
 	para "My name is OAK."
 
 	para "People call me the"
-	line "#MON PROF."
+	line "#mon PROF."
 	prompt
 
 _OakText2::
 	text "This world is in-"
 	line "habited by crea-"
 	cont "tures that we call"
-	cont "#MON.@"
+	cont "#mon.@"
 	text_end
 
 _OakText3::
@@ -1593,26 +1593,26 @@ _OakText3::
 	text_end ; unreferenced
 
 _OakText4::
-	text "People and #MON"
+	text "People and #mon"
 	line "live together by"
 
 	para "supporting each"
 	line "other."
 
 	para "Some people play"
-	line "with #MON, some"
+	line "with #mon, some"
 	cont "battle with them."
 	prompt
 
 _OakText5::
 	text "But we don't know"
 	line "everything about"
-	cont "#MON yet."
+	cont "#mon yet."
 
 	para "There are still"
 	line "many mysteries to"
 	cont "solve."
 
 	para "That's why I study"
-	line "#MON every day."
+	line "#mon every day."
 	prompt

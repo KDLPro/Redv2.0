@@ -25,7 +25,7 @@ BlackthornPokecenter1FGentlemanText:
 	text "Deep inside far-"
 	line "off INDIGO PLATEAU"
 
-	para "is the #MON"
+	para "is the #mon"
 	line "LEAGUE."
 
 	para "I hear the best"

@@ -97,7 +97,7 @@ SentAllToMomText:
 UnusedRivalLossText: ; unreferenced
 	text "<RIVAL>: Huh? I"
 	line "should've chosen"
-	cont "your #MON!"
+	cont "your #mon!"
 	prompt
 
 BattleText_MonFainted:
@@ -107,13 +107,13 @@ BattleText_MonFainted:
 	prompt
 
 BattleText_UseNextMon:
-	text "Use next #MON?"
+	text "Use next #mon?"
 	done
 
 UnusedRivalWinText: ; unreferenced
 	text "<RIVAL>: Yes!"
 	line "I guess I chose a"
-	cont "good #MON!"
+	cont "good #mon!"
 	prompt
 
 LostAgainstText:
@@ -129,7 +129,7 @@ BattleText_EnemyIsAboutToUseWillPlayerChangeMon:
 	text "."
 
 	para "Will <PLAYER>"
-	line "change #MON?"
+	line "change #mon?"
 	done
 
 BattleText_EnemySentOut:
@@ -278,13 +278,13 @@ BattleText_SafeguardFaded:
 
 BattleText_MonsLightScreenFell:
 	text_ram wStringBuffer1
-	text " #MON's"
+	text " #mon's"
 	line "Light Screen fell!"
 	autodone
 
 BattleText_MonsReflectFaded:
 	text_ram wStringBuffer1
-	text " #MON's"
+	text " #mon's"
 	line "Reflect faded!"
 	autodone
 
@@ -1051,7 +1051,7 @@ IdentifiedText:
 	autodone
 
 StartPerishText:
-	text "Both #MON will"
+	text "Both #mon will"
 	line "faint in 3 turns!"
 	autodone
 

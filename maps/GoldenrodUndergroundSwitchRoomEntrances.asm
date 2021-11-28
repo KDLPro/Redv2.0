@@ -693,7 +693,7 @@ UndergroundSilverWinText:
 	line "Why do I lose?"
 
 	para "I've assembled the"
-	line "toughest #MON."
+	line "toughest #mon."
 
 	para "I didn't ease up"
 	line "on the gas."
@@ -709,7 +709,7 @@ UndergroundSilverAfterText:
 	line "guy said true?"
 
 	para "That I don't treat"
-	line "#MON properly?"
+	line "#mon properly?"
 
 	para "Love…"
 
@@ -734,7 +734,7 @@ UndergroundSilverAfterText:
 	line "dream of becoming"
 
 	para "the world's best"
-	line "#MON trainer!"
+	line "#mon trainer!"
 	done
 
 UndergroundSilverLossText:

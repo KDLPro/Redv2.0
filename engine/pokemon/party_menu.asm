@@ -801,7 +801,7 @@ PartyMenuStrings:
 	dw ToWhichPKMNString
 
 ChooseAMonString:
-	db "Choose a #MON.@"
+	db "Choose a #mon.@"
 
 UseOnWhichPKMNString:
 	db "Use on which <PK><MN>?@"

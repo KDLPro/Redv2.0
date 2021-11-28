@@ -312,7 +312,7 @@ NationalParkLassText:
 	para "I printed out my"
 	line "favorites from my"
 
-	para "#DEX and stuck"
+	para "#dex and stuck"
 	line "them on my bag."
 	done
 
@@ -333,7 +333,7 @@ NationalParkTeacher1Text:
 	line "time."
 
 	para "You must be a"
-	line "#MON trainer."
+	line "#mon trainer."
 
 	para "Since you're work-"
 	line "ing so hard, I"
@@ -343,7 +343,7 @@ NationalParkTeacher1Text:
 	done
 
 NationalParkTeacher1Text_GotQuickClaw:
-	text "Let a #MON hold"
+	text "Let a #mon hold"
 	line "that QUICK CLAW."
 
 	para "Sometimes it will"
@@ -354,12 +354,12 @@ NationalParkTeacher1Text_GotQuickClaw:
 NationalParkYoungster1Text:
 	text "I'm playing with"
 	line "stickers I printed"
-	cont "from my #DEX."
+	cont "from my #dex."
 	done
 
 NationalParkYoungster2Text:
 	text "I get the other"
-	line "guy's #DEX"
+	line "guy's #dex"
 	cont "sticker if I win."
 	done
 
@@ -380,7 +380,7 @@ NationalParkPersianText:
 
 NationalParkGameboyKidText:
 	text "I'm printing out"
-	line "my #DEX."
+	line "my #dex."
 
 	para "You can also print"
 	line "out stuff like"
@@ -391,7 +391,7 @@ NationalParkGameboyKidText:
 
 SchoolboyJack1SeenText:
 	text "The world of"
-	line "#MON is deep."
+	line "#mon is deep."
 
 	para "There are still"
 	line "lots of things we"
@@ -414,12 +414,12 @@ SchoolboyJackTradeMonText:
 	para "There are 50 kinds"
 	line "of TMs."
 
-	para "Traded #MON"
+	para "Traded #mon"
 	line "level up faster."
 	done
 
 PokefanfBeverly1SeenText:
-	text "My #MON are"
+	text "My #mon are"
 	line "simply darling."
 
 	para "Let me tell you"
@@ -434,7 +434,7 @@ PokefanfBeverly1BeatenText:
 
 PokefanBeverlyCuteMonText:
 	text "I must say, your"
-	line "#MON are quite"
+	line "#mon are quite"
 	cont "cute, too."
 	done
 
@@ -448,12 +448,12 @@ PokefanmWilliamSeenText:
 	done
 
 PokefanmWilliamBeatenText:
-	text "M-my #MON!"
+	text "M-my #mon!"
 	done
 
 PokefanmWilliamAfterBattleText:
 	text "I lost the battle,"
-	line "but my #MON win"
+	line "but my #mon win"
 
 	para "the prize for"
 	line "being most lovely."

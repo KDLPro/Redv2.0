@@ -51,19 +51,19 @@ CherrygroveMartCooltrainerMText:
 CherrygroveMartCooltrainerMText_PokeBallsInStock:
 	text "# BALLS are in"
 	line "stock! Now I can"
-	cont "catch #MON!"
+	cont "catch #mon!"
 	done
 
 CherrygroveMartYoungsterText:
 	text "When I was walking"
 	line "in the grass, a"
 
-	para "bug #MON poi-"
-	line "soned my #MON!"
+	para "bug #mon poi-"
+	line "soned my #mon!"
 
 	para "I just kept going,"
 	line "but then my"
-	cont "#MON fainted."
+	cont "#mon fainted."
 
 	para "You should keep an"
 	line "ANTIDOTE with you."

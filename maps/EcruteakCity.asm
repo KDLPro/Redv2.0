@@ -149,7 +149,7 @@ EcruteakCityLass2Text:
 	done
 
 EcruteakCityLass2Text_ReleasedBeasts:
-	text "Three big #MON"
+	text "Three big #mon"
 	line "ran off in differ-"
 	cont "ent directions."
 	cont "What were they?"
@@ -160,7 +160,7 @@ EcruteakCityFisherText:
 	line "about OLIVINE"
 	cont "LIGHTHOUSE."
 
-	para "The #MON that"
+	para "The #mon that"
 	line "serves as the"
 
 	para "beacon fell ill."
@@ -169,7 +169,7 @@ EcruteakCityFisherText:
 	done
 
 EcruteakCityFisherText_JasmineReturned:
-	text "The #MON at"
+	text "The #mon at"
 	line "OLIVINE LIGHTHOUSE"
 	cont "has been cured."
 
@@ -179,7 +179,7 @@ EcruteakCityFisherText_JasmineReturned:
 	done
 
 EcruteakCityYoungsterText:
-	text "I hear #MON are"
+	text "I hear #mon are"
 	line "rampaging at the"
 
 	para "LAKE OF RAGE. I'd"
@@ -193,11 +193,11 @@ EcruteakCityGramps3Text:
 	para "This tower burned"
 	line "in a fire. Three"
 
-	para "nameless #MON"
+	para "nameless #mon"
 	line "perished in it."
 
 	para "A rainbow-colored"
-	line "#MON descended"
+	line "#mon descended"
 
 	para "from the sky and"
 	line "resurrected them…"
@@ -233,7 +233,7 @@ TinTowerSignText:
 
 EcruteakGymSignText:
 	text "ECRUTEAK CITY"
-	line "#MON GYM"
+	line "#mon GYM"
 	cont "LEADER: MORTY"
 
 	para "The Mystic Seer of"

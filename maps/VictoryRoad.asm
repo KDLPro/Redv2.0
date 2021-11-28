@@ -165,7 +165,7 @@ VictoryRoadRivalBeforeText:
 	text "Hold it."
 
 	para "…Are you going to"
-	line "take the #MON"
+	line "take the #mon"
 	cont "LEAGUE challenge?"
 
 	para "…Don't make me"
@@ -180,7 +180,7 @@ VictoryRoadRivalBeforeText:
 	para "I now have the"
 	line "best and strongest"
 
-	para "#MON with me."
+	para "#mon with me."
 	line "I'm invincible!"
 
 	para "<PLAYER>!"

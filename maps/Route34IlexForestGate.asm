@@ -88,10 +88,10 @@ Route34IlexForestGateTeacherReturnsMovement:
 
 Route34IlexForestGateTeacherText:
 	text "Oh, honey. You're"
-	line "making a #DEX?"
+	line "making a #dex?"
 
 	para "It must be hard if"
-	line "#MON won't"
+	line "#mon won't"
 
 	para "appear. Try using"
 	line "this TM."
@@ -101,9 +101,9 @@ Route34IlexForestGateTeacher_GotSweetScent:
 	text "It's SWEET SCENT."
 
 	para "Use it wherever"
-	line "#MON appear."
+	line "#mon appear."
 
-	para "#MON will be"
+	para "#mon will be"
 	line "enticed by it."
 	done
 
@@ -130,7 +130,7 @@ Route34IlexForestGateLassText:
 
 	para "I think that it"
 	line "must be a grass-"
-	cont "type #MON."
+	cont "type #mon."
 	done
 
 Route34IlexForestGate_MapEvents:

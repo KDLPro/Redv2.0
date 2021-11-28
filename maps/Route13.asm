@@ -79,7 +79,7 @@ Route13HiddenCalcium:
 
 PokefanmAlexSeenText:
 	text "Bow down before my"
-	line "regal #MON!"
+	line "regal #mon!"
 	done
 
 PokefanmAlexBeatenText:
@@ -105,7 +105,7 @@ PokefanmJoshuaBeatenText:
 
 PokefanmJoshuaAfterBattleText:
 	text "You look like you"
-	line "have many #MON,"
+	line "have many #mon,"
 
 	para "but PIKACHU is"
 	line "still the best."
@@ -114,7 +114,7 @@ PokefanmJoshuaAfterBattleText:
 BirdKeeperPerrySeenText:
 	text "Agility is the key"
 	line "attribute of bird"
-	cont "#MON."
+	cont "#mon."
 	done
 
 BirdKeeperPerryBeatenText:
@@ -123,7 +123,7 @@ BirdKeeperPerryBeatenText:
 	done
 
 BirdKeeperPerryAfterBattleText:
-	text "Your #MON are"
+	text "Your #mon are"
 	line "remarkably well-"
 	cont "trained."
 	done
@@ -143,7 +143,7 @@ BirdKeeperBretBeatenText:
 
 BirdKeeperBretAfterBattleText:
 	text "If you groom them,"
-	line "#MON get happy."
+	line "#mon get happy."
 	done
 
 HikerKennySeenText:

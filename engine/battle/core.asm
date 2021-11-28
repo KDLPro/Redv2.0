@@ -2462,6 +2462,7 @@ UpdateBattleStateAndExperienceAfterEnemyFaint:
 	call CopyBytes
 	xor a
 	ld [wGivingExperienceToExpShareHolders], a
+	ld [wDisplayExpShareGained], a
 	call GiveExperiencePoints
 	call IsAnyMonHoldingExpShare
 	ret z
@@ -2475,6 +2476,7 @@ UpdateBattleStateAndExperienceAfterEnemyFaint:
 	ld bc, wEnemyMonEnd - wEnemyMonBaseStats
 	call CopyBytes
 	ld a, $1
+	ld [wDisplayExpShareGained], a
 	ld [wGivingExperienceToExpShareHolders], a
 	call GiveExperiencePoints
 	pop af
@@ -2595,6 +2597,7 @@ CheckEnemyTrainerDefeated:
 	ret
 
 HandleEnemySwitch:
+	farcall ResetBattlePalettes
 	ld hl, wEnemyHPPal
 	ld e, HP_BAR_LENGTH_PX
 	call UpdateHPPal
@@ -3452,7 +3455,7 @@ EnemySwitch_SetMode:
 	jr nz, .test_switch
 	
 	push hl
-	farcall FindEnemyMonsImmuneToOrResistsLastCounterMove
+	farcall FindEnemyMonsThatCanHandleLastCounterMove
 	pop hl
 	ld a, [wEnemyAISwitchScore]
 	cp $ff
@@ -5455,6 +5458,7 @@ TryPlayerSwitch:
 	ld a, [wCurPartyMon]
 	ld [wCurBattleMon], a
 PlayerSwitch:
+	farcall ResetBattlePalettes
 	ld a, 1
 	ld [wPlayerIsSwitching], a
 	ld a, [wLinkMode]
@@ -7300,10 +7304,6 @@ GiveExperiencePoints:
 	ld a, [wBattleMode]
 	dec a
 	call nz, BoostExp
-; Boost experience for battle participants
-	ld a, [wGivingExperienceToExpShareHolders]
-	and a
-	call nz, HalveExp
 ; Boost experience for Lucky Egg
 	push bc
 	ld a, MON_ITEM
@@ -7311,15 +7311,33 @@ GiveExperiencePoints:
 	ld a, [hl]
 	cp LUCKY_EGG
 	call z, BoostExp
+; Boost experience for battle participants
+	ld a, [wGivingExperienceToExpShareHolders]
+	and a
+	call nz, HalveExp
 	ldh a, [hQuotient + 3]
 	ld [wStringBuffer2 + 1], a
 	ldh a, [hQuotient + 2]
 	ld [wStringBuffer2], a
+	ld a, [wGivingExperienceToExpShareHolders]
+	and a
+	jr nz, .exp_share
 	ld a, [wCurPartyMon]
 	ld hl, wPartyMonNicknames
 	call GetNick
 	ld hl, Text_MonGainedExpPoint
 	call BattleTextbox
+	jr .animate_exp
+	
+.exp_share
+	ld a, [wDisplayExpShareGained]
+	and a
+	jr z, .animate_exp
+	ld hl, ExpPointsFromShareText
+	call BattleTextbox
+	ld a, $0
+	ld [wDisplayExpShareGained], a
+.animate_exp
 	ld a, [wStringBuffer2 + 1]
 	ldh [hQuotient + 3], a
 	ld a, [wStringBuffer2]
@@ -7649,15 +7667,10 @@ Text_MonGainedExpPoint:
 	text_far Text_Gained
 	text_asm
 	ld hl, ExpPointsText
-	ld a, [wGivingExperienceToExpShareHolders]
-	and a
-	ret z
-	
-	ld hl, ExpPointsFromShareText
 	ld a, [wStringBuffer2 + 2] ; IsTradedMon
 	and a
 	ret z
-
+	
 	ld hl, BoostedExpPointsText
 	ret
 

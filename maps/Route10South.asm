@@ -47,7 +47,7 @@ HikerJimAfterBattleText:
 	done
 
 PokefanmRobertSeenText:
-	text "You like #MON,"
+	text "You like #mon,"
 	line "don't you?"
 
 	para "Me too!"
@@ -60,7 +60,7 @@ PokefanmRobertBeatenText:
 
 PokefanmRobertAfterBattleText:
 	text "Look what you did"
-	line "to my #MON…"
+	line "to my #mon…"
 
 	para "I won't forget"
 	line "this…"

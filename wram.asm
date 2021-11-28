@@ -522,7 +522,7 @@ wEnemyMonsLeft:: db
 wEnemyTurnsTaken::  db
 wPlayerTurnsTaken:: db
 	
-	ds 1
+wDisplayExpShareGained:: db
 wEnemyMonJustFainted:: db
 
 wPlayerSubstituteHP:: db

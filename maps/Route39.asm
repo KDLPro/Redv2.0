@@ -189,7 +189,7 @@ SailorEugeneSeenText:
 	line "OLIVINE."
 
 	para "So how about a"
-	line "#MON battle?"
+	line "#mon battle?"
 	done
 
 SailorEugeneBeatenText:
@@ -197,7 +197,7 @@ SailorEugeneBeatenText:
 	done
 
 SailorEugeneAfterBattleText:
-	text "My #MON were"
+	text "My #mon were"
 	line "caught and raised"
 	cont "overseas."
 
@@ -230,10 +230,10 @@ PokefanMDerekText_NotBragging:
 
 PokefanfRuthSeenText:
 	text "Such darling"
-	line "#MON."
+	line "#mon."
 
 	para "Let's show our"
-	line "#MON together"
+	line "#mon together"
 	cont "at the same time."
 	done
 
@@ -244,7 +244,7 @@ PokefanfRuthBeatenText:
 
 PokefanfRuthAfterBattleText:
 	text "Do you know about"
-	line "baby #MON?"
+	line "baby #mon?"
 
 	para "I bet they're just"
 	line "adorable!"
@@ -257,12 +257,12 @@ PokefanMDerekPikachuIsItText:
 
 PsychicNormanSeenText:
 	text "Let me see what"
-	line "your #MON are"
+	line "your #mon are"
 	cont "capable of."
 	done
 
 PsychicNormanBeatenText:
-	text "Ooh, your #MON"
+	text "Ooh, your #mon"
 	line "have potential."
 	done
 
@@ -331,10 +331,10 @@ Route39TrainerTipsText:
 
 	para "Use HEADBUTT on"
 	line "trees to shake"
-	cont "#MON out."
+	cont "#mon out."
 
 	para "Different kinds of"
-	line "#MON drop out"
+	line "#mon drop out"
 	cont "of trees."
 
 	para "Use HEADBUTT on"

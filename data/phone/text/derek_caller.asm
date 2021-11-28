@@ -45,7 +45,7 @@ DerekLostAMonText:
 	line "cute, so I left"
 
 	para "it…"
-	line "#MON have to be"
+	line "#mon have to be"
 
 	para "cute. They're no"
 	line "good otherwise."

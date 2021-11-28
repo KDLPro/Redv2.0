@@ -158,7 +158,7 @@ RadioTower3FSuperNerdText:
 	text "We have recordings"
 	line "of the cries of"
 
-	para "all #MON that"
+	para "all #mon that"
 	line "have been found."
 
 	para "We must have about"
@@ -174,7 +174,7 @@ RadioTower3FGymGuideText_Rockets:
 	line "TEAM ROCKET is"
 
 	para "trying to control"
-	line "#MON."
+	line "#mon."
 	done
 
 RadioTower3FGymGuideText:
@@ -251,7 +251,7 @@ GruntM7AfterBattleText:
 
 GruntM8SeenText:
 	text "It feels great"
-	line "ordering #MON"
+	line "ordering #mon"
 	cont "to commit crimes."
 	done
 
@@ -264,7 +264,7 @@ GruntM8AfterBattleText:
 	line "losing!"
 
 	para "Darn it! I hate"
-	line "useless #MON!"
+	line "useless #mon!"
 	done
 
 GruntM9SeenText:
@@ -322,7 +322,7 @@ RadioTower3FPersonnelSignText:
 	done
 
 RadioTower3FPokemonMusicSignText:
-	text "#MON MUSIC with"
+	text "#mon MUSIC with"
 	line "Host DJ BEN"
 	done
 

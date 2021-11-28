@@ -222,7 +222,7 @@ ElmsLookingForYouText:
 	cont "thing for him."
 
 	para "Oh! I almost for-"
-	line "got! Your #MON"
+	line "got! Your #mon"
 
 	para "GEAR is back from"
 	line "the repair shop."
@@ -231,7 +231,7 @@ ElmsLookingForYouText:
 	done
 
 MomGivesPokegearText:
-	text "#MON GEAR, or"
+	text "#mon GEAR, or"
 	line "just #GEAR."
 
 	para "It's essential if"
@@ -348,7 +348,7 @@ NeighborText:
 	line "ELM's assistant."
 
 	para "She really loves"
-	line "#MON!"
+	line "#mon!"
 	done
 
 PlayersHouse1FStoveText:

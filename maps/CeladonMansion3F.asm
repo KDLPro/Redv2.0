@@ -88,14 +88,14 @@ GameFreakGameDesignerText:
 	line "DESIGNER!"
 
 	para "Filling up your"
-	line "#DEX is tough,"
+	line "#dex is tough,"
 	cont "but don't give up!"
 	done
 
 GameFreakGameDesignerCompletedPokedexText:
 	text "Wow! Excellent!"
 	line "You completed your"
-	cont "#DEX!"
+	cont "#dex!"
 
 	para "Congratulations!"
 	done
@@ -125,7 +125,7 @@ GameFreakGraphicArtistPrintDiplomaText:
 	line "ARTIST."
 
 	para "Oh, you completed"
-	line "your #DEX?"
+	line "your #dex?"
 
 	para "Want me to print"
 	line "out your DIPLOMA?"

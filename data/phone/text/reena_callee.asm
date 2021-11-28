@@ -57,12 +57,12 @@ ReenaGreetNiteText:
 
 ReenaGenericText:
 	text "Hey, how are your"
-	line "#MON doing?"
+	line "#mon doing?"
 
 	para "What? Great?"
 	line "I see…"
 
-	para "What? My #MON?"
+	para "What? My #mon?"
 
 	para "Of course they're"
 	line "doing great! What"

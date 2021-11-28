@@ -31,7 +31,7 @@ OlivineLighthouse1FPokefanFText:
 
 	para "The LIGHTHOUSE was"
 	line "made in honor of"
-	cont "those #MON."
+	cont "those #mon."
 	done
 
 OlivineLighthouse1F_MapEvents:

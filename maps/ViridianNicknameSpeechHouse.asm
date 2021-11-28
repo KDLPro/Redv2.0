@@ -36,7 +36,7 @@ ViridianNicknameSpeechHousePokefanMText:
 	line "of thought into"
 
 	para "naming your"
-	line "#MON?"
+	line "#mon?"
 
 	para "Giving them good"
 	line "nicknames adds to"

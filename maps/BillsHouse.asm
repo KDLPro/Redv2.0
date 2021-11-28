@@ -222,7 +222,7 @@ BillsGrandpaIntroText:
 
 BillsGrandpaAskToSeeMonText:
 	text "If you have that"
-	line "#MON, may I see"
+	line "#mon, may I see"
 	cont "it, please?"
 	done
 
@@ -262,7 +262,7 @@ BillsGrandpaComeAgainText:
 BillsGrandpaShownAllThePokemonText:
 	text "Thanks for showing"
 	line "me so many cute"
-	cont "#MON."
+	cont "#mon."
 
 	para "I really enjoyed"
 	line "myself. I'm glad"
@@ -275,7 +275,7 @@ BillsGrandpaWrongPokemonText:
 	text "Hm?"
 
 	para "That's not the"
-	line "#MON that I was"
+	line "#mon that I was"
 	cont "told about."
 	done
 
@@ -283,7 +283,7 @@ BillsGrandpaLickitungText:
 	text "My grandson BILL"
 	line "told me about a"
 
-	para "#MON that has a"
+	para "#mon that has a"
 	line "long tongue."
 	done
 
@@ -291,14 +291,14 @@ BillsGrandpaOddishText:
 	text "Ah, my grandson"
 	line "mentioned a round,"
 
-	para "green #MON that"
+	para "green #mon that"
 	line "has leaves growing"
 	cont "on its head."
 	done
 
 BillsGrandpaStaryuText:
 	text "Do you know of a"
-	line "sea #MON that"
+	line "sea #mon that"
 
 	para "has a red sphere"
 	line "in its body?"
@@ -316,7 +316,7 @@ BillsGrandpaStaryuText:
 
 BillsGrandpaGrowlitheText:
 	text "BILL told me about"
-	line "a #MON that is"
+	line "a #mon that is"
 
 	para "very loyal to its"
 	line "trainer."
@@ -327,20 +327,20 @@ BillsGrandpaGrowlitheText:
 
 BillsGrandpaVulpixText:
 	text "I heard about a"
-	line "cute #MON that"
+	line "cute #mon that"
 	cont "has six tails."
 
 	para "I would love to"
-	line "hug a cute #MON"
+	line "hug a cute #mon"
 	cont "like that."
 	done
 
 BillsGrandpaPichuText:
 	text "Do you know that"
 	line "hugely popular"
-	cont "#MON?"
+	cont "#mon?"
 
-	para "The #MON that"
+	para "The #mon that"
 	line "has a yellow body"
 	cont "and red cheeks."
 

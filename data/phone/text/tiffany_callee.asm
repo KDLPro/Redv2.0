@@ -55,11 +55,11 @@ TiffanyGreetNiteText:
 	done
 
 TiffanyGenericText:
-	text "Are your #MON"
+	text "Are your #mon"
 	line "doing well?"
 
 	para "I hope you take"
-	line "them to a #MON"
+	line "them to a #mon"
 	cont "CENTER every day."
 
 	para "Don't push them"
@@ -73,6 +73,6 @@ TiffanyGenericText:
 	para "precisely because"
 	line "I take it to a"
 
-	para "#MON CENTER"
+	para "#mon CENTER"
 	line "every day."
 	done

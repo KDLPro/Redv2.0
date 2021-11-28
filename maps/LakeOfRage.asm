@@ -357,7 +357,7 @@ LakeOfRageCooltrainerFText:
 
 FisherAndreSeenText:
 	text "Let me battle with"
-	line "the #MON I just"
+	line "the #mon I just"
 	cont "caught!"
 	done
 
@@ -372,7 +372,7 @@ FisherAndreBeatenText:
 FisherAndreAfterBattleText:
 	text "I won't lose as an"
 	line "angler! I catch"
-	cont "#MON all day."
+	cont "#mon all day."
 	done
 
 FisherRaymondSeenText:
@@ -390,7 +390,7 @@ FisherRaymondBeatenText:
 
 FisherRaymondAfterBattleText:
 	text "Why can't I catch"
-	line "any good #MON?"
+	line "any good #mon?"
 	done
 
 CooltrainermAaronSeenText:
@@ -410,7 +410,7 @@ CooltrainermAaronBeatenText:
 	done
 
 CooltrainermAaronAfterBattleText:
-	text "#MON and their"
+	text "#mon and their"
 	line "trainer become"
 
 	para "powerful through"

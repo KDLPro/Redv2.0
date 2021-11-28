@@ -2,7 +2,7 @@
 	dw 200, 720 ; height, weight
 
 	db   "This manmade"
-	next "#MON evolved"
+	next "#mon evolved"
 	next "from the latest"
 
 	page "technology. It"

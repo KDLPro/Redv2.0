@@ -16,13 +16,11 @@ LoadSpecialMapPalette:
 
 .pokecom_2f
 	call LoadPokeComPalette
-	scf
-	ret
+	jr .set_carry
 
 .battle_tower_inside
 	call LoadBattleTowerInsidePalette
-	scf
-	ret
+	jr .set_carry
 
 .ice_path
 	ld a, [wEnvironment]
@@ -30,21 +28,20 @@ LoadSpecialMapPalette:
 	cp INDOOR ; Hall of Fame
 	jr z, .do_nothing
 	call LoadIcePathPalette
-	scf
-	ret
+	jr .set_carry
 
 .house
 	call LoadHousePalette
-	scf
-	ret
+	jr .set_carry
 
 .radio_tower
 	call LoadRadioTowerPalette
-	scf
-	ret
-
+	jr .set_carry
+	
 .mansion_mobile
 	call LoadMansionPalette
+	; fallthrough
+.set_carry
 	scf
 	ret
 

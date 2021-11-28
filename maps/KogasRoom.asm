@@ -100,7 +100,7 @@ KogaScript_KogaBeforeText:
 
 	para "Fwahahahaha!"
 
-	para "#MON is not"
+	para "#mon is not"
 	line "merely about brute"
 
 	para "force--you shall"
