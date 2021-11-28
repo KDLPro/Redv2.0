@@ -893,6 +893,14 @@ FindMonToSwitchSESwitch:
 	call FindEnemyMonsWithAtLeastQuarterMaxHP
 	call FindAliveEnemyMonsWithASuperEffectiveMoveSwitch
 	ret
+
+FindEnemyMonsThatCanHandleLastCounterMove:
+	call FindEnemyMonsImmuneToOrResistsLastCounterMove
+	ld a, [wEnemyAISwitchScore]
+	cp $ff
+	ret nz
+	call FindEnemyMonsImmuneToOrResistsLastCounterMoveBadDamage
+	ret
 	
 	
 FiftyPercentRoll:
@@ -1148,7 +1156,7 @@ FindEnemyMonsImmuneToOrResistsLastCounterMove:
 	call AIGetMoveAttr
 	and a
 	jr z, .next
-	; and the Pokemon is immune to it...
+	; and the Pokemon is immune or resists it...
 	inc hl
 	call AIGetMoveByte
 	ld hl, wBaseType
@@ -1322,7 +1330,7 @@ FindEnemyMonsImmuneToOrResistsLastCounterMoveBadDamage:
 	call AIGetMoveAttr
 	and a
 	jr z, .encourage
-	; and the Pokemon is immune to it...
+	; and the Pokemon is immune to or resists it or is neutral to it...
 	inc hl
 	call AIGetMoveByte
 	ld hl, wBaseType
