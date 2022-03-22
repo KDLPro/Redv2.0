@@ -4974,7 +4974,7 @@ PrintPlayerHUD:
 	pop bc
 	hlcoord 14, 8
 
-.copy_level
+
 	ld a, [wBattleMonLevel]
 	ld [wTempMonLevel], a
 	jp PrintLevel
