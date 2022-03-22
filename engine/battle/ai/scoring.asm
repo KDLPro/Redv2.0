@@ -2977,10 +2977,18 @@ AI_Aggressive:
 	pop de
 	pop hl
 	
-; Encourage moves that can OHKO and have perfect accuracy.
+; Encourage moves that can OHKO and have good accuracy.
 	cp 1
 	jr nz, .check_turns_to_ko
 	
+	ld a, [wEnemyMoveStruct + MOVE_ACC]
+	cp 74 percent
+	jr c, .check_turns_to_ko
+	
+	call AI_Encourage
+	
+; Encourage moves that can OHKO and have perfect accuracy.
+
 	ld a, [wEnemyMoveStruct + MOVE_ACC]
 	cp 99 percent + 1
 	jr c, .check_turns_to_ko
@@ -3032,7 +3040,7 @@ AI_Aggressive:
 	pop hl
 	inc de
 	inc hl
-	jr .checkmove
+	jp .checkmove
 	
 .low_hp
 	push hl
@@ -3161,9 +3169,6 @@ AIAggessiveCheckTurnsToKOPlayer:
 	cp 6
 	jr c, .loop
 	jr .max_turns
-.just_fainted
-	xor a
-	ld [wEnemyMonJustFainted], a
 .max_turns
 	ld a, -1
 .less_than_six_turns
