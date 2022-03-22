@@ -321,12 +321,9 @@ MainMenu_PrintCurrentTimeAndDay:
 
 .PrintTimeNotSet:
 	hlcoord 1, 14
-	ld de, .TimeNotSetString
+	ld de, .MainMenuTimeUnknownText
 	call PlaceString
 	ret
-
-.TimeNotSetString:
-	db "TIME NOT SET@"
 
 .MainMenuTimeUnknownText: ; unreferenced
 	text_far _MainMenuTimeUnknownText
