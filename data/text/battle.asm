@@ -718,7 +718,7 @@ TookAimText:
 
 SketchedText:
 	text "<USER>"
-	line "SKETCHED"
+	line "Sketched"
 	scroll "@"
 	text_ram wStringBuffer1
 	text "!"
@@ -731,13 +731,11 @@ DestinyBondEffectText:
 	autodone
 
 SpiteEffectText:
-	text "<TARGET>'s"
-	line "@"
-	text_ram wStringBuffer1
-	text " was"
-	scroll "reduced by @"
-	text_decimal wTextDecimalByte, 1, 1
-	text "!"
+	text "The PP of "
+	line "<TARGET>'s"
+	
+	autopara "moves was"
+	line "reduced by 5!"
 	autodone
 
 BellChimedText:
