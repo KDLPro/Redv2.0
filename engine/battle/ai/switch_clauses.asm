@@ -259,13 +259,13 @@ CheckPlayerRechageOrLockedOn:
 	cp 3
 	jr c, .switch
 .stay_in
-	ld a, 0
+	xor a
+.done
 	and a
 	ret
 .switch
 	ld a, 1
-	and a
-	ret
+	jr .done
 	
 CalcPlayerDamageTakenThisTurn:
 	ld a, [wCurDamage]
