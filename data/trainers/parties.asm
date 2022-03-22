@@ -151,22 +151,22 @@ Rival1Group:
 
 	; RIVAL1 (4)
 	db "?@", TRAINERTYPE_NORMAL
-	db 12, GASTLY
-	db 14, ZUBAT
+	db 14, GASTLY
+	db 15, ZUBAT
 	db 16, BAYLEEF
 	db -1 ; end
 
 	; RIVAL1 (5)
 	db "?@", TRAINERTYPE_NORMAL
-	db 12, GASTLY
-	db 14, ZUBAT
+	db 14, GASTLY
+	db 15, ZUBAT
 	db 16, QUILAVA
 	db -1 ; end
 
 	; RIVAL1 (6)
 	db "?@", TRAINERTYPE_NORMAL
-	db 12, GASTLY
-	db 14, ZUBAT
+	db 14, GASTLY
+	db 15, ZUBAT
 	db 16, CROCONAW
 	db -1 ; end
 
