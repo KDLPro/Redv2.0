@@ -2768,10 +2768,10 @@ BattleAnim_DreamEater:
 
 BattleAnim_LeechLife:
 	anim_3gfx ANIM_GFX_HORN, ANIM_GFX_HIT, ANIM_GFX_BUBBLE
-	anim_obj ANIM_OBJ_NEEDLE_2, 64, 92, $14
+	anim_obj ANIM_OBJ_NEEDLE_2, 60, 80, $14
 	anim_wait 16
 	anim_sound 0, 1, SFX_POISON_STING
-	anim_obj ANIM_OBJ_HIT_SMALL, 136, 56, $0
+	anim_obj ANIM_OBJ_HIT_SMALL, 132, 44, $0
 	anim_wait 4
 	anim_sound 6, 3, SFX_WATER_GUN
 	anim_call BattleAnimSub_Drain
@@ -4893,11 +4893,12 @@ BattleAnimSub_Acid:
 	anim_ret
 
 BattleAnimSub_Metallic:
-	anim_sound 0, 0, SFX_SHINE
 	anim_bgeffect ANIM_BG_FADE_MON_TO_BLACK, $0, BG_EFFECT_USER, $40
 	anim_wait 8
+	anim_sound 0, 0, SFX_SHINE
 	anim_obj ANIM_OBJ_HARDEN, 48, 84, $0
 	anim_wait 32
+	anim_sound 0, 0, SFX_SHINE
 	anim_obj ANIM_OBJ_HARDEN, 48, 84, $0
 	anim_wait 64
 	anim_incbgeffect ANIM_BG_FADE_MON_TO_BLACK
