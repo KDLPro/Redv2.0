@@ -865,12 +865,13 @@ NUM_BG_EFFECTS EQU 5 ; see wActiveBGEffects
 	const PAL_BATTLE_OB_BROWN      		; 7
 	const PAL_BATTLE_OB_POISON     		; 8
 	const PAL_BATTLE_OB_RED_VIOLET 		; 9
-	const PAL_BATTLE_OB_YELLOW_GREEN 	; 10
-	const PAL_BATTLE_OB_GHOST    		; 11
-	const PAL_BATTLE_OB_SKY_BLUE  		; 12
-	const PAL_BATTLE_OB_GRAY_2    		; 13
-	const PAL_BATTLE_OB_DRAGON    		; 14
-	const PAL_BATTLE_OB_PINK			; 15
-	const PAL_BATTLE_OB_OTHERS_1        ; 16
-	const PAL_BATTLE_OB_OTHERS_2     	; 17
-	const PAL_BATTLE_OB_OTHERS_3      	; 18
+	const PAL_BATTLE_OB_YELLOW_GREEN 	; A
+	const PAL_BATTLE_OB_GHOST    		; B
+	const PAL_BATTLE_OB_FLYING    		; C
+	const PAL_BATTLE_OB_GRAY_2    		; D
+	const PAL_BATTLE_OB_DRAGON    		; E
+	const PAL_BATTLE_OB_PINK			; F	
+	const PAL_BATTLE_OB_OTHERS_1		; 10
+	const PAL_BATTLE_OB_OTHERS_2		; 11
+	const PAL_BATTLE_OB_OTHERS_3		; 12
+	const PAL_BATTLE_OB_GRAY_3    		; 13
