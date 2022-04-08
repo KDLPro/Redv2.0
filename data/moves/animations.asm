@@ -2768,10 +2768,10 @@ BattleAnim_DreamEater:
 
 BattleAnim_LeechLife:
 	anim_3gfx ANIM_GFX_HORN, ANIM_GFX_HIT, ANIM_GFX_BUBBLE
-	anim_obj ANIM_OBJ_NEEDLE_2, 60, 80, $14
+	anim_obj ANIM_OBJ_NEEDLE, 58, 96, $14
 	anim_wait 16
 	anim_sound 0, 1, SFX_POISON_STING
-	anim_obj ANIM_OBJ_HIT_SMALL, 132, 44, $0
+	anim_obj ANIM_OBJ_HIT_SMALL, 130, 58, $0
 	anim_wait 4
 	anim_sound 6, 3, SFX_WATER_GUN
 	anim_call BattleAnimSub_Drain
