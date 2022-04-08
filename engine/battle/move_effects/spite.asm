@@ -5,12 +5,12 @@ BattleCommand_Spite:
 	and a
 	jp nz, .failed
 	ld hl, wBattleMonPP
-	ld a, [hl]
 	ld b, NUM_MOVES + 1
 .loop_moves
 	dec b
 	jr z, .done
 	
+	ld a, [hl]
 	cp 5
 	jr nc, .subtract_pp
 	ld a, 5
