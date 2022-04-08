@@ -123,10 +123,10 @@
 	charmap "└",         $be
 	charmap "┘",         $bf
 
+	charmap "<FRZ1>",    $c1
+	charmap "<FRZ2>",    $c2
 	charmap "<SLP1>",    $c3
 	charmap "<SLP2>",    $c4
-	charmap "<FRZ1>",    $c3
-	charmap "<FRZ2>",    $c4
 	charmap "<PAR1>",    $c5
 	charmap "<PAR2>",    $c6
 	charmap "<PSN1>",    $c7
