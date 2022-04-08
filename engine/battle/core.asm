@@ -5912,9 +5912,14 @@ MoveSelectionScreen:
 MoveInfoBox:
 	xor a
 	ldh [hBGMapMode], a
+	
+	ld de, wBattleMonNick
+	hlcoord 11, 7
+	call Battle_DummyFunction
+	call PlaceString
 
-	hlcoord 0, 8
-	ld b, 3
+	hlcoord 0, 6
+	ld b, 5
 	ld c, 9
 	call Textbox
 	call MobileTextBorder
@@ -5930,10 +5935,10 @@ MoveInfoBox:
 	cp b
 	jr nz, .not_disabled
 
-	hlcoord 1, 10
+	hlcoord 1, 9
 	ld de, .Disabled
 	call PlaceString
-	jr .done
+	jp .done
 
 .not_disabled
 	ld hl, wMenuCursorY
@@ -5969,17 +5974,83 @@ MoveInfoBox:
 	ld a, [wPlayerMoveStruct + MOVE_ANIM]
 	ld b, a
 	farcall GetMoveCategoryIcon
-	hlcoord 1, 9
+	hlcoord 1, 7
 	ld de, .Type
 	call PlaceString
 
-	hlcoord 7, 11
+	hlcoord 7, 7
 	ld [hl], "/"
+	
+	hlcoord 1, 11
+	ld de, .PP_word
+	call PlaceString
+	
+	hlcoord 1, 9
+	ld de, .Pow
+	call PlaceString
+	
+	hlcoord 7, 9
+	ld a, [wPlayerMoveStruct + MOVE_POWER]
+	ld [wStringBuffer1], a
+	and a
+	jr z, .no_pow
+	ld de, wStringBuffer1
+	lb bc, 1, 3
+	call PrintNum
+	jr .display_acc
+
+.no_pow
+	ld de, .NoAccPow
+	call PlaceString
+
+.display_acc
+	hlcoord 1, 10
+	ld de, .Acc
+	call PlaceString
+	
+	ld a, [wPlayerMoveStruct + MOVE_ACC]
+	ldh [hMultiplicand], a
+	ld a, 100
+	ldh [hMultiplier], a
+	ld b, 1
+	call Multiply
+	ldh a, [hProduct + 2]
+	ldh [hDividend + 3], a
+	ldh a, [hProduct + 1]
+	ldh [hDividend + 2], a
+	ld a, $ff
+	ldh [hDivisor], a
+	ld b, 2
+	call Divide
+	ldh a, [hQuotient + 3]
+	ld b, a
+	ldh a, [hRemainder]
+	cp 50 percent + 1
+	jr c, .display_acc_2
+	inc b
+.display_acc_2
+	ld a, b
+	hlcoord 6, 10
+	cp 2
+	jr c, .no_acc
+	ld [wStringBuffer1], a
+	ld de, wStringBuffer1
+	lb bc, 1, 3
+	call PrintNum
+	jr .display_move_type
+
+.no_acc
+	ld de, .NoAccPow
+	call PlaceString
+
+.display_move_type	
+	hlcoord 9, 10
+	ld [hl], "<PERCENT>"
 
 	farcall UpdateMoveData
 	ld a, [wPlayerMoveStruct + MOVE_ANIM]
 	ld b, a
-	hlcoord 2, 10
+	hlcoord 2, 8
 	predef PrintMoveType
 
 .done
@@ -5989,6 +6060,15 @@ MoveInfoBox:
 	db "Disabled!@"
 .Type:
 	db "TYPE/@"
+.PP_word:
+	db "PP:@"
+.Acc:
+	db "ACC:@"
+.NoAccPow:	
+	db "---@"
+.Pow:
+	db "POW:@"
+
 
 .PrintPP:
 	hlcoord 5, 11
