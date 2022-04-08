@@ -743,7 +743,7 @@ BattleObjectPals:
 INCLUDE "gfx/battle_anims/battle_anims.pal"
 
 BattleObjectPals2: 
-INCLUDE "gfx/battle_anims/unused_battle_anims.pal"
+INCLUDE "gfx/battle_anims/battle_anims_page_2.pal"
 
 BattleObjectPals3: 
 INCLUDE "gfx/battle_anims/battle_anims_page_3.pal"
