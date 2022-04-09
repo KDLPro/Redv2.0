@@ -34,5 +34,5 @@ NameInputOther:
 	db "1 2 3 4 5 6 7 8 9"
 	db "0 . ? ! & , ′ ″ …"
 	db "× ( ) : ; [ ] ♂ ♀"
-	db "- <COLON> “ ” ¥        "
+	db "- : “ ” ¥        "
 	db "UPPER  DEL   END "

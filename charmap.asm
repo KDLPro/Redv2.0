@@ -153,7 +153,7 @@
 	charmap "☎",        $d9
 	charmap "<BOLD_V>",  $da
 	charmap "<BOLD_S>",  $db
-	charmap "<COLON>",   $dc ; colon with tinier dots than ":"
+	charmap "<SHINY>",   $dc
 	charmap "“",         $dd ; opening quote
 	charmap "”",         $de ; closing quote
 

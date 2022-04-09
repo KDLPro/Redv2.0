@@ -4963,22 +4963,28 @@ PrintPlayerHUD:
 	ld a, "♀"
 
 .got_gender_char
-	hlcoord 17, 8
+	hlcoord 16, 8
 	ld [hl], a
 	push af ; back up gender
 	push hl
-	hlcoord 10, 8
+	hlcoord 11, 8
 	ld de, wBattleMonStatus
 	predef PlaceNonFaintStatus
 	pop hl
 	pop bc
-	hlcoord 14, 8
-
-
+	
+	hlcoord 13, 8
 	ld a, [wBattleMonLevel]
 	ld [wTempMonLevel], a
-	jp PrintLevel
-
+	call PrintLevel
+	
+    call BattleCheckPlayerShininess
+    ret nc
+    ld a, "<SHINY>"
+    hlcoord 17, 8
+    ld [hl], a
+	ret
+	
 UpdateEnemyHUD::
 	push hl
 	push de
@@ -5024,7 +5030,14 @@ DrawEnemyHUD:
 	inc de
 	ld a, [hl]
 	ld [de], a
+	
+	call BattleCheckEnemyShininess
+    jr nc, .regular_mon
+    ld a, "<SHINY>"
+    hlcoord 9, 1
+    ld [hl], a
 
+.regular_mon
 	ld a, TEMPMON
 	ld [wMonType], a
 	farcall GetGender
@@ -5035,17 +5048,17 @@ DrawEnemyHUD:
 	ld a, "♀"
 
 .got_gender
-	hlcoord 9, 1
+	hlcoord 8, 1
 	ld [hl], a
 
 	push af
 	push hl
-	hlcoord 2, 1
+	hlcoord 3, 1
 	ld de, wEnemyMonStatus
 	predef PlaceNonFaintStatus
 	pop hl
 	pop bc
-	hlcoord 6, 1
+	hlcoord 5, 1
 	ld a, b
 	ld a, [wEnemyMonLevel]
 	ld [wTempMonLevel], a
