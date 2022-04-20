@@ -6007,6 +6007,8 @@ MoveInfoBox:
 	ld [wStringBuffer1], a
 	and a
 	jr z, .no_pow
+	cp 1
+	jr z, .no_pow
 	ld de, wStringBuffer1
 	lb bc, 1, 3
 	call PrintNum
