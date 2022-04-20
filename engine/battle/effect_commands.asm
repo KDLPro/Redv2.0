@@ -1352,17 +1352,26 @@ BattleCommand_Stab:
 	cp -1
 	jr z, .end
 
-	; foresight
+	; Special Clause for Foresight
 	cp -2
-	jr nz, .SkipForesightCheck
+	jr nz, .SkipForesightOrAcidCheck
 	ld a, BATTLE_VARS_SUBSTATUS1_OPP
 	call GetBattleVar
 	bit SUBSTATUS_IDENTIFIED, a
 	jr nz, .end
+	
+	cp -3
+	jr nz, .SkipForesightOrAcidCheck
+	
+	; Special Clause for Acid
+	ld a, BATTLE_VARS_MOVE
+	call GetBattleVar
+	cp ACID
+	jr nz, .end
 
 	jr .TypesLoop
 
-.SkipForesightCheck:
+.SkipForesightOrAcidCheck:
 	cp b
 	jr nz, .SkipType
 	ld a, [hl]
@@ -1436,7 +1445,7 @@ BattleCommand_Stab:
 .SkipType:
 	inc hl
 	inc hl
-	jr .TypesLoop
+	jp .TypesLoop
 
 .end
 	call BattleCheckTypeMatchup
@@ -1474,6 +1483,8 @@ CheckTypeMatchup:
 	cp -1
 	jr z, .End
 	cp -2
+	jr nz, .Next
+	cp -3
 	jr nz, .Next
 	ld a, BATTLE_VARS_SUBSTATUS1_OPP
 	call GetBattleVar
@@ -3120,8 +3131,8 @@ BattleCommand_DamageCalc:
 ; Critical hits
 	call .CriticalMultiplier
 
-; Update wCurDamage. Max 999 (capped at 997, then add 2).
-MAX_DAMAGE EQU 999
+; Update wCurDamage. Max 1023 (capped at 1021, then add 2).
+MAX_DAMAGE EQU 1023
 MIN_DAMAGE EQU 2
 DAMAGE_CAP EQU MAX_DAMAGE - MIN_DAMAGE
 
@@ -4254,7 +4265,6 @@ BattleCommand_CheckPowder:
     ld a, 1
     ld [wAttackMissed], a
     ret
-
 
 INCLUDE "data/moves/powder_moves.asm"
 
@@ -6130,6 +6140,8 @@ EndRechargeOpp:
 	ret
 
 INCLUDE "engine/battle/move_effects/rage.asm"
+
+INCLUDE "engine/battle/move_effects/acid.asm"
 
 BattleCommand_DoubleFlyingDamage:
 ; doubleflyingdamage

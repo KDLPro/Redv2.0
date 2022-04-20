@@ -2085,3 +2085,26 @@ DefenseCurl:
 	statupmessage
 	statupfailtext
 	endmove
+	
+Acid:
+	checkobedience
+	usedmovetext
+	doturn
+	critical
+	damagestats
+	damagecalc
+	stab
+	damagevariation
+	acid
+	checkhit
+	moveanim
+	failuretext
+	applydamage
+	criticaltext
+	supereffectivetext
+	acidsupereffectivetext
+	checkfaint
+	buildopponentrage
+	specialdefensedown
+	statdownmessage
+	endmove

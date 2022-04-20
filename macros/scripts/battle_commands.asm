@@ -181,6 +181,8 @@ ENDM
 	command startloop               ; ae
 	command curl                    ; af
 	command growth					; b0
+	command acid					; b1
+	command acidsupereffectivetext	; b2
 
 	const_def -1, -1
 	command endmove                 ; ff

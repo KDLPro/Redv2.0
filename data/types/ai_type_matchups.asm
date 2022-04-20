@@ -56,7 +56,6 @@ AITypeMatchups:
 	db POISON,       BUG,          SUPER_EFFECTIVE
 	db POISON,       ROCK,         NOT_VERY_EFFECTIVE
 	db POISON,       GHOST,        NOT_VERY_EFFECTIVE
-	db POISON,       STEEL,        NO_EFFECT
 	db GROUND,       FIRE,         SUPER_EFFECTIVE
 	db GROUND,       ELECTRIC,     SUPER_EFFECTIVE
 	db GROUND,       GRASS,        NOT_VERY_EFFECTIVE
@@ -115,5 +114,12 @@ AITypeMatchups:
 ; Foresight removes Ghost's immunities.
 	db NORMAL,       GHOST,        NO_EFFECT
 	db FIGHTING,     GHOST,        NO_EFFECT
+	
+	db -3 ; end (with Acid)
+
+; Acid hits Steel-types. It deals double damage but has
+; a separate text for it.
+	db POISON,       STEEL,        NO_EFFECT
 
 	db -1 ; end
+	

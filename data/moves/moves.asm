@@ -62,7 +62,7 @@ Moves:
 	move SUPERSONIC,   EFFECT_CONFUSE,             0, NORMAL,       STATUS,			 55, 20,   0
 	move SONICBOOM,    EFFECT_STATIC_DAMAGE,      25, NORMAL,       SPECIAL,		 90, 20,   0
 	move DISABLE,      EFFECT_DISABLE,             0, NORMAL,       STATUS,			 55, 20,   0
-	move ACID,         EFFECT_DEFENSE_DOWN_HIT,   45, POISON,       SPECIAL,		100, 30,  10
+	move ACID,         EFFECT_ACID,   			  45, POISON,       SPECIAL,		100, 30,  10
 	move EMBER,        EFFECT_BURN_HIT,           40, FIRE,         SPECIAL,		100, 25,  10
 	move FLAMETHROWER, EFFECT_BURN_HIT,           95, FIRE,         SPECIAL,		100, 15,  10
 	move MIST,         EFFECT_MIST,                0, ICE,          STATUS,			100, 30,   0

@@ -180,3 +180,5 @@ BattleCommandPointers:
 	dw BattleCommand_StartLoop
 	dw BattleCommand_Curl
 	dw BattleCommand_Growth
+	dw BattleCommand_Acid
+	dw BattleCommand_AcidSuperEffectiveText

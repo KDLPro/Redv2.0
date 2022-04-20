@@ -1145,3 +1145,8 @@ IgnoredOrders2Text:
 	text "<USER>"
 	line "ignored orders!"
 	autodone
+	
+AcidSuperEffectiveText:
+	text "Acid makes it"
+	line "super-effective!"
+	autodone
