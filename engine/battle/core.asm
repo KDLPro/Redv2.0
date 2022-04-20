@@ -6005,10 +6005,8 @@ MoveInfoBox:
 	hlcoord 7, 9
 	ld a, [wPlayerMoveStruct + MOVE_POWER]
 	ld [wStringBuffer1], a
-	and a
-	jr z, .no_pow
-	cp 1
-	jr z, .no_pow
+	cp 2
+	jr c, .no_pow
 	ld de, wStringBuffer1
 	lb bc, 1, 3
 	call PrintNum
