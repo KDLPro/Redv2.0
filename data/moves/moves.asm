@@ -50,7 +50,7 @@ Moves:
 	move WILD_CHARGE,  EFFECT_RECOIL_HIT,        120, ELECTRIC,     PHYSICAL,		 90, 15,   0
 	move THRASH,       EFFECT_RAMPAGE,            90, NORMAL,       PHYSICAL,		100, 20,   0
 	move DOUBLE_EDGE,  EFFECT_RECOIL_HIT,        120, NORMAL,       PHYSICAL,		 90, 15,   0
-	move TAIL_WHIP,    EFFECT_DEFENSE_DOWN,        0, NORMAL,       STATUS,		100, 30,   0
+	move TAIL_WHIP,    EFFECT_DEFENSE_DOWN,        0, NORMAL,       STATUS,			100, 30,   0
 	move POISON_STING, EFFECT_POISON_HIT,         25, POISON,       PHYSICAL,		100, 35,  30
 	move TWINEEDLE,    EFFECT_POISON_MULTI_HIT,   35, BUG,          PHYSICAL,		100, 20,  20
 	move PIN_MISSILE,  EFFECT_MULTI_HIT,          25, BUG,          PHYSICAL,		 95, 20,   0
@@ -62,7 +62,7 @@ Moves:
 	move SUPERSONIC,   EFFECT_CONFUSE,             0, NORMAL,       STATUS,			 55, 20,   0
 	move SONICBOOM,    EFFECT_STATIC_DAMAGE,      25, NORMAL,       SPECIAL,		 90, 20,   0
 	move DISABLE,      EFFECT_DISABLE,             0, NORMAL,       STATUS,			 55, 20,   0
-	move ACID,         EFFECT_ACID,   			  45, POISON,       SPECIAL,		100, 30,  10
+	move ACID,         EFFECT_ACID,   			  75, POISON,       SPECIAL,		100, 20,  20
 	move EMBER,        EFFECT_BURN_HIT,           40, FIRE,         SPECIAL,		100, 25,  10
 	move FLAMETHROWER, EFFECT_BURN_HIT,           95, FIRE,         SPECIAL,		100, 15,  10
 	move MIST,         EFFECT_MIST,                0, ICE,          STATUS,			100, 30,   0
@@ -135,7 +135,7 @@ Moves:
 	move EGG_BOMB,     EFFECT_NORMAL_HIT,        100, NORMAL,       PHYSICAL,		 75, 10,   0
 	move LICK,         EFFECT_PARALYZE_HIT,       20, GHOST,        PHYSICAL,		100, 30,  30
 	move SMOG,         EFFECT_POISON_HIT,         20, POISON,       SPECIAL,		 70, 20,  40
-	move SLUDGE,       EFFECT_POISON_HIT,         70, POISON,       SPECIAL,		100, 20,  30
+	move SLUDGE,       EFFECT_POISON_HIT,         50, POISON,       SPECIAL,		100, 30,  30
 	move BONE_CLUB,    EFFECT_FLINCH_HIT,         65, GROUND,       PHYSICAL,		 85, 20,  10
 	move FIRE_BLAST,   EFFECT_BURN_HIT,          120, FIRE,         SPECIAL,		 85,  5,  10
 	move WATERFALL,    EFFECT_NORMAL_HIT,         80, WATER,        PHYSICAL,		100, 15,   0

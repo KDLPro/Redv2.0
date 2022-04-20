@@ -2097,6 +2097,7 @@ Acid:
 	damagevariation
 	acid
 	checkhit
+	effectchance
 	moveanim
 	failuretext
 	applydamage
