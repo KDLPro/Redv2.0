@@ -391,6 +391,9 @@ AI_Smart_EffectHandlers:
 	dbw EFFECT_THUNDER,          AI_Smart_Thunder
 	dbw EFFECT_FLY,              AI_Smart_Fly
 	dbw EFFECT_FLINCH_HIT,		 AI_Smart_Flinch
+	dbw EFFECT_RETURN,		 	 AI_Smart_Return
+	dbw EFFECT_FRUSTRATION,		 AI_Smart_Frustration
+	dbw EFFECT_ACID,			 AI_Smart_Acid
 	db -1 ; end
 
 AI_Smart_Sleep:
@@ -1643,6 +1646,25 @@ AI_Smart_HealBell:
 	ret nz
 	jp AIDiscourageMove
 
+AI_Smart_Return:
+	ld a, [wEnemyMonHappiness]
+	cp 225
+	jp nc, AI_Encourage_Greatly
+	
+	cp 175
+	jp nc, AI_Encourage
+	
+	jp AIDiscourageMove
+	
+AI_Smart_Frustration:
+	ld a, [wEnemyMonHappiness]
+	cp 30
+	jp c, AI_Encourage_Greatly
+	
+	cp 80
+	jp c, AI_Encourage
+	
+	jp AIDiscourageMove
 
 AI_Smart_PriorityHit:
 ; Dismiss this move if the player is flying or underground.
@@ -1695,6 +1717,20 @@ AI_Smart_Thief:
 	add $1e
 	ld [hl], a
 	ret
+	
+AI_Smart_Acid:
+; Greatly encourage this move if the player's Pokémon
+; is a Steel-type.
+
+	ld a, [wBattleMonType1]
+	cp STEEL
+	jr z, .encourage_greatly
+	ld a, [wBattleMonType2]
+	cp STEEL
+	ret nz
+	; fallthrough
+.encourage_greatly
+	jp AI_Encourage_Greatly
 
 AI_Smart_Conversion2:
 	ld a, [wLastPlayerMove]
