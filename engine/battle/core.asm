@@ -6082,7 +6082,7 @@ MoveInfoBox:
 .NoAccPow:	
 	db "---@"
 .Pow:
-	db "POW:@"
+	db "BP:@"
 
 
 .PrintPP:
