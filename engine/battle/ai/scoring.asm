@@ -478,7 +478,7 @@ AI_Smart_LeechHit:
 .neutral
 ; Encourage this move if it deals STAB damage.
 	ld a, [wEnemyMoveStruct + MOVE_TYPE]
-;   and TYPE_MASK       uncomment this for phys/spec split
+   and TYPE_MASK       uncomment this for phys/spec split
 	ld b, a
 	ld a, [wEnemyMonType1]
 	cp b
