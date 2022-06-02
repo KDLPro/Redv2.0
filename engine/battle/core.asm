@@ -3949,6 +3949,8 @@ endr
 	ld [wPlayerWrapCount], a
 	ld [wEnemyWrapCount], a
 	ld [wEnemyTurnsTaken], a
+	ld [wEnemyDamageTakenThisTurn], a
+	ld [wEnemyDamageTakenThisTurn + 1], a
 	ld hl, wPlayerSubStatus5
 	res SUBSTATUS_CANT_RUN, [hl]
 	ret
@@ -4429,6 +4431,8 @@ endr
 	ld [wEnemyWrapCount], a
 	ld [wPlayerWrapCount], a
 	ld [wPlayerTurnsTaken], a
+	ld [wPlayerDamageTakenThisTurn], a
+	ld [wPlayerDamageTakenThisTurn + 1], a
 	ld hl, wEnemySubStatus5
 	res SUBSTATUS_CANT_RUN, [hl]
 	ret
