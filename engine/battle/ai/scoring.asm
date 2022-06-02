@@ -478,7 +478,7 @@ AI_Smart_LeechHit:
 .neutral
 ; Encourage this move if it deals STAB damage.
 	ld a, [wEnemyMoveStruct + MOVE_TYPE]
-   and TYPE_MASK       uncomment this for phys/spec split
+    and TYPE_MASK       
 	ld b, a
 	ld a, [wEnemyMonType1]
 	cp b
@@ -602,38 +602,61 @@ AI_Smart_Selfdestruct:
 	push hl
 	call AICheckLastPlayerMon
 	pop hl
-	jr nz, .discourage
-	
-; May greatly discourage if enemy is a Ghost-type
-	ld a, [wBattleMonType1]
-	cp GHOST
-	jr z, .random_discourage
-	ld a, [wBattleMonType2]
-	cp GHOST
-	jr z, .random_discourage
+	jr nz, .greatly_discourage
 
 .notlastmon
-; Greatly discourage this move if enemy's HP is above 50%.
-	call AICheckEnemyHalfHP
-	jr c, .discourage
+; Greatly encourage this move if it does OHKO.
+	push hl
+	call AIAggessiveCheckTurnsToKOPlayer
+	pop hl
+	cp 1
+	ret nz
+	call AI_Encourage_Greatly
 
-; Encourage if enemy's HP is below 25%.
-	call AICheckEnemyQuarterHP
+; May greatly discourage if enemy is a Ghost-type.
+
+	ld a, [wBattleMonType1]
+	cp GHOST
+	jr z, .random_greatly_discourage
+	ld a, [wBattleMonType2]
+	cp GHOST
+	jr z, .random_greatly_discourage
+	
+; May discourage if enemy is Rock- or Steel-type.
+	ld a, [wBattleMonType1]
+	cp ROCK
+	jr z, .random_greatly_discourage
+	ld a, [wBattleMonType2]
+	cp ROCK
+	jr z, .random_greatly_discourage
+	ld a, [wBattleMonType1]
+	cp STEEL
+	jr z, .random_greatly_discourage
+	ld a, [wBattleMonType2]
+	cp STEEL
+	jr z, .random_greatly_discourage
+
+.check_hp
+; Randomly encourage this move if enemy's HP is above 50%.
+	call AICheckEnemyHalfHP
+	ret c
+	call AI_60_40
+	ret c
 	jp AI_Encourage
 
-; If enemy's HP is between 25% and 50%,
-; over 90% chance to greatly discourage this move.
-	call Random
-	cp 8 percent
-	ret c
-
-.discourage
+.greatly_discourage
 	call AI_Discourage_Greatly
+.discourage
 	jp AI_Discourage
+	
+.random_greatly_discourage
+	call AI_80_20
+	jr c, .check_hp
+	jr .greatly_discourage
 	
 .random_discourage
 	call AI_80_20
-	jr c, .notlastmon
+	jr c, .check_hp
 	jr .discourage
 
 AI_Smart_DreamEater:
@@ -1121,8 +1144,12 @@ AI_Smart_LeechSeed:
 	jp AI_Discourage
 
 AI_Smart_LightScreen:
-; Greatly encourage this move if enemy's HP is greater than 50% and 
-; enemy's Sp. Def < Def.
+; Check if enemy is slower than player.
+	call AICompareSpeed
+	jr nc, .slower
+
+; Greatly encourage this move if enemy's HP is greater than 50%,
+; enemy's Sp. Def < Def, and enemy is faster than player.
 
     call AICheckEnemyHalfHP
     ret nc
@@ -1134,13 +1161,26 @@ AI_Smart_LightScreen:
 	jp AI_Encourage_Greatly
 	
 .spdef_is_greater_or_equal
-; Otherwise, encourage if enemy's HP is greater than 50% and 
-; enemy's Sp. Def >= Def.
+; Otherwise, encourage if enemy's HP is greater than 50%, 
+; enemy's Sp. Def >= Def, and enemy is faster than player.
+	jp AI_Encourage
+	
+.slower
+; Over 50% chance to encourage this move if enemy's HP is greater than 50%.
+
+	call AICheckEnemyHalfHP
+	ret c
+	call AI_50_50
+	ret c
 	jp AI_Encourage
 
 AI_Smart_Reflect:
-; Greatly encourage this move if enemy's HP is greater than 50% and 
-; enemy's Def < Sp. Def.
+; Check if enemy is slower than player.
+	call AICompareSpeed
+	jr nc, .slower
+
+; Greatly encourage this move if enemy's HP is greater than 50%, 
+; enemy's Def < Sp. Def, and enemy is faster than player.
 
     call AICheckEnemyHalfHP
     ret nc
@@ -1152,8 +1192,17 @@ AI_Smart_Reflect:
 	jp AI_Encourage_Greatly
 	
 .def_is_greater_or_equal
-; Otherwise, encourage if enemy's HP is greater than 50% and 
-; enemy's Def >= Sp. Def.
+; Otherwise, encourage if enemy's HP is greater than 50%,
+; enemy's Def >= Sp. Def, and enemy is faster than player.
+	jp AI_Encourage
+	
+.slower
+; Over 50% chance to encourage this move if enemy's HP is greater than 50%.
+
+	call AICheckEnemyHalfHP
+	ret c
+	call AI_50_50
+	ret c
 	jp AI_Encourage
 
 AI_Smart_Ohko:
@@ -1584,6 +1633,14 @@ AI_Smart_DefrostOpponent:
 	ret
 
 AI_Smart_DestinyBond:
+; 33% chance to encourage this move.
+	call Random
+	cp 33 percent + 1
+	ret nc
+	
+	call AI_Encourage_Greatly
+	ret
+	
 AI_Smart_Reversal:
 AI_Smart_SkullBash:
 ; Discourage this move if enemy's HP is above 25%.
@@ -2986,6 +3043,10 @@ AI_Aggressive:
 	push bc
 	ld a, [de]
 	call AIGetEnemyMove
+	cp SELFDESTRUCT
+	jp z, .nodamage
+	cp EXPLOSION
+	jp z, .nodamage
 	ld a, [wEnemyMoveStruct + MOVE_POWER]
 	and a
 	jr z, .nodamage
@@ -3038,6 +3099,7 @@ AI_Aggressive:
 	jr z, .check_turns_to_ko
 	
 	call AI_Encourage
+	
 	
 .check_turns_to_ko
 	push hl
@@ -3123,16 +3185,63 @@ AIDamageCalc:
 	ld a, 1
 	ldh [hBattleTurn], a
 	ld a, [wEnemyMoveStruct + MOVE_EFFECT]
+	cp EFFECT_MULTI_HIT
+	jr z, .multihit
+	cp EFFECT_DOUBLE_HIT
+	jr z, .doublehit
+	cp EFFECT_MAGNITUDE
+	jr z, .magnitude
+	cp EFFECT_RETURN
+	jr z, .return
+	cp EFFECT_REVERSAL
+	jr z, .reversal
+	
 	ld de, 1
 	ld hl, ConstantDamageEffects
 	call IsInArray
-	jr nc, .notconstant
+	jr nc, .regular_damage
 	farcall BattleCommand_ConstantDamage
 	ret
 
-.notconstant
+.multihit
+	ld b, 3
+	jr .multihit_boost
+.doublehit
+	; Multiply base power by 2
+	ld b, 2
+.multihit_boost
+	ld a, [wEnemyMoveStruct + MOVE_POWER]
+	ld c, a
+.multihit_loop
+	dec b
+	jr z, .regular_damage ; With proper BP, we can use regular calc now
+	add c
+	ld [wEnemyMoveStruct + MOVE_POWER], a
+	jr .multihit_loop
+	
+.return ; the move
 	farcall EnemyAttackDamage
+	farcall BattleCommand_HappinessPower
+	jr .damagecalc
+
+.reversal
+	farcall BattleCommand_ConstantDamage
+	jr .stab
+	
+.hidden_power
+	farcall BattleCommand_HiddenPower
+	jr .damagecalc
+
+.magnitude
+	; Pretend that the base power is 70
+	ld a, 70
+	ld [wEnemyMoveStruct + MOVE_POWER], a
+	; fallthrough
+.regular_damage
+	farcall EnemyAttackDamage
+.damagecalc
 	farcall BattleCommand_DamageCalc
+.stab
 	farcall BattleCommand_Stab
 	ret
 	
