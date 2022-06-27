@@ -3929,6 +3929,7 @@ ShowSetEnemyMonAndSendOutAnimation:
 	ret
 
 NewEnemyMonStatus:
+	call ApplyStatusEffectOnEnemyStats
 	farcall ResetEnemyDamageTakenThisTurn
 	call SpeedCheckWhoGoesFirst
 	xor a
@@ -4237,7 +4238,6 @@ InitBattleMon:
 	ld de, wPlayerStats
 	ld bc, PARTYMON_STRUCT_LENGTH - MON_ATK
 	call CopyBytes
-	call ApplyStatusEffectOnPlayerStats
 	ret
 
 BattleCheckPlayerShininess:
@@ -4411,6 +4411,7 @@ SendOutPlayerMon:
 	ret
 
 NewBattleMonStatus:
+	call ApplyStatusEffectOnPlayerStats
 	farcall ResetPlayerDamageTakenThisTurn
 	call SpeedCheckWhoGoesFirst
 	xor a
