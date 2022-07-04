@@ -3093,7 +3093,7 @@ AI_Aggressive:
 
 ; If we made it this far, discourage this move.
 	call AI_Discourage
-	jr .checkmove
+	jp .checkmove
 	
 .nodamage
 	pop bc
@@ -3196,10 +3196,6 @@ AIDamageCalc:
 .reversal
 	farcall BattleCommand_ConstantDamage
 	jr .stab
-	
-.hidden_power
-	farcall BattleCommand_HiddenPower
-	jr .damagecalc
 
 .magnitude
 	; Pretend that the base power is 70
@@ -3212,7 +3208,7 @@ AIDamageCalc:
 	farcall BattleCommand_DamageCalc
 .stab
 	farcall BattleCommand_Stab
-	ret
+	jr MinDamageRoll
 	
 PursuitDamage:
 	call AICheckPlayerQuarterHP
@@ -3255,6 +3251,52 @@ PursuitDamage:
 	ld [wCurDamage], a
 	ld a, e
 	ld [wCurDamage + 1], a
+	ret
+
+MinDamageRoll:
+; Set damage spread to a minimum of 85%.
+
+; Because of the method of division the probability distribution
+; is not consistent. This makes the highest damage multipliers
+; rarer than normal.
+
+; No point in reducing 1 or 0 damage.
+	ld hl, wCurDamage
+	ld a, [hli]
+	and a
+	jr nz, .go
+	ld a, [hl]
+	cp 2
+	ret c
+
+.go
+; Start with the maximum damage.
+	xor a
+	ldh [hMultiplicand + 0], a
+	dec hl
+	ld a, [hli]
+	ldh [hMultiplicand + 1], a
+	ld a, [hl]
+	ldh [hMultiplicand + 2], a
+
+; Multiply by 85%...
+	ld a, 85 percent 
+
+	ldh [hMultiplier], a
+	call Multiply
+
+; ...divide by 100%...
+	ld a, 100 percent
+	ldh [hDivisor], a
+	ld b, $4
+	call Divide
+
+; ...to get .85-1.00x damage.
+	ldh a, [hQuotient + 2]
+	ld hl, wCurDamage
+	ld [hli], a
+	ldh a, [hQuotient + 3]
+	ld [hl], a
 	ret
 
 INCLUDE "data/battle/ai/constant_damage_effects.asm"
