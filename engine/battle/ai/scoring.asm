@@ -2672,26 +2672,26 @@ AI_Smart_Flinch:
 	jr .encourage
 
 AI_Smart_Solarbeam:
-; 40% chance to encourage this move when it's sunny.
-; 60% chance to discourage this move otherwise.
+; Discourage this move when the weather is clear and player has more than one Pokémon.
+; Greatly discourage when weather is not clear or sunny.
 
 	ld a, [wBattleWeather]
+	and a
+	jr z, .clear
+
 	cp WEATHER_SUN
-	jr z, .encourage
+	ret z
 
-	cp WEATHER_RAIN
-	ret nz
-
-	call AI_60_40
-	ret nc
-
+	call AI_Discourage
 	jp AI_Discourage_Greatly
 
-.encourage
-	call AI_60_40
+.clear
+	push hl
+	farcall FindAliveEnemyMons
+	pop hl
 	ret c
 
-	jp AI_Encourage_Greatly
+	jp AI_Discourage
 
 AI_Smart_Thunder:
 ; 90% chance to discourage this move when it's sunny.
