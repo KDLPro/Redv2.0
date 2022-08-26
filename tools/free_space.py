@@ -17,7 +17,7 @@ from mapreader import MapReader
 
 def main():
 	print_bank = 'none'
-	mapfile = 'pokecrystal.map'
+	mapfile = 'redv2.map'
 
 	for arg in sys.argv[1:]:
 		if arg.startswith('BANK='):
