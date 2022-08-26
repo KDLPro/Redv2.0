@@ -3826,6 +3826,7 @@ BattleCommand_Poison:
 	jr .failed
 
 .do_poison
+	ld hl, ProtectingItselfText
 	call CheckSubstituteOpp
 	jr nz, .failed
 	
