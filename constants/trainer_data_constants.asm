@@ -14,13 +14,13 @@ NUM_TRAINER_ATTRIBUTES EQU const_value
 	const_def
 	shift_const AI_BASIC
 	shift_const AI_SETUP
+	shift_const AI_AGGRESSIVE
+	shift_const AI_SMART
+	shift_const AI_STATUS
 	shift_const AI_TYPES
 	shift_const AI_OFFENSIVE
-	shift_const AI_SMART
 	shift_const AI_OPPORTUNIST
-	shift_const AI_AGGRESSIVE
 	shift_const AI_CAUTIOUS
-	shift_const AI_STATUS
 	shift_const AI_RISKY
 NO_AI EQU 0
 
