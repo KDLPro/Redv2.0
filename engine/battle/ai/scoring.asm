@@ -589,8 +589,6 @@ AI_Smart_LockOn:
 	jp AIDiscourageMove
 
 AI_Smart_Selfdestruct:
-; Selfdestruct, Explosion
-
 ; Unless this is the enemy's last Pokemon...
 	push hl
 	farcall FindAliveEnemyMons
@@ -601,17 +599,33 @@ AI_Smart_Selfdestruct:
 	push hl
 	call AICheckLastPlayerMon
 	pop hl
-	jr nz, .greatly_discourage
+	jr nz, .discourage
 
 .notlastmon
-; Greatly encourage this move if it does OHKO.
-	push hl
-	call AIAggessiveCheckTurnsToKOPlayer
-	pop hl
-	cp 1
-	ret nz
-	call AI_Encourage_Greatly
+; Greatly discourage this move if there's another move that can kill.
+	ld a, [wMovesThatOHKOPlayer]
+	and a
+	jr nz, .discourage
+	
+; 90% chance to greatly discourage this move if enemy's HP is full.
+	call AICheckEnemyMaxHP
+	jr nc, .check_type
+	
+	call Random
+	cp 90 percent + 1
+	jr c, .greatly_discourage
+	jr .may_encourage
+	
+.check_type
+; 75% chance to greatly discourage this move if enemy's HP is above 50% but is not full.
+	call AICheckEnemyHalfHP
+	ret nc
+	
+	call Random
+	cp 75 percent + 1
+	jr c, .greatly_discourage
 
+.may_encourage
 ; May greatly discourage if enemy is a Ghost-type.
 
 	ld a, [wBattleMonType1]
@@ -624,24 +638,20 @@ AI_Smart_Selfdestruct:
 ; May discourage if enemy is Rock- or Steel-type.
 	ld a, [wBattleMonType1]
 	cp ROCK
-	jr z, .random_greatly_discourage
+	jr z, .random_discourage
 	ld a, [wBattleMonType2]
 	cp ROCK
-	jr z, .random_greatly_discourage
+	jr z, .random_discourage
 	ld a, [wBattleMonType1]
 	cp STEEL
-	jr z, .random_greatly_discourage
+	jr z, .random_discourage
 	ld a, [wBattleMonType2]
 	cp STEEL
-	jr z, .random_greatly_discourage
+	jr z, .random_discourage
 
-.check_hp
-; Randomly encourage this move if enemy's HP is above 50%.
-	call AICheckEnemyHalfHP
-	ret c
-	call AI_60_40
-	ret c
-	jp AI_Encourage
+.greatly_encourage
+; Greatly encourage otherwise.
+	jp AI_Encourage_Greatly
 
 .greatly_discourage
 	call AI_Discourage_Greatly
@@ -649,13 +659,17 @@ AI_Smart_Selfdestruct:
 	jp AI_Discourage
 	
 .random_greatly_discourage
-	call AI_80_20
-	jr c, .check_hp
+	call AI_50_50
+	ret c
+	call AI_50_50
+	jr c, .greatly_encourage
 	jr .greatly_discourage
-	
+
 .random_discourage
-	call AI_80_20
-	jr c, .check_hp
+	call AI_50_50
+	ret c
+	call AI_50_50
+	jr c, .greatly_encourage
 	jr .discourage
 
 AI_Smart_DreamEater:
@@ -2995,6 +3009,8 @@ AI_Aggressive:
 	ld hl, wEnemyAIMoveScores - 1
 	ld de, wEnemyMonMoves
 	ld bc, 0
+	xor a
+	ld [wMovesThatOHKOPlayer], a
 .checkmove
 	inc b
 	ld a, b
@@ -3040,6 +3056,10 @@ AI_Aggressive:
 ; Encourage moves that can OHKO and have good accuracy.
 	cp 1
 	jr nz, .check_turns_to_ko
+
+	ld a, [wMovesThatOHKOPlayer]
+	inc a
+	ld [wMovesThatOHKOPlayer], a
 	
 	ld a, [wEnemyMoveStruct + MOVE_ACC]
 	cp 74 percent
@@ -3089,7 +3109,7 @@ AI_Aggressive:
 	pop bc
 	pop de
 	pop hl
-	jr c, .checkmove
+	jp c, .checkmove
 
 ; If we made it this far, discourage this move.
 	call AI_Discourage
@@ -3145,6 +3165,7 @@ AI_Aggressive:
 INCLUDE "data/battle/ai/reckless_moves.asm"
 
 AIDamageCalc:
+; TO-DO: Account for two-turn moves. Halve BP during AI Damage Calculation.
 	ld a, 1
 	ldh [hBattleTurn], a
 	ld a, [wEnemyMoveStruct + MOVE_EFFECT]
@@ -3160,6 +3181,11 @@ AIDamageCalc:
 	jr z, .return
 	cp EFFECT_REVERSAL
 	jr z, .reversal
+
+	ld de, 1
+	ld hl, TwoTurnEffects
+	call IsInArray
+	jr c, .two_turn_effects
 	
 	ld de, 1
 	ld hl, ConstantDamageEffects
@@ -3196,6 +3222,12 @@ AIDamageCalc:
 .reversal
 	farcall BattleCommand_ConstantDamage
 	jr .stab
+
+.two_turn_effects
+	ld a, [wEnemyMoveStruct + MOVE_POWER]
+	rrca
+	ld [wEnemyMoveStruct + MOVE_POWER], a
+	jr .regular_damage
 
 .magnitude
 	; Pretend that the base power is 70
@@ -3300,6 +3332,7 @@ MinDamageRoll:
 	ret
 
 INCLUDE "data/battle/ai/constant_damage_effects.asm"
+INCLUDE "data/battle/ai/two_turn_move_effects.asm"
 
 AIAggessiveCheckTurnsToKOPlayer:
 	ld hl, wCurDamage
