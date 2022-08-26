@@ -597,7 +597,6 @@ _CGB_PartyMenu:
 	call CopyFourPalettes
 	call InitPartyMenuBGPal0
 	call InitPartyMenuBGPal7
-	call InitPartyMenuOBPals
 	call ApplyAttrmap
 	ret
 

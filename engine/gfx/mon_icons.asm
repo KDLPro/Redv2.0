@@ -159,6 +159,20 @@ InitPartyMenuIcon:
 	ld e, a
 	ld d, 0
 	add hl, de
+
+	push hl
+	ldh a, [hObjectStructIndex]
+	ld hl, wPartyMon1DVs
+	call GetPartyLocation
+	ld b, h
+	ld c, l
+	pop hl
+	ld a, [hl]
+	ld d, a
+	push hl
+	farcall LoadMonIconPalette
+	pop hl
+
 	ld a, [hl]
 	call ReadMonMenuIcon
 	ld [wCurIcon], a
