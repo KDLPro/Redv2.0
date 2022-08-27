@@ -13,6 +13,32 @@ LoadOverworldMonIcon:
 	ld c, 8
 	ret
 
+SetMenuMonIconColor:
+	push hl
+	push de
+	push bc
+	push af
+	ld a, [wCurPartyMon]
+	inc a
+	ld hl, wVirtualOAMSprite00Attributes
+	jr _ApplyMenuMonIconColor
+
+_ApplyMenuMonIconColor:
+	ld c, 4
+	ld de, 4
+.loop
+	ld [hl], a
+	add hl, de
+	dec c
+	jr nz, .loop
+	; fallthrough
+_FinishMenuMonIconColor:
+	pop af
+	pop bc
+	pop de
+	pop hl
+	ret
+
 LoadMenuMonIcon:
 	push hl
 	push de
@@ -243,6 +269,7 @@ NamingScreen_InitAnimatedMonIcon:
 	ret
 
 MoveList_InitAnimatedMonIcon:
+	call SetMenuMonIconColor
 	ld a, [wTempIconSpecies]
 	call ReadMonMenuIcon
 	ld [wCurIcon], a

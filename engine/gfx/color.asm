@@ -656,6 +656,8 @@ CGB_ApplyPartyMenuHPPals:
 	call FillBoxCGB
 	ret
 
+
+
 InitPartyMenuOBPals:
 	ld hl, PartyMenuOBPals
 	ld de, wOBPals1
@@ -836,11 +838,11 @@ endr
 	ld hl, wOBPals1
 	ld a, [hObjectStructIndex]
 .get_address_loop
+	ld bc, 8
+	add hl, bc
 	and a
 	jr z, .start_loadpalette
 	dec a
-	ld bc, 8
-	add hl, bc
 	jr .get_address_loop
 
 .start_loadpalette

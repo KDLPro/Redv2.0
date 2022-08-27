@@ -49,3 +49,13 @@
 	const MONICON_MOBILE1
 	const MONICON_MOBILE2
 	const MONICON_UNUSED
+
+; party menu icon palettes
+	const_def
+	const PAL_ICON_ITEM   	; 0
+	const PAL_ICON_PARTY_1  ; 1
+	const PAL_ICON_PARTY_2  ; 2
+	const PAL_ICON_PARTY_3  ; 3
+	const PAL_ICON_PARTY_4  ; 4
+	const PAL_ICON_PARTY_5  ; 5
+	const PAL_ICON_PARTY_6  ; 6
