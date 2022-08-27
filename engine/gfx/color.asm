@@ -836,7 +836,7 @@ endr
 
 	push hl
 	ld hl, wOBPals1
-	ld a, [hObjectStructIndex]
+	ldh a, [hObjectStructIndex]
 .get_address_loop
 	ld bc, 8
 	add hl, bc

@@ -2073,11 +2073,12 @@ wBallsPocketCursor::    db
 wTMHMPocketCursor::     db
 
 wPCItemsScrollPosition::        db
-	ds 1
 wItemsPocketScrollPosition::    db
 wKeyItemsPocketScrollPosition:: db
 wBallsPocketScrollPosition::    db
 wTMHMPocketScrollPosition::     db
+
+wCurIconMonHasItemOrMail:: 		db
 
 wSwitchMon::
 wSwitchItem::

@@ -23,6 +23,15 @@ SetMenuMonIconColor:
 	ld hl, wVirtualOAMSprite00Attributes
 	jr _ApplyMenuMonIconColor
 
+SetNamingMenuMonIconColor:
+	push hl
+	push de
+	push bc
+	push af
+	ld a, 1
+	ld hl, wVirtualOAMSprite00Attributes
+	jr _ApplyMenuMonIconColor
+
 _ApplyMenuMonIconColor:
 	ld c, 4
 	ld de, 4
@@ -255,6 +264,20 @@ SetPartyMonIconAnimSpeed:
 	db $80 ; HP_RED
 
 NamingScreen_InitAnimatedMonIcon:
+	ldh a, [hObjectStructIndex]
+	push af
+	xor a
+	ldh [hObjectStructIndex], a
+	ld hl, wTempMonDVs
+	ld b, h
+	ld c, l
+	ld a, [wTempIconSpecies]
+	ld d, a
+	farcall LoadMonIconPalette
+	pop af
+	ldh [hObjectStructIndex], a
+	call SetNamingMenuMonIconColor
+
 	ld a, [wTempIconSpecies]
 	call ReadMonMenuIcon
 	ld [wCurIcon], a
