@@ -23,6 +23,56 @@ SetMenuMonIconColor:
 	ld hl, wVirtualOAMSprite00Attributes
 	jr _ApplyMenuMonIconColor
 
+LoadPartyMenuMonIconColors:
+	push hl
+	push de
+	push bc
+	push af
+
+	ldh a, [hObjectStructIndex]
+	ld [wCurPartyMon], a
+	ld e, a
+	ld d, 0
+
+	ld hl, wPartyMon1Item
+	call GetPartyLocation
+	ld a, [hl]
+	ld [wCurIconMonHasItemOrMail], a
+
+	ld hl, wPartySpecies
+	add hl, de
+	ld a, [hl]
+	ld [wCurPartySpecies], a
+	ldh a, [hObjectStructIndex]
+	inc a
+	ld hl, wVirtualOAMSprite00Attributes
+	push af
+	ld a, [wCurPartyMon]
+	swap a
+	ld d, 0
+	ld e, a
+	add hl, de
+	pop af
+
+	ld de, 4
+	ld [hl], a ; top left
+	add hl, de
+	ld [hl], a ; top right
+	add hl, de
+	push hl
+	add hl, de
+	ld [hl], a ; bottom right
+	pop hl
+	ld d, a
+	ld a, [wCurIconMonHasItemOrMail]
+	and a
+	ld a, PAL_OW_RED ; item or mail color
+	jr nz, .ok
+	ld a, d
+.ok
+	ld [hl], a ; bottom left
+	jr _FinishMenuMonIconColor
+
 SetNamingMenuMonIconColor:
 	push hl
 	push de
@@ -207,6 +257,7 @@ InitPartyMenuIcon:
 	push hl
 	farcall LoadMonIconPalette
 	pop hl
+	call LoadPartyMenuMonIconColors
 
 	ld a, [hl]
 	call ReadMonMenuIcon
@@ -325,6 +376,7 @@ GetSpeciesIcon:
 	pop de
 	ld a, e
 	call GetIconGFX
+	call SetMenuMonIconColor
 	ret
 
 FlyFunction_GetMonIcon:
@@ -335,6 +387,26 @@ FlyFunction_GetMonIcon:
 	pop de
 	ld a, e
 	call GetIcon_a
+
+	ldh a, [hObjectStructIndex]
+	push af
+	ld a, $FF
+	ldh [hObjectStructIndex], a
+	ld a, [wCurPartyMon]
+	ld hl, wPartyMon1DVs
+	call GetPartyLocation
+	ld b, h
+	ld c, l
+	ld a, [wTempIconSpecies]
+	ld d, a
+	farcall LoadMonIconPalette
+	pop af
+	ldh [hObjectStructIndex], a
+
+	ld a, TRUE
+ 	ldh [hCGBPalUpdate], a
+	farcall ApplyPals
+	call SetMenuMonIconColor
 	ret
 
 GetMonIconDE: ; unreferenced

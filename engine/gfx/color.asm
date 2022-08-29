@@ -838,6 +838,8 @@ endr
 	ld hl, wOBPals1
 	ldh a, [hObjectStructIndex]
 .get_address_loop
+	cp $FF
+	jr z, .start_loadpalette
 	ld bc, 8
 	add hl, bc
 	and a
@@ -873,6 +875,19 @@ endr
 	pop af
 	ldh [rSVBK], a
 	ret
+
+; Input: E must contain the offset of the selected palette from PartyMenuOBPals.
+SetFirstOBJPalette::
+	ld hl, PartyMenuOBPals
+	ld d, 0
+	add hl, de
+ 	ld de, wOBPals1
+	ld bc, 1 palettes
+	ld a, BANK(wOBPals1)
+	call FarCopyWRAM
+	ld a, TRUE
+	ldh [hCGBPalUpdate], a
+ 	jp ApplyPals
 
 PushSGBPals:
 	ld a, [wJoypadDisable]
