@@ -19,57 +19,57 @@ _LoadBattleCoreFont::
 	ld de, English
 	ld hl, vTiles1
 	lb bc, BANK(English), 32 ; "A" to "]"
-	call Get1bppViaHDMA
-	ld de, English + 32 * LEN_1BPP_TILE
+	call Get2bppViaHDMA
+	ld de, English + 32 * LEN_2BPP_TILE
 	ld hl, vTiles1 tile $20
 	lb bc, BANK(English), 26 ; "a" to "z" (skip "┌" to "┘")
-	call Get1bppViaHDMA
-	ld de, English + 64 * LEN_1BPP_TILE
+	call Get2bppViaHDMA
+	ld de, English + 64 * LEN_2BPP_TILE
 	ld hl, vTiles1 tile $40
 	lb bc, BANK(English), 32 ; "SLP" to "←"
-	call Get1bppViaHDMA
-	ld de, English + 96 * LEN_1BPP_TILE
+	call Get2bppViaHDMA
+	ld de, English + 96 * LEN_2BPP_TILE
 	ld hl, vTiles1 tile $60
 	lb bc, BANK(English), 32 ; "'" to "9"
-	call Get1bppViaHDMA
+	call Get2bppViaHDMA
 	ret
 
 _LoadStandardFont::
 	ld de, Font
 	ld hl, vTiles1
 	lb bc, BANK(Font), 32 ; "A" to "]"
-	call Get1bppViaHDMA
-	ld de, Font + 32 * LEN_1BPP_TILE
+	call Get2bppViaHDMA
+	ld de, Font + 32 * LEN_2BPP_TILE
 	ld hl, vTiles1 tile $20
 	lb bc, BANK(Font), 26 ; "a" to "z" (skip "┌" to "┘")
-	call Get1bppViaHDMA
-	ld de, Font + 64 * LEN_1BPP_TILE
+	call Get2bppViaHDMA
+	ld de, Font + 64 * LEN_2BPP_TILE
 	ld hl, vTiles1 tile $40
 	lb bc, BANK(Font), 32 ; "SLP" to "←"
-	call Get1bppViaHDMA
-	ld de, Font + 96 * LEN_1BPP_TILE
+	call Get2bppViaHDMA
+	ld de, Font + 96 * LEN_2BPP_TILE
 	ld hl, vTiles1 tile $60
 	lb bc, BANK(Font), 32 ; "'" to "9"
-	call Get1bppViaHDMA
+	call Get2bppViaHDMA
 	ret
 	
 _LoadInversedFont::
 	ld de, FontInversed
 	ld hl, vTiles1
 	lb bc, BANK(FontInversed), 32 ; "A" to "]"
-	call Get1bppViaHDMA
-	ld de, FontInversed + 32 * LEN_1BPP_TILE
+	call Get2bppViaHDMA
+	ld de, FontInversed + 32 * LEN_2BPP_TILE
 	ld hl, vTiles1 tile $20
 	lb bc, BANK(FontInversed), 26 ; "a" to "z" (skip "┌" to "┘")
-	call Get1bppViaHDMA
-	ld de, FontInversed + 64 * LEN_1BPP_TILE
+	call Get2bppViaHDMA
+	ld de, FontInversed + 64 * LEN_2BPP_TILE
 	ld hl, vTiles1 tile $40
 	lb bc, BANK(FontInversed), 32 ; "SLP" to "←"
-	call Get1bppViaHDMA
-	ld de, FontInversed + 96 * LEN_1BPP_TILE
+	call Get2bppViaHDMA
+	ld de, FontInversed + 96 * LEN_2BPP_TILE
 	ld hl, vTiles1 tile $60
 	lb bc, BANK(FontInversed), 32 ; "'" to "9"
-	call Get1bppViaHDMA
+	call Get2bppViaHDMA
 	ret
 
 _LoadFontsExtra1::
