@@ -12,8 +12,7 @@ CheckPlayerMoveTypeMatchups:
 	and a
 	jp z, .unknown_moves
 
-	ld d, NUM_MOVES
-	ld e, 0
+	lb de, NUM_MOVES, 0
 .loop
 	ld a, [hli]
 	and a
@@ -141,8 +140,7 @@ CheckEnemyMoveMatchups:
 	push de
 	push bc
 	ld de, wEnemyMonMoves
-	ld b, NUM_MOVES + 1
-	ld c, 0
+	lb bc, NUM_MOVES + 1, 0
 
 .loop
 	dec b
@@ -1045,8 +1043,7 @@ FindAliveEnemyMons:
 
 	ld d, a
 	ld e, 0
-	ld b, 1 << (PARTY_LENGTH - 1)
-	ld c, 0
+	lb bc, 1 << (PARTY_LENGTH - 1), 0
 	ld hl, wOTPartyMon1HP
 
 .loop
@@ -1174,8 +1171,7 @@ FindEnemyMonsImmuneToOrResistsLastCounterMoveReverse:
 	ld hl, wOTPartyMon6
 	ld a, [wOTPartyCount]
 	ld d, a
-	ld c, 1 << (PARTY_LENGTH - 1)
-	ld b, 0
+	lb bc, 0, 1 << (PARTY_LENGTH - 1)
 	ld a, $FF
 	ld [wEnemyAISwitchScore], a
 
@@ -1325,8 +1321,7 @@ FindAliveEnemyMonsWithASuperEffectiveMove:
 	ld a, [wOTPartyCount]
 	ld e, a
 	ld hl, wOTPartyMon1HP
-	ld b, 1 << (PARTY_LENGTH - 1)
-	ld c, 0
+	lb bc, 1 << (PARTY_LENGTH - 1), 0
 .loop
 	; Check the Pokemon has at least 1/2 max HP...
 	; Check if the Pokemon has at least 1/2 max HP...
@@ -1357,8 +1352,7 @@ FindEnemyMonsWithASuperEffectiveMove:
 	ld [wEnemyAISwitchScore], a
 	ld hl, wOTPartyMon1Moves
 	ld b, 1 << (PARTY_LENGTH - 1)
-	ld d, 0
-	ld e, 0
+	ld de, 0
 .loop
 	ld a, b
 	and c
@@ -1463,8 +1457,7 @@ FindAliveEnemyMonsWithASuperEffectiveMoveSwitch:
 	ld a, [wOTPartyCount]
 	ld e, a
 	ld hl, wOTPartyMon1HP
-	ld b, 1 << (PARTY_LENGTH - 1)
-	ld c, 0
+	lb bc, 1 << (PARTY_LENGTH - 1), 0
 .loop
 	; Check if the Pokemon has at least 1/2 max HP...
 	call CheckCurrentMonIfAtLeastHalfHP
@@ -1505,8 +1498,7 @@ FindEnemyMonsThatResistPlayer:
 	push bc
 	push de
 	ld hl, wOTPartyMon1
-	ld b, 1 << (PARTY_LENGTH - 1)
-	ld c, 0
+	lb bc, 1 << (PARTY_LENGTH - 1), 0
 	ld a, [wEnemyMonsLeft]
 	ld d, a
 
