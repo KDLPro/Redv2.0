@@ -31,8 +31,7 @@ _LoadBattleCoreFont::
 	ld de, English + 96 * LEN_2BPP_TILE
 	ld hl, vTiles1 tile $60
 	lb bc, BANK(English), 32 ; "'" to "9"
-	call Get2bppViaHDMA
-	ret
+	jp Get2bppViaHDMA
 
 _LoadStandardFont::
 	ld de, Font
@@ -50,8 +49,7 @@ _LoadStandardFont::
 	ld de, Font + 96 * LEN_2BPP_TILE
 	ld hl, vTiles1 tile $60
 	lb bc, BANK(Font), 32 ; "'" to "9"
-	call Get2bppViaHDMA
-	ret
+	jp Get2bppViaHDMA
 	
 _LoadInversedFont::
 	ld de, FontInversed
@@ -69,8 +67,7 @@ _LoadInversedFont::
 	ld de, FontInversed + 96 * LEN_2BPP_TILE
 	ld hl, vTiles1 tile $60
 	lb bc, BANK(FontInversed), 32 ; "'" to "9"
-	call Get2bppViaHDMA
-	ret
+	jp Get2bppViaHDMA
 
 _LoadFontsExtra1::
 	jr LoadFrame
@@ -125,8 +122,7 @@ LoadHPBar:
 	ld de, ExpBarGFX
 	ld hl, vTiles2 tile $55
 	lb bc, BANK(ExpBarGFX), 11
-	call Get2bppViaHDMA
-	ret
+	jp Get2bppViaHDMA
 
 StatsScreen_LoadFont:
 	call _LoadFontsBattleExtra
@@ -150,5 +146,4 @@ LoadStatsScreenPageTilesGFX:
 	ld de, StatsScreenPageTilesGFX
 	ld hl, vTiles2 tile $31
 	lb bc, BANK(StatsScreenPageTilesGFX), 17
-	call Get2bppViaHDMA
-	ret
+	jp Get2bppViaHDMA

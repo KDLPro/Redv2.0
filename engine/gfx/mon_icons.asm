@@ -9,8 +9,7 @@ LoadOverworldMonIcon:
 	ld a, [hli]
 	ld e, a
 	ld d, [hl]
-	ld b, BANK(Icons)
-	ld c, 8
+	lb bc, BANK(Icons), 8
 	ret
 
 SetMenuMonIconColor:

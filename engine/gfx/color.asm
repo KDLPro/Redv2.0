@@ -1368,6 +1368,51 @@ LoadMapPals:
 	ld a, BANK(wOBPals1)
 	call FarCopyWRAM
 
+	ld a, [wMapGroup]
+	cp GROUP_ROUTE_34
+	jr nz, .get_roofpals
+
+	ld a, [wMapNumber]
+	cp MAP_ROUTE_34
+	jr nz, .get_roofpals
+
+	ld a, [wBreedMon1Species]
+	and a
+	jr z, .breedmon_2
+	
+	ldh a, [hObjectStructIndex]
+	push af
+	ld a, 5
+	ldh [hObjectStructIndex], a
+	ld hl, wBreedMon1DVs
+	ld b, h
+	ld c, l
+	ld a, [wBreedMon1Species]
+	ld d, a
+	farcall LoadMonIconPalette
+	pop af
+	ldh [hObjectStructIndex], a
+
+
+.breedmon_2
+	ld a, [wBreedMon2Species]
+	and a
+	jr z, .get_roofpals
+
+	ldh a, [hObjectStructIndex]
+	push af
+	ld a, 6
+	ldh [hObjectStructIndex], a
+	ld hl, wBreedMon2DVs
+	ld b, h
+	ld c, l
+	ld a, [wBreedMon2Species]
+	ld d, a
+	farcall LoadMonIconPalette
+	pop af
+	ldh [hObjectStructIndex], a
+
+.get_roofpals
 	ld a, [wEnvironment]
 	cp TOWN
 	jr z, .outside

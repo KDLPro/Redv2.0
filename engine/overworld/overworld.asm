@@ -222,10 +222,12 @@ GetMonSprite:
 
 .BreedMon1
 	ld a, [wBreedMon1Species]
+	ld [wTempMon], a
 	jr .Mon
 
 .BreedMon2
 	ld a, [wBreedMon2Species]
+	ld [wTempMon], a
 
 .Mon:
 	ld e, a
@@ -297,9 +299,26 @@ _GetSpritePalette::
 	ret
 
 .is_pokemon
+	ld a, [wTempMon]
+	ld c, a
+	ld a, [wBreedMon1Species]
+	cp c
+	jr z, .BreedMon1
+	ld a, [wBreedMon2Species]
+	cp c
+	jr z, .BreedMon2
 	xor a
+.save_sprite_palette
 	ld c, a
 	ret
+
+.BreedMon1
+	ld a, 6
+	jr .save_sprite_palette
+
+.BreedMon2
+	ld a, 7
+	jr .save_sprite_palette
 
 LoadAndSortSprites:
 	call LoadSpriteGFX
@@ -366,9 +385,9 @@ LoadSpriteGFX:
 	ret
 
 .LoadSprite:
-	; push bc
+	push bc
 	call GetSprite
-	; pop bc
+	pop bc
 	ld a, l
 	ret
 
