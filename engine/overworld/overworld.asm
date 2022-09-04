@@ -313,11 +313,11 @@ _GetSpritePalette::
 	ret
 
 .BreedMon1
-	ld a, 6
+	ld a, 3
 	jr .save_sprite_palette
 
 .BreedMon2
-	ld a, 7
+	ld a, 4
 	jr .save_sprite_palette
 
 LoadAndSortSprites:
