@@ -16,21 +16,21 @@ Get2bppOptionalHDMA: ; unreferenced
 	jp Get2bpp
 
 _LoadBattleCoreFont::
-	ld de, English
+	ld de, Font
 	ld hl, vTiles1
-	lb bc, BANK(English), 32 ; "A" to "]"
+	lb bc, BANK(Font), 32 ; "A" to "]"
 	call Get2bppViaHDMA
-	ld de, English + 32 * LEN_2BPP_TILE
+	ld de, Font + 32 * LEN_2BPP_TILE
 	ld hl, vTiles1 tile $20
-	lb bc, BANK(English), 26 ; "a" to "z" (skip "┌" to "┘")
+	lb bc, BANK(Font), 26 ; "a" to "z" (skip "┌" to "┘")
 	call Get2bppViaHDMA
-	ld de, English + 64 * LEN_2BPP_TILE
+	ld de, Font + 64 * LEN_2BPP_TILE
 	ld hl, vTiles1 tile $40
-	lb bc, BANK(English), 32 ; "SLP" to "←"
+	lb bc, BANK(Font), 32 ; "SLP" to "←"
 	call Get2bppViaHDMA
-	ld de, English + 96 * LEN_2BPP_TILE
+	ld de, Font + 96 * LEN_2BPP_TILE
 	ld hl, vTiles1 tile $60
-	lb bc, BANK(English), 32 ; "'" to "9"
+	lb bc, BANK(Font), 32 ; "'" to "9"
 	jp Get2bppViaHDMA
 
 _LoadStandardFont::

@@ -124,12 +124,12 @@ _CGB_FinishBattleScreenLayout:
 	lb bc, 7, 10
 	ld a, PAL_BATTLE_BG_ENEMY
 	call FillBoxCGB
-	hlcoord 0, 0, wAttrmap
-	lb bc, 4, 10
+	hlcoord 2, 0, wAttrmap
+	lb bc, 2, 10
 	ld a, PAL_BATTLE_BG_ENEMY_HP
 	call FillBoxCGB
-	hlcoord 10, 7, wAttrmap
-	lb bc, 5, 10
+	hlcoord 12, 7, wAttrmap
+	lb bc, 3, 10
 	ld a, PAL_BATTLE_BG_PLAYER_HP
 	call FillBoxCGB
 	hlcoord 10, 11, wAttrmap
@@ -140,6 +140,15 @@ _CGB_FinishBattleScreenLayout:
 	ld bc, 6 * SCREEN_WIDTH
 	ld a, PAL_BATTLE_BG_TEXT
 	call ByteFill
+	
+	hlcoord 0, 0, wAttrmap
+	lb bc, 2, 10
+	ld a, PAL_BATTLE_BG_TEXT
+	call FillBoxCGB
+	hlcoord 10, 7, wAttrmap
+	lb bc, 2, 10
+	ld a, PAL_BATTLE_BG_TEXT
+	call FillBoxCGB
 	
 	ld a, [wBattleAnimTempPalette]
 	cp PAL_BATTLE_OB_POISON
@@ -278,8 +287,12 @@ _CGB_StatsScreenHPPals:
 	call LoadPalette_White_Col1_Col2_Black ; mon palette
 	ld hl, ExpBarPalette
 	call LoadPalette_White_Col1_Col2_Black ; exp palette
+	ld hl, GenderPalette
+	call LoadPalette_White_Col1_Col2_Black ; gender palette 1
+	ld hl, GenderPalette
+	call LoadPalette_White_Col1_Col2_Black ; gender palette 2
 	ld hl, StatsScreenPagePals
-	ld de, wBGPals1 palette 3
+	ld de, wBGPals1 palette 5
 	ld bc, 3 palettes ; pink, green, and blue page palettes
 	ld a, BANK(wBGPals1)
 	call FarCopyWRAM
@@ -295,19 +308,29 @@ _CGB_StatsScreenHPPals:
 	ld a, $2 ; exp palette
 	call ByteFill
 
+	hlcoord 18, 0, wAttrmap
+	lb bc, 1, 1
+	ld a, $3 ; gender palette 1
+	call FillBoxCGB
+
+	hlcoord 8, 13, wAttrmap
+	lb bc, 1, 1
+	ld a, $4 ; gender palette 2
+	call FillBoxCGB
+
 	hlcoord 13, 5, wAttrmap
 	lb bc, 2, 2
-	ld a, $3 ; pink page palette
+	ld a, $5 ; pink page palette
 	call FillBoxCGB
 
 	hlcoord 15, 5, wAttrmap
 	lb bc, 2, 2
-	ld a, $4 ; green page palette
+	ld a, $6 ; green page palette
 	call FillBoxCGB
 
 	hlcoord 17, 5, wAttrmap
 	lb bc, 2, 2
-	ld a, $5 ; blue page palette
+	ld a, $7 ; blue page palette
 	call FillBoxCGB
 
 	call ApplyAttrmap
@@ -321,6 +344,9 @@ INCLUDE "gfx/stats/pages.pal"
 
 StatsScreenPals:
 INCLUDE "gfx/stats/stats.pal"
+
+GenderPalette:
+INCLUDE "gfx/stats/gender.pal"
 
 _CGB_Pokedex:
 	ld de, wBGPals1
