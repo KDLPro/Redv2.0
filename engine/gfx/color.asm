@@ -1382,7 +1382,7 @@ LoadMapPals:
 	
 	ldh a, [hObjectStructIndex]
 	push af
-	ld a, 5
+	ld a, 2
 	ldh [hObjectStructIndex], a
 	ld hl, wBreedMon1DVs
 	ld b, h
@@ -1401,7 +1401,7 @@ LoadMapPals:
 
 	ldh a, [hObjectStructIndex]
 	push af
-	ld a, 6
+	ld a, 3
 	ldh [hObjectStructIndex], a
 	ld hl, wBreedMon2DVs
 	ld b, h
