@@ -245,8 +245,7 @@ ClearPCItemScreen:
 	lb bc, 4, 18
 	call Textbox
 	call WaitBGMap2
-	call SetPalettes ; load regular palettes?
-	ret
+	jp SetPalettes ; load regular palettes?
 
 CopyBoxmonToTempMon:
 	ld a, [wCurPartyMon]

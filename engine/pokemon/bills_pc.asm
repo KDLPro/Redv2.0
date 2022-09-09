@@ -2456,7 +2456,7 @@ BillsPC_ChangeBoxSubmenu:
 .Name:
 	ld b, NAME_BOX
 	ld de, wBoxNameBuffer
-	farcall NamingScreen
+	farcall NamingScreen_PC
 	call ClearTilemap
 	call LoadStandardFont
 	call LoadFontsBattleExtra

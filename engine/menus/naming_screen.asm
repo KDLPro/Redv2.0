@@ -1,16 +1,53 @@
-NAMINGSCREEN_CURSOR     EQU $7e
+NAMINGSCREEN_CURSOR     			EQU $7e
 
-NAMINGSCREEN_BORDER     EQU "■" ; $d7
-NAMINGSCREEN_MIDDLELINE EQU "→" ; $eb
-NAMINGSCREEN_UNDERLINE  EQU "☎" ; $d9
+NAMINGSCREEN_MIDDLELINE 			EQU "→" ; $eb
+NAMINGSCREEN_UNDERLINE  			EQU "☎" ; $d9
+NAMINGSCREEN_SPACE					EQU $C0
+NAMINGSCREEN_BORDER_TOPBOTTOM		EQU $C1
+NAMINGSCREEN_BORDER_TOP  			EQU $C2
+NAMINGSCREEN_BORDER_TOPLEFT  		EQU $C3
+NAMINGSCREEN_BORDER_TOPRIGHT  		EQU $C4
+NAMINGSCREEN_BORDER_RIGHT  			EQU $C5
+NAMINGSCREEN_BORDER_LEFT  			EQU $C6
+NAMINGSCREEN_BORDER_BOTTOM  		EQU $C7
+NAMINGSCREEN_BORDER_BOTTOMLEFT		EQU $C8
+NAMINGSCREEN_BORDER_BOTTOMRIGHT		EQU $C9
+NAMINGSCREEN_BORDER     			EQU $CA
+NAMINGSCREEN_BORDER_TOPBOTTOMLEFT	EQU $CB
+NAMINGSCREEN_BORDER_TOPBOTTOMRIGHT	EQU $CC
 
 _NamingScreen:
 	call DisableSpriteUpdates
-	call NamingScreen
-	call ReturnToMapWithSpeechTextbox
-	ret
+	call SetUpNamingScreen
+	ld b, SCGB_DONENAMING
+	call GetSGBLayout
+	call SetPalettes
+	jp ReturnToMapWithSpeechTextbox
+
+NamingScreen_JustCaught:
+	call SetUpNamingScreen
+	ld b, SCGB_DONENAMING_JUSTCAUGHT
+	call GetSGBLayout
+	jp SetPalettes 
 
 NamingScreen:
+	call SetUpNamingScreen
+ExitNamingScreen:
+	ld b, SCGB_DONENAMING
+	call GetSGBLayout
+	jp SetPalettes 
+
+DoneMonName:
+	call RotateThreePalettesRight
+	jr ExitNamingScreen
+
+NamingScreen_PC:
+	call SetUpNamingScreen
+	ld b, SCGB_BACK_TO_PC
+	call GetSGBLayout
+	jp SetPalettes 
+
+SetUpNamingScreen:
 	ld hl, wNamingScreenDestinationPointer
 	ld [hl], e
 	inc hl
@@ -45,8 +82,28 @@ NamingScreen:
 
 .SetUpNamingScreen:
 	call ClearBGPalettes
+
+	ld a, [wNamingScreenType]
+	maskbits NUM_NAME_TYPES
+	cp 4
+	jr z, .box
+
+	and a
+	jr nz, .others
+
+	ld b, SCGB_MON_NAMING_SCREEN
+	call GetSGBLayout
+	jr .init_name_entry
+
+.box
+	ld b, SCGB_BOX_NAMING_SCREEN
+	call GetSGBLayout
+	jr .init_name_entry
+
+.others
 	ld b, SCGB_DIPLOMA
 	call GetSGBLayout
+.init_name_entry
 	call DisableLCD
 	call LoadNamingScreenGFX
 	call NamingScreen_InitText
@@ -56,8 +113,7 @@ NamingScreen:
 	call WaitBGMap
 	call WaitTop
 	call SetPalettes
-	call NamingScreen_InitNameEntry
-	ret
+	jp NamingScreen_InitNameEntry
 
 .GetNamingScreenSetup:
 	ld a, [wNamingScreenType]
@@ -118,14 +174,14 @@ NamingScreen:
 	ld a, [wCurPartySpecies]
 	ld [wNamedObjectIndex], a
 	call GetPokemonName
-	hlcoord 5, 2
+	hlcoord 7, 2
 	call PlaceString
 	ld l, c
 	ld h, b
 	ld de, .NicknameStrings
 	call PlaceString
 	inc de
-	hlcoord 5, 4
+	hlcoord 7, 3
 	call PlaceString
 	farcall GetGender
 	jr c, .genderless
@@ -133,11 +189,10 @@ NamingScreen:
 	jr nz, .place_gender
 	ld a, "♀"
 .place_gender
-	hlcoord 1, 2
+	hlcoord 4, 2
 	ld [hl], a
 .genderless
-	call .StoreMonIconParams
-	ret
+	jp .StoreMonIconParams
 
 .NicknameStrings:
 	db "'s@"
@@ -149,8 +204,7 @@ NamingScreen:
 	hlcoord 5, 2
 	ld de, .PlayerNameString
 	call PlaceString
-	call .StoreSpriteIconParams
-	ret
+	jp .StoreSpriteIconParams
 
 .PlayerNameString:
 	db "Your name?@"
@@ -162,8 +216,7 @@ NamingScreen:
 	hlcoord 5, 2
 	ld de, .RivalNameString
 	call PlaceString
-	call .StoreSpriteIconParams
-	ret
+	jp .StoreSpriteIconParams
 
 .RivalNameString:
 	db "Rival's name?@"
@@ -175,8 +228,7 @@ NamingScreen:
 	hlcoord 5, 2
 	ld de, .MomNameString
 	call PlaceString
-	call .StoreSpriteIconParams
-	ret
+	jp .StoreSpriteIconParams
 
 .MomNameString:
 	db "Mother's Name?@"
@@ -199,8 +251,7 @@ NamingScreen:
 	hlcoord 5, 2
 	ld de, .BoxNameString
 	call PlaceString
-	call .StoreBoxIconParams
-	ret
+	jp .StoreBoxIconParams
 
 .BoxNameString:
 	db "BOX NAME?@"
@@ -209,8 +260,7 @@ NamingScreen:
 	hlcoord 3, 2
 	ld de, .oTomodachi_no_namae_sutoringu
 	call PlaceString
-	call .StoreSpriteIconParams
-	ret
+	jp .StoreSpriteIconParams
 
 .oTomodachi_no_namae_sutoringu
 	db "おともだち　の　なまえは？@"
@@ -249,7 +299,7 @@ NamingScreen:
 
 .StoreMonIconParams:
 	ld a, MON_NAME_LENGTH - 1
-	hlcoord 5, 6
+	hlcoord 7, 5
 	jr .StoreParams
 
 .StoreSpriteIconParams:
@@ -288,6 +338,104 @@ NamingScreen_InitText:
 	ld bc, SCREEN_WIDTH * SCREEN_HEIGHT
 	ld a, NAMINGSCREEN_BORDER
 	call ByteFill
+
+	hlcoord 1, 0
+	ld bc, SCREEN_WIDTH - 2 * 1
+	ld a, NAMINGSCREEN_BORDER_TOP
+	call ByteFill
+	hlcoord 1, 7
+	ld bc, SCREEN_WIDTH - 2 * 1
+	ld a, NAMINGSCREEN_BORDER_TOPBOTTOM
+	call ByteFill
+	hlcoord 1, 15
+	ld bc, SCREEN_WIDTH - 2 * 1
+	call ByteFill
+	hlcoord 1, 17
+	ld bc, SCREEN_WIDTH - 2 * 1
+	ld a, NAMINGSCREEN_BORDER_BOTTOM
+	call ByteFill
+	hlcoord 0, 0
+	ld bc, 1
+	ld a, NAMINGSCREEN_BORDER_TOPLEFT
+	call ByteFill
+	hlcoord 19, 0
+	ld bc, 1
+	ld a, NAMINGSCREEN_BORDER_TOPRIGHT
+	call ByteFill
+	hlcoord 0, 17
+	ld bc, 1
+	ld a, NAMINGSCREEN_BORDER_BOTTOMLEFT
+	call ByteFill
+	hlcoord 19, 17
+	ld bc, 1
+	ld a, NAMINGSCREEN_BORDER_BOTTOMRIGHT
+	call ByteFill
+	hlcoord 0, 7
+	ld bc, 1
+	ld a, NAMINGSCREEN_BORDER_TOPBOTTOMLEFT
+	call ByteFill
+	hlcoord 0, 15
+	ld bc, 1
+	call ByteFill
+	hlcoord 19, 7
+	ld bc, 1
+	ld a, NAMINGSCREEN_BORDER_TOPBOTTOMRIGHT
+	call ByteFill
+	hlcoord 19, 15
+	ld bc, 1
+	call ByteFill
+	hlcoord 0, 16
+	ld bc, 1
+	ld a, NAMINGSCREEN_BORDER_LEFT
+	call ByteFill
+	hlcoord 19, 16
+	ld bc, 1
+	ld a, NAMINGSCREEN_BORDER_RIGHT
+	call ByteFill
+	hlcoord 0, 1
+	lb bc, 6, 1
+	ld a, NAMINGSCREEN_BORDER_LEFT
+	call FillBoxWithByte
+	hlcoord 0, 8
+	lb bc, 7, 1
+	ld a, NAMINGSCREEN_BORDER_LEFT
+	call FillBoxWithByte
+	hlcoord 19, 1
+	lb bc, 6, 1
+	ld a, NAMINGSCREEN_BORDER_RIGHT
+	call FillBoxWithByte
+	hlcoord 19, 8
+	lb bc, 7, 1
+	ld a, NAMINGSCREEN_BORDER_RIGHT
+	call FillBoxWithByte
+
+	ld a, [wNamingScreenType]
+	maskbits NUM_NAME_TYPES
+	cp 4
+	jr nz, .done_border_setup
+
+	hlcoord 19, 7
+	ld bc, 1
+	ld a, NAMINGSCREEN_BORDER_RIGHT
+	call ByteFill
+	hlcoord 0, 7
+	ld bc, 1
+	ld a, NAMINGSCREEN_BORDER_LEFT
+	call ByteFill
+	hlcoord 19, 5
+	ld bc, 1
+	ld a, NAMINGSCREEN_BORDER_TOPBOTTOMRIGHT
+	call ByteFill
+	hlcoord 0, 5
+	ld bc, 1
+	ld a, NAMINGSCREEN_BORDER_TOPBOTTOMLEFT
+	call ByteFill
+	hlcoord 1, 5
+	ld bc, SCREEN_WIDTH - 2 * 1
+	ld a, NAMINGSCREEN_BORDER_TOPBOTTOM
+	call ByteFill
+
+.done_border_setup
 	hlcoord 1, 1
 	lb bc, 6, 18
 	call NamingScreen_IsTargetBox
@@ -887,6 +1035,73 @@ LoadNamingScreenGFX:
 	ld a, BANK(NamingScreenGFX_Border)
 	call FarCopyBytes
 
+	ld de, vTiles0 tile NAMINGSCREEN_BORDER_TOPLEFT
+	ld hl, NamingScreenGFX_BorderTopLeft
+	ld bc, 1 tiles
+	ld a, BANK(NamingScreenGFX_BorderTopLeft)
+	call FarCopyBytes
+
+	ld de, vTiles0 tile NAMINGSCREEN_BORDER_TOPRIGHT
+	ld hl, NamingScreenGFX_BorderTopRight
+	ld bc, 1 tiles
+	ld a, BANK(NamingScreenGFX_BorderTopRight)
+	call FarCopyBytes
+
+	ld de, vTiles0 tile NAMINGSCREEN_BORDER_TOP
+	ld hl, NamingScreenGFX_BorderTop
+	ld bc, 1 tiles
+	ld a, BANK(NamingScreenGFX_BorderTop)
+	call FarCopyBytes
+
+	ld de, vTiles0 tile NAMINGSCREEN_BORDER_TOPBOTTOM
+	ld hl, NamingScreenGFX_BorderTopBottom
+	ld bc, 1 tiles
+	ld a, BANK(NamingScreenGFX_BorderTopBottom)
+	call FarCopyBytes
+
+	ld de, vTiles0 tile NAMINGSCREEN_BORDER_LEFT
+	ld hl, NamingScreenGFX_BorderLeft
+	ld bc, 1 tiles
+	ld a, BANK(NamingScreenGFX_BorderLeft)
+	call FarCopyBytes
+
+	ld de, vTiles0 tile NAMINGSCREEN_BORDER_RIGHT
+	ld hl, NamingScreenGFX_BorderRight
+	ld bc, 1 tiles
+	ld a, BANK(NamingScreenGFX_BorderRight)
+	call FarCopyBytes
+
+	ld de, vTiles0 tile NAMINGSCREEN_BORDER_BOTTOM
+	ld hl, NamingScreenGFX_BorderBottom
+	ld bc, 1 tiles
+	ld a, BANK(NamingScreenGFX_BorderBottom)
+	call FarCopyBytes
+
+	ld de, vTiles0 tile NAMINGSCREEN_BORDER_BOTTOMLEFT
+	ld hl, NamingScreenGFX_BorderBottomLeft
+	ld bc, 1 tiles
+	ld a, BANK(NamingScreenGFX_BorderBottomLeft)
+	call FarCopyBytes
+
+	ld de, vTiles0 tile NAMINGSCREEN_BORDER_BOTTOMRIGHT
+	ld hl, NamingScreenGFX_BorderBottomRight
+	ld bc, 1 tiles
+	ld a, BANK(NamingScreenGFX_BorderBottomRight)
+	call FarCopyBytes
+	call FarCopyBytes
+
+	ld de, vTiles0 tile NAMINGSCREEN_BORDER_TOPBOTTOMLEFT
+	ld hl, NamingScreenGFX_BorderTopBottomLeft
+	ld bc, 1 tiles
+	ld a, BANK(NamingScreenGFX_BorderTopBottomLeft)
+	call FarCopyBytes
+
+	ld de, vTiles0 tile NAMINGSCREEN_BORDER_TOPBOTTOMRIGHT
+	ld hl, NamingScreenGFX_BorderTopBottomRight
+	ld bc, 1 tiles
+	ld a, BANK(NamingScreenGFX_BorderTopBottomRight)
+	call FarCopyBytes
+
 	ld de, vTiles0 tile NAMINGSCREEN_CURSOR
 	ld hl, NamingScreenGFX_Cursor
 	ld bc, 2 tiles
@@ -912,6 +1127,39 @@ LoadNamingScreenGFX:
 
 NamingScreenGFX_Border:
 INCBIN "gfx/naming_screen/border.2bpp"
+
+NamingScreenGFX_BorderTopBottom:
+INCBIN "gfx/naming_screen/border_topbottom.2bpp"
+
+NamingScreenGFX_BorderTop:
+INCBIN "gfx/naming_screen/border_top.2bpp"
+
+NamingScreenGFX_BorderTopLeft:
+INCBIN "gfx/naming_screen/border_topleft.2bpp"
+
+NamingScreenGFX_BorderTopRight:
+INCBIN "gfx/naming_screen/border_topright.2bpp"
+
+NamingScreenGFX_BorderBottom:
+INCBIN "gfx/naming_screen/border_bottom.2bpp"
+
+NamingScreenGFX_BorderBottomLeft:
+INCBIN "gfx/naming_screen/border_bottomleft.2bpp"
+
+NamingScreenGFX_BorderBottomRight:
+INCBIN "gfx/naming_screen/border_bottomright.2bpp"
+
+NamingScreenGFX_BorderLeft:
+INCBIN "gfx/naming_screen/border_left.2bpp"
+
+NamingScreenGFX_BorderRight:
+INCBIN "gfx/naming_screen/border_right.2bpp"
+
+NamingScreenGFX_BorderTopBottomLeft:
+INCBIN "gfx/naming_screen/border_topbottomleft.2bpp"
+
+NamingScreenGFX_BorderTopBottomRight:
+INCBIN "gfx/naming_screen/border_topbottomright.2bpp"
 
 NamingScreenGFX_Cursor:
 INCBIN "gfx/naming_screen/cursor.2bpp"

@@ -258,6 +258,7 @@ ALL_STATUS EQU (1 << PSN) | (1 << BRN) | (1 << FRZ) | (1 << PAR) | (1 << TOX) | 
 	const WIN
 	const LOSE
 	const DRAW
+	const MON_CAUGHT
 
 ; Enemy's Speed Relative to Player (wEnemyGoesFirst)
 ENEMY_FIRST EQU 1

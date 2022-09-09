@@ -246,7 +246,11 @@ endr
 	jp .loop
 
 .quit
-	call ResetBattlePalettes
+	ld a, [wBattleResult]
+	cp MON_CAUGHT
+	jp nz, ResetBattlePalettes
+	xor a
+	ld a, [wBattleResult]
 	ret
 
 Stubbed_Increments5_a89a:
@@ -2597,7 +2601,7 @@ CheckEnemyTrainerDefeated:
 	ret
 
 HandleEnemySwitch:
-	farcall ResetBattlePalettes
+	call ResetBattlePalettes
 	ld hl, wEnemyHPPal
 	ld e, HP_BAR_LENGTH_PX
 	call UpdateHPPal
@@ -5332,10 +5336,13 @@ BattleMenu_Pack:
 	xor a
 	ld [wWildMon], a
 	ld a, [wBattleResult]
+	cp MON_CAUGHT
+	jr z, .caught
 	and BATTLERESULT_BITMASK
 	ld [wBattleResult], a ; WIN
 	call ClearWindowData
 	call SetPalettes
+.caught
 	scf
 	ret
 
@@ -5475,7 +5482,7 @@ TryPlayerSwitch:
 	ld a, [wCurPartyMon]
 	ld [wCurBattleMon], a
 PlayerSwitch:
-	farcall ResetBattlePalettes
+	call ResetBattlePalettes
 	ld a, 1
 	ld [wPlayerIsSwitching], a
 	ld a, [wLinkMode]

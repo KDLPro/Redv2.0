@@ -61,9 +61,6 @@ PalPacket_BattleGrayscale:
 PalPacket_Pokegear:
 	sgb_pal_set POKEGEAR, ROUTES, ROUTES, ROUTES
 
-PalPacket_Pack2: ; unreferenced
-	sgb_pal_set PACK, ROUTES, ROUTES, ROUTES
-
 PalPacket_SlotMachine:
 	sgb_pal_set SLOT_MACHINE_0, SLOT_MACHINE_1, SLOT_MACHINE_2, SLOT_MACHINE_3
 
@@ -72,6 +69,9 @@ PalPacket_BetaTitleScreen:
 
 PalPacket_Diploma:
 	sgb_pal_set DIPLOMA, ROUTES, ROUTES, ROUTES
+
+PalPacket_NamingScreen:
+	sgb_pal_set BORDER, BOTTOM_BACKGROUND_1, TOP_BACKGROUND_1, TEXT
 
 PalPacket_TradeTube:
 	sgb_pal_set TRADE_TUBE, ROUTES, ROUTES, ROUTES

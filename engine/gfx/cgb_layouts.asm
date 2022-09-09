@@ -42,7 +42,7 @@ LoadSGBLayoutCGB:
 	dw _CGB_PartyMenu
 	dw _CGB_Evolution
 	dw _CGB_GSTitleScreen
-	dw _CGB_Unused0D
+	dw _CGB_JustCaught
 	dw _CGB_MoveList
 	dw _CGB_BetaPikachuMinigame
 	dw _CGB_PokedexSearchOption
@@ -59,7 +59,12 @@ LoadSGBLayoutCGB:
 	dw _CGB_TradeTube
 	dw _CGB_TrainerOrMonFrontpicPals
 	dw _CGB_MysteryGift
-	dw _CGB_Unused1E
+	dw _CGB_MonNamingScreen
+	dw _CGB_BoxNamingScreen
+	dw _CGB_RegularNamingScreen
+	dw _CGB_BackToPC
+	dw _CGB_DoneNaming
+	dw _CGB_DoneNamingMon_JustCaught
 
 _CGB_BattleGrayscale:
 	ld hl, PalPacket_BattleGrayscale + 1
@@ -136,18 +141,16 @@ _CGB_FinishBattleScreenLayout:
 	lb bc, 1, 9
 	ld a, PAL_BATTLE_BG_EXP
 	call FillBoxCGB
+
 	hlcoord 0, 12, wAttrmap
 	ld bc, 6 * SCREEN_WIDTH
 	ld a, PAL_BATTLE_BG_TEXT
 	call ByteFill
-	
 	hlcoord 0, 0, wAttrmap
 	lb bc, 2, 10
-	ld a, PAL_BATTLE_BG_TEXT
 	call FillBoxCGB
 	hlcoord 10, 7, wAttrmap
 	lb bc, 2, 10
-	ld a, PAL_BATTLE_BG_TEXT
 	call FillBoxCGB
 	
 	ld a, [wBattleAnimTempPalette]
@@ -397,17 +400,39 @@ _CGB_BillsPC:
 	jr nz, .GetMonPalette
 	ld hl, BillsPCOrangePalette
 	call LoadHLPaletteIntoDE
+	ld hl, GenderPalette
+	call LoadPalette_White_Col1_Col2_Black 
+	ld de, wBGPals1 palette 7
+	ld hl, GenderPalette
+	call LoadPalette_White_Col1_Col2_Black 
 	jr .GotPalette
 
 .GetMonPalette:
 	ld bc, wTempMonDVs
 	call GetPlayerOrMonPalettePointer
 	call LoadPalette_White_Col1_Col2_Black
+	ld hl, GenderPalette
+	call LoadPalette_White_Col1_Col2_Black 
+	ld de, wBGPals1 palette 7
+	ld hl, GenderPalette
+	call LoadPalette_White_Col1_Col2_Black 
 .GotPalette:
 	call WipeAttrmap
 	hlcoord 1, 4, wAttrmap
 	lb bc, 7, 7
 	ld a, $1
+	call FillBoxCGB
+	hlcoord 1, 12, wAttrmap
+	lb bc, 1, 5
+	ld a, $2
+	call FillBoxCGB
+	hlcoord 1, 14, wAttrmap
+	lb bc, 1, 12
+	ld a, $2
+	call FillBoxCGB
+	hlcoord 8, 0, wAttrmap
+	lb bc, 18, 12
+	ld a, $2
 	call FillBoxCGB
 	call InitPartyMenuOBPals
 	call ApplyAttrmap
@@ -618,6 +643,60 @@ _CGB_MapPals:
 	ld [wDefaultSGBLayout], a
 	ret
 
+_CGB_BackToPC:
+	call WipeAttrmap
+	call LoadMapPals
+	farcall LoadOW_BGPal7
+	call WipeAttrmap
+
+	hlcoord 0, 0, wAttrmap
+	lb bc, 18, 20
+	ld a, $7 ; text palette
+	call FillBoxCGB
+
+	call ApplyAttrmap
+	call ApplyPals
+	ld a, TRUE
+	ldh [hCGBPalUpdate], a
+	ret
+
+_CGB_DoneNamingMon_JustCaught:
+	ld hl, PalPacket_NamingScreen + 1
+	call CopyFourPalettes
+	call WipeAttrmap
+
+	hlcoord 1, 1, wAttrmap
+	lb bc, 6, 18
+	ld a, $3 
+	call FillBoxCGB
+
+	hlcoord 1, 8, wAttrmap
+	lb bc, 7, 18
+	ld a, $2 ; naming
+	call FillBoxCGB
+	hlcoord 0, 12, wAttrmap
+	lb bc, 6, 20
+	ld a, $3 
+	call FillBoxCGB
+
+	call ApplyAttrmap
+	call ApplyPals
+	ld a, TRUE
+	ldh [hCGBPalUpdate], a
+	ret
+
+_CGB_DoneNaming:
+	ld hl, PalPacket_Diploma + 1
+	call CopyFourPalettes
+	call WipeAttrmap
+	call ClearTilemap
+
+	call ApplyAttrmap
+	call ApplyPals
+	ld a, TRUE
+	ldh [hCGBPalUpdate], a
+	ret
+
 _CGB_PartyMenu:
 	ld hl, PalPacket_PartyMenu + 1
 	call CopyFourPalettes
@@ -678,11 +757,22 @@ _CGB_GSTitleScreen:
 	ldh [hCGBPalUpdate], a
 	ret
 
-_CGB_Unused0D:
-	ld hl, PalPacket_Diploma + 1
-	call CopyFourPalettes
+_CGB_JustCaught:
+	ld de, wBGPals1
+	ld a, [wCurPartySpecies]
+	ld bc, wTempMonDVs
+	call GetPlayerOrMonPalettePointer
+	call LoadPalette_White_Col1_Col2_Black
+	ld hl, GenderPalette
+	call LoadPalette_White_Col1_Col2_Black 
 	call WipeAttrmap
+	
+	hlcoord 0, 12, wAttrmap
+	ld bc, 6 * SCREEN_WIDTH
+	ld a, 1
+	call ByteFill
 	call ApplyAttrmap
+	call ApplyPals
 	ret
 
 _CGB_UnownPuzzle:
@@ -991,17 +1081,65 @@ _CGB_PlayerOrMonFrontpicPals:
 	call LoadPalette_White_Col1_Col2_Black
 	call WipeAttrmap
 	call ApplyAttrmap
-	call ApplyPals
-	ret
+	jp ApplyPals
 
-_CGB_Unused1E:
-	ld de, wBGPals1
-	ld a, [wCurPartySpecies]
-	call GetMonPalettePointer
-	call LoadPalette_White_Col1_Col2_Black
+_CGB_RegularNamingScreen:
+	ld hl, PalPacket_NamingScreen + 1
+	call CopyFourPalettes
 	call WipeAttrmap
+	jr SetupAttrmap_NamingScreen
+
+_CGB_MonNamingScreen:
+	ld hl, PalPacket_NamingScreen + 1
+	call CopyFourPalettes
+	call WipeAttrmap
+	; fallthrough
+SetupAttrmap_NamingScreen:
+	hlcoord 1, 1, wAttrmap
+	lb bc, 6, 18
+	ld a, $3 
+	call FillBoxCGB
+
+	hlcoord 1, 8, wAttrmap
+	lb bc, 7, 18
+	ld a, $2 
+	call FillBoxCGB
+
+	hlcoord 1, 16, wAttrmap
+	lb bc, 1, 18
+	ld a, $1 
+	call FillBoxCGB
 	call ApplyAttrmap
-	ret
+	jp ApplyPals
+
+_CGB_BoxNamingScreen:
+	ld hl, DiplomaPalettes
+	ld de, wBGPals1
+	ld bc, 16 palettes
+	ld a, BANK(wBGPals1)
+	call FarCopyWRAM
+
+	ld hl, PalPacket_NamingScreen + 1
+	call CopyFourPalettes
+	call WipeAttrmap
+
+	
+	hlcoord 1, 1, wAttrmap
+	lb bc, 4, 18
+	ld a, $3 
+	call FillBoxCGB
+
+	hlcoord 1, 6, wAttrmap
+	lb bc, 9, 18
+	ld a, $2 
+	call FillBoxCGB
+
+	hlcoord 1, 16, wAttrmap
+	lb bc, 1, 18
+	ld a, $1 
+	call FillBoxCGB
+	call ApplyAttrmap
+	jp ApplyPals
 
 _CGB_TradeTube:
 	ld hl, PalPacket_TradeTube + 1

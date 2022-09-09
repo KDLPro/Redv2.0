@@ -486,6 +486,8 @@ PokeBallEffect:
 	call PrintText
 	call ClearSprites
 	callfar RemoveToxicAfterBattle
+	ld a, MON_CAUGHT 
+	ld [wBattleResult], a
 
 	ld a, [wTempSpecies]
 	dec a
@@ -571,7 +573,7 @@ PokeBallEffect:
 	xor a ; PARTYMON
 	ld [wMonType], a
 	ld b, NAME_MON
-	farcall NamingScreen
+	farcall NamingScreen_JustCaught
 
 	call RotateThreePalettesRight
 
@@ -624,7 +626,7 @@ PokeBallEffect:
 	ld [wMonType], a
 	ld de, wMonOrItemNameBuffer
 	ld b, NAME_MON
-	farcall NamingScreen
+	farcall NamingScreen_JustCaught
 
 	ld a, BANK(sBoxMonNicknames)
 	call OpenSRAM
@@ -653,8 +655,8 @@ PokeBallEffect:
 
 	ld hl, BallSentToPCText
 	call PrintText
+	farcall DoneMonName
 
-	call RotateThreePalettesRight
 	call LoadStandardFont
 	jr .return_from_capture
 
@@ -684,6 +686,7 @@ PokeBallEffect:
 
 	call ClearBGPalettes
 	call ClearTilemap
+	farcall WipeAttrmap
 
 .toss
 	ld hl, wNumItems
