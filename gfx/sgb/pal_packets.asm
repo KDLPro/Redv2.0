@@ -70,8 +70,11 @@ PalPacket_BetaTitleScreen:
 PalPacket_Diploma:
 	sgb_pal_set DIPLOMA, ROUTES, ROUTES, ROUTES
 
-PalPacket_NamingScreen:
-	sgb_pal_set BORDER, BOTTOM_BACKGROUND_1, TOP_BACKGROUND_1, TEXT
+PalPacket_MonNamingScreen:
+	sgb_pal_set BORDER_1, BOTTOM_BACKGROUND_1, TOP_BACKGROUND_1, TEXT
+
+PalPacket_HumanNamingScreen:
+	sgb_pal_set BORDER_2, BOTTOM_BACKGROUND_2, TOP_BACKGROUND_2, TEXT
 
 PalPacket_TradeTube:
 	sgb_pal_set TRADE_TUBE, ROUTES, ROUTES, ROUTES
