@@ -665,39 +665,6 @@ DetermineMoveOrder:
 .enemy_first
 	and a
 	ret
-	
-SpeedCheckWhoGoesFirst:
-	ld de, wBattleMonSpeed
-	ld hl, wEnemyMonSpeed
-	ld c, 2
-	call CompareBytes
-	jr z, .speed_tie
-	jr nc, .player_first
-	jr .enemy_first
-	
-.speed_tie
-	ldh a, [hSerialConnectionStatus]
-	cp USING_INTERNAL_CLOCK
-	jr z, .player_2c
-	call BattleRandom
-	cp 50 percent + 1
-	jp c, .player_first
-	jp .enemy_first
-
-.player_2c
-	call BattleRandom
-	cp 50 percent + 1
-	jp c, .enemy_first
-
-.player_first
-	ld a, 0
-	ld [wEnemyShouldGoFirst], a
-	ret
-
-.enemy_first
-	ld a, 1
-	ld [wEnemyShouldGoFirst], a
-	ret
 
 CheckContestBattleOver:
 	ld a, [wBattleType]
@@ -5284,7 +5251,6 @@ BattleMenu_Pack:
 
 .didnt_use_item
 	call ClearPalettes
-	call DelayFrame
 	call _LoadBattleFontsHPBar
 	call GetBattleMonBackpic
 	call GetEnemyMonFrontpic

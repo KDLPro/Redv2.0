@@ -182,6 +182,10 @@ SECTION "Battle Core", ROMX
 
 INCLUDE "engine/battle/core.asm"
 
+SECTION "Misc Battle Core", ROMX
+
+INCLUDE "engine/battle/core_misc_functions.asm"
+
 SECTION "Effect Command Pointers", ROMX
 
 INCLUDE "data/battle/effect_command_pointers.asm"
@@ -349,7 +353,6 @@ INCLUDE "engine/games/slot_machine.asm"
 SECTION "Battle Images", ROMX
 
 INCLUDE "engine/pokemon/categories.asm"
-INCLUDE "engine/battle/load_weather_images.asm"
 
 
 SECTION "Phone Scripts 1", ROMX
