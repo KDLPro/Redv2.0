@@ -54,7 +54,6 @@ SECTION "bank4", ROMX
 INCLUDE "engine/items/pack.asm"
 INCLUDE "engine/overworld/time.asm"
 INCLUDE "engine/items/tmhm2.asm"
-INCLUDE "engine/menus/naming_screen.asm"
 INCLUDE "engine/events/misc_scripts.asm"
 INCLUDE "engine/events/heal_machine_anim.asm"
 INCLUDE "engine/events/whiteout.asm"
@@ -73,6 +72,9 @@ INCLUDE "engine/events/pokerus/apply_pokerus_tick.asm"
 INCLUDE "engine/events/bug_contest/contest_2.asm"
 INCLUDE "engine/pokemon/correct_party_errors.asm"
 
+SECTION "NamingScreen", ROMX
+
+INCLUDE "engine/menus/naming_screen.asm"
 
 SECTION "bank5", ROMX
 
