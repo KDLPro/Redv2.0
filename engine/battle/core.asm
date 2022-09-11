@@ -5134,14 +5134,14 @@ BattleMenu:
 
 	ld a, [wBattleType]
 	cp BATTLETYPE_DEBUG
-	jr z, .ok
+	jr z, Start_BattleMenuDisplay
 	cp BATTLETYPE_TUTORIAL
-	jr z, .ok
+	jr z, Start_BattleMenuDisplay
 	call UpdateBattleHuds
 	call EmptyBattleTextbox
 	call LoadTilemapToTempTilemap
-.ok
-
+	
+Start_BattleMenuDisplay:
 .loop
 	ld a, [wBattleType]
 	cp BATTLETYPE_CONTEST
@@ -5258,9 +5258,11 @@ BattleMenu_Pack:
 	call GetEnemyMonFrontpic
 	call ExitMenu
 	call WaitBGMap
+	ld a, PAL_BATTLE_OB_DRAGON
+	ld [wBattleAnimTempPalette], a
 	call FinishBattleAnim
 	call LoadTilemapToTempTilemap
-	jp BattleMenu
+	jp Start_BattleMenuDisplay
 
 .ItemsCantBeUsed:
 	ld hl, BattleText_ItemsCantBeUsedHere
@@ -5906,13 +5908,13 @@ MoveInfoBox:
 	ldh [hBGMapMode], a
 	
 	ld de, wBattleMonNick
-	hlcoord 11, 7
+	hlcoord 10, 7
 	call Battle_DummyFunction
 	call PlaceString
 
 	hlcoord 0, 6
 	ld b, 5
-	ld c, 9
+	ld c, 8
 	call Textbox
 	call MobileTextBorder
 
@@ -5927,7 +5929,7 @@ MoveInfoBox:
 	cp b
 	jr nz, .not_disabled
 
-	hlcoord 1, 9
+	hlcoord 0, 9
 	ld de, .Disabled
 	call PlaceString
 	jp .done
@@ -5966,22 +5968,26 @@ MoveInfoBox:
 	ld a, [wPlayerMoveStruct + MOVE_ANIM]
 	ld b, a
 	farcall GetMoveCategoryIcon
-	hlcoord 1, 7
+	hlcoord 0, 7
 	ld de, .Type
 	call PlaceString
 
-	hlcoord 7, 7
-	ld [hl], "/"
+	hlcoord 0, 6
+	ld [hl], "─"
+	hlcoord 0, 12
+	ld [hl], "─"
+	hlcoord 0, 8
+	ld [hl], " "
 	
-	hlcoord 1, 11
+	hlcoord 0, 11
 	ld de, .PP_word
 	call PlaceString
 	
-	hlcoord 1, 9
+	hlcoord 0, 9
 	ld de, .Pow
 	call PlaceString
 	
-	hlcoord 7, 9
+	hlcoord 6, 9
 	ld a, [wPlayerMoveStruct + MOVE_POWER]
 	ld [wStringBuffer1], a
 	cp 2
@@ -5996,7 +6002,7 @@ MoveInfoBox:
 	call PlaceString
 
 .display_acc
-	hlcoord 1, 10
+	hlcoord 0, 10
 	ld de, .Acc
 	call PlaceString
 	
@@ -6022,7 +6028,7 @@ MoveInfoBox:
 	inc b
 .display_acc_2
 	ld a, b
-	hlcoord 6, 10
+	hlcoord 5, 10
 	cp 2
 	jr c, .no_acc
 	ld [wStringBuffer1], a
@@ -6036,7 +6042,7 @@ MoveInfoBox:
 	call PlaceString
 
 .display_move_type	
-	hlcoord 9, 10
+	hlcoord 8, 10
 	ld [hl], "<PERCENT>"
 
 	farcall UpdateMoveData
