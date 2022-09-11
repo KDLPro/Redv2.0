@@ -657,9 +657,8 @@ _CGB_BackToPC:
 	ret
 
 _CGB_DoneNamingMon_JustCaught:
-	ld hl, PalPacket_NamingScreen + 1
+	ld hl, PalPacket_MonNamingScreen + 1
 	call CopyFourPalettes
-	call WipeAttrmap
 
 	hlcoord 1, 1, wAttrmap
 	lb bc, 6, 18
@@ -1080,13 +1079,13 @@ _CGB_PlayerOrMonFrontpicPals:
 	jp ApplyPals
 
 _CGB_RegularNamingScreen:
-	ld hl, PalPacket_NamingScreen + 1
+	ld hl, PalPacket_HumanNamingScreen + 1
 	call CopyFourPalettes
 	call WipeAttrmap
 	jr SetupAttrmap_NamingScreen
 
 _CGB_MonNamingScreen:
-	ld hl, PalPacket_NamingScreen + 1
+	ld hl, PalPacket_MonNamingScreen + 1
 	call CopyFourPalettes
 	call WipeAttrmap
 	; fallthrough
@@ -1115,7 +1114,7 @@ _CGB_BoxNamingScreen:
 	ld a, BANK(wBGPals1)
 	call FarCopyWRAM
 
-	ld hl, PalPacket_NamingScreen + 1
+	ld hl, PalPacket_MonNamingScreen + 1
 	call CopyFourPalettes
 	call WipeAttrmap
 

@@ -101,7 +101,7 @@ SetUpNamingScreen:
 	jr .init_name_entry
 
 .others
-	ld b, SCGB_DIPLOMA
+	ld b, SCGB_REGULAR_NAMING_SCREEN
 	call GetSGBLayout
 .init_name_entry
 	call DisableLCD
@@ -201,7 +201,7 @@ SetUpNamingScreen:
 .Player:
 	farcall GetPlayerIcon
 	call .LoadSprite
-	hlcoord 5, 2
+	hlcoord 6, 2
 	ld de, .PlayerNameString
 	call PlaceString
 	jp .StoreSpriteIconParams
@@ -213,7 +213,7 @@ SetUpNamingScreen:
 	ld de, SilverSpriteGFX
 	ld b, BANK(SilverSpriteGFX)
 	call .LoadSprite
-	hlcoord 5, 2
+	hlcoord 6, 2
 	ld de, .RivalNameString
 	call PlaceString
 	jp .StoreSpriteIconParams
@@ -225,7 +225,7 @@ SetUpNamingScreen:
 	ld de, MomSpriteGFX
 	ld b, BANK(MomSpriteGFX)
 	call .LoadSprite
-	hlcoord 5, 2
+	hlcoord 6, 2
 	ld de, .MomNameString
 	call PlaceString
 	jp .StoreSpriteIconParams
@@ -248,7 +248,7 @@ SetUpNamingScreen:
 	ld hl, SPRITEANIMSTRUCT_FRAMESET_ID
 	add hl, bc
 	ld [hl], $0
-	hlcoord 5, 2
+	hlcoord 7, 2
 	ld de, .BoxNameString
 	call PlaceString
 	jp .StoreBoxIconParams
@@ -304,12 +304,12 @@ SetUpNamingScreen:
 
 .StoreSpriteIconParams:
 	ld a, PLAYER_NAME_LENGTH - 1
-	hlcoord 5, 6
+	hlcoord 6, 5
 	jr .StoreParams
 
 .StoreBoxIconParams:
 	ld a, BOX_NAME_LENGTH - 1
-	hlcoord 5, 4
+	hlcoord 7, 4
 	jr .StoreParams
 
 .StoreParams:
