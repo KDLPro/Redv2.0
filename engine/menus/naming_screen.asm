@@ -1016,7 +1016,7 @@ NamingScreen_GetLastCharacter:
 LoadNamingScreenGFX:
 	call ClearSprites
 	callfar ClearSpriteAnims
-	call LoadStandardFont
+	call LoadNamingScreenFont
 	call LoadFontsExtra
 
 	ld de, NamingScreenGFX_MiddleLine

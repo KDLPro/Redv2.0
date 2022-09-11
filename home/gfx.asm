@@ -101,6 +101,10 @@ UpdatePlayerSprite::
 LoadStandardFont::
 	farcall _LoadStandardFont
 	ret
+
+LoadNamingScreenFont::
+	farcall _LoadNamingScreenFont
+	ret
 	
 LoadBattleCoreFont::
 	farcall _LoadBattleCoreFont
