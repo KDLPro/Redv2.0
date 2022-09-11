@@ -6048,7 +6048,7 @@ MoveInfoBox:
 	farcall UpdateMoveData
 	ld a, [wPlayerMoveStruct + MOVE_ANIM]
 	ld b, a
-	hlcoord 2, 8
+	hlcoord 1, 8
 	predef PrintMoveType
 
 .done
@@ -6069,11 +6069,11 @@ MoveInfoBox:
 
 
 .PrintPP:
-	hlcoord 5, 11
+	hlcoord 4, 11
 	ld a, [wLinkMode] ; What's the point of this check?
 	cp LINK_MOBILE
 	jr c, .ok
-	hlcoord 5, 11
+	hlcoord 4, 11
 .ok
 	push hl
 	ld de, wStringBuffer1
