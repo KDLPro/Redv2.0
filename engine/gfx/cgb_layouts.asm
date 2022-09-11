@@ -117,10 +117,6 @@ _CGB_BattleColors:
 	call ApplyPals
 _CGB_FinishBattleScreenLayout:
 	call InitPartyMenuBGPal7
-	hlcoord 0, 0, wAttrmap
-	ld bc, SCREEN_WIDTH * SCREEN_HEIGHT
-	ld a, PAL_BATTLE_BG_ENEMY_HP
-	call ByteFill
 	hlcoord 0, 4, wAttrmap
 	lb bc, 8, 10
 	ld a, PAL_BATTLE_BG_PLAYER
@@ -129,11 +125,11 @@ _CGB_FinishBattleScreenLayout:
 	lb bc, 7, 10
 	ld a, PAL_BATTLE_BG_ENEMY
 	call FillBoxCGB
-	hlcoord 2, 0, wAttrmap
+	hlcoord 0, 2, wAttrmap
 	lb bc, 2, 10
 	ld a, PAL_BATTLE_BG_ENEMY_HP
 	call FillBoxCGB
-	hlcoord 12, 7, wAttrmap
+	hlcoord 10, 7, wAttrmap
 	lb bc, 3, 10
 	ld a, PAL_BATTLE_BG_PLAYER_HP
 	call FillBoxCGB
