@@ -3903,6 +3903,7 @@ ShowSetEnemyMonAndSendOutAnimation:
 NewEnemyMonStatus:
 	farcall ResetEnemyDamageTakenThisTurn
 	call SpeedCheckWhoGoesFirst
+	farcall SpeedCheckWhoGoesFirst
 	xor a
 	ld [wLastEnemyCounterMove], a
 	ld [wLastEnemyMove], a
@@ -4384,6 +4385,7 @@ SendOutPlayerMon:
 NewBattleMonStatus:
 	farcall ResetPlayerDamageTakenThisTurn
 	call SpeedCheckWhoGoesFirst
+	farcall SpeedCheckWhoGoesFirst
 	xor a
 	ld [wLastPlayerCounterMove], a
 	ld [wLastPlayerMove], a
