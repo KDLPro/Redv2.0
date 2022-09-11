@@ -11,6 +11,8 @@ _ReturnToBattle_UseBall:
 	farcall GetTrainerBackpic
 .continue
 	farcall GetEnemyMonFrontpic
+	ld a, PAL_BATTLE_OB_RED
+	ld [wBattleAnimTempPalette], a
 	farcall _LoadBattleFontsHPBar
 	call GetMemSGBLayout
 	call CloseWindow

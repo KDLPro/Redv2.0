@@ -74,6 +74,6 @@ GetMoveCategoryIcon:
 .CategoryImagesOAMData
 ; positions are backwards since
 ; we load them in reverse order
-	db $48, $44 ; y/x - right
-	db $48, $3c ; y/x - left
+	db $48, $3c ; y/x - right
+	db $48, $34 ; y/x - left
 	
