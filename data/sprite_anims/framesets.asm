@@ -128,13 +128,13 @@ SpriteAnimFrameData:
 	dorestart
 
 .Frameset_TextEntryCursor:
-	frame SPRITE_ANIM_OAMSET_TEXT_ENTRY_CURSOR,  1
-	dowait 1
+	frame SPRITE_ANIM_OAMSET_TEXT_ENTRY_CURSOR,  4
+	dowait 4
 	dorestart
 
 .Frameset_TextEntryCursorBig:
-	frame SPRITE_ANIM_OAMSET_TEXT_ENTRY_CURSOR_BIG,  1
-	dowait 1
+	frame SPRITE_ANIM_OAMSET_TEXT_ENTRY_CURSOR_BIG,  4
+	dowait 4
 	dorestart
 
 .Frameset_GameFreakLogo:
