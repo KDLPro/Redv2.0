@@ -1111,24 +1111,6 @@ FindEnemyMonsImmuneToOrResistsLastCounterMove:
 	cp 4
 	jr nc, .stalled
 	
-	; If the Pokemon is faster than the player...
-	push hl
-	push bc
-	ld bc, MON_SPD
-	add hl, bc
-	
-	inc hl
-	ld a, [hld]
-	ld b, a
-	ld a, [wBattleMonSpeed + 1]
-	cp b
-	ld a, [hl]
-	ld b, a
-	ld a, [wBattleMonSpeed]
-	sbc b
-	pop bc
-	pop hl
-	jr nc, .next
 	
 .stalled
 	ld a, [hl]
@@ -1190,25 +1172,6 @@ FindEnemyMonsImmuneToOrResistsLastCounterMoveReverse:
 	cp 4
 	jr nc, .stalled
 	
-	; If the Pokemon is faster than the player...
-	push hl
-	push bc
-	ld bc, MON_SPD
-	add hl, bc
-	
-	inc hl
-	ld a, [hld]
-	ld b, a
-	ld a, [wBattleMonSpeed + 1]
-	cp b
-	ld a, [hl]
-	ld b, a
-	ld a, [wBattleMonSpeed]
-	sbc b
-	pop bc
-	pop hl
-	jr nc, .next
-
 .stalled
 	ld a, [hl]
 	ld [wCurSpecies], a
@@ -1551,27 +1514,6 @@ FindEnemyMonsThatResistPlayer:
 	jr nc, .dont_choose_mon
 	cp NO_EFFECT
 	jr z, .choose_mon
-	
-	pop hl
-	push hl
-	; If the Pokemon is faster than the player...
-	push hl
-	push bc
-	ld bc, MON_SPD
-	add hl, bc
-	
-	inc hl
-	ld a, [hld]
-	ld b, a
-	ld a, [wBattleMonSpeed + 1]
-	cp b
-	ld a, [hl]
-	ld b, a
-	ld a, [wBattleMonSpeed]
-	sbc b
-	pop bc
-	pop hl
-	jr c, .choose_mon
 	
 	ld a, [wEnemyMonStatus]
 	bit FRZ, a
