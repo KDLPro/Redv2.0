@@ -270,7 +270,7 @@ NUM_ATTACKS EQU const_value - 1
 	const ANIM_BRN               ; 105
 	const ANIM_PSN               ; 106
 	const ANIM_SAP               ; 107
-	const ANIM_FRZ               ; 108
+	const ANIM_FRB               ; 108
 	const ANIM_PAR               ; 109
 	const ANIM_IN_LOVE           ; 10a
 	const ANIM_IN_SANDSTORM      ; 10b

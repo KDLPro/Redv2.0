@@ -191,48 +191,6 @@ BattleCommand_CheckTurn:
 	jp EndTurn
 
 .not_asleep
-
-	ld hl, wBattleMonStatus
-	bit FRZ, [hl]
-	jr z, .not_frozen
-
-	; Flame Wheel and Sacred Fire thaw the user.
-	ld a, [wCurPlayerMove]
-	cp FLAME_WHEEL
-	jr z, .defrost
-	cp SACRED_FIRE
-	jr z, .defrost
-
-	ld a, [wPlayerJustGotFrozen]
-	and a
-	jr nz, .frozen
-	ld a, [wPlayerFrozenTurns]
-	and a
-	jp z, .defrost
-	
-.frozen
-	ld de, ANIM_FRZ
-	call FarPlayBattleAnimation
-
-	ld hl, FrozenSolidText
-	call StdBattleTextbox
-
-	call CantMove
-	jp EndTurn
-
-.defrost
-	xor a
-	ld [wBattleMonStatus], a
-	ld a, [wCurBattleMon]
-	ld hl, wPartyMon1Status
-	call GetPartyLocation
-	ld [hl], 0
-	call UpdateBattleHuds
-	ld hl, DefrostedOpponentText
-	call StdBattleTextbox
-	
-.not_frozen
-
 	ld hl, wPlayerSubStatus3
 	bit SUBSTATUS_FLINCHED, [hl]
 	jr z, .not_flinched
@@ -441,53 +399,6 @@ CheckEnemyTurn:
 	jp EndTurn
 
 .not_asleep
-
-	ld hl, wEnemyMonStatus
-	bit FRZ, [hl]
-	jr z, .not_frozen
-
-	; Flame Wheel and Sacred Fire thaw the user.
-	ld a, [wCurEnemyMove]
-	cp FLAME_WHEEL
-	jr z, .defrost
-	cp SACRED_FIRE
-	jr z, .defrost
-
-	ld a, [wEnemyJustGotFrozen]
-	and a
-	jr nz, .frozen
-	ld a, [wEnemyFrozenTurns]
-	and a
-	jp z, .defrost
-
-.frozen
-	ld de, ANIM_FRZ
-	call FarPlayBattleAnimation
-
-	ld hl, FrozenSolidText
-	call StdBattleTextbox
-	
-	call CantMove
-	jp EndTurn
-	
-.defrost
-	xor a
-	ld [wEnemyMonStatus], a
-
-	ld a, [wBattleMode]
-	dec a
-	jr z, .wild
-	ld a, [wCurOTMon]
-	ld hl, wOTPartyMon1Status
-	call GetPartyLocation
-	ld [hl], 0
-.wild
-	call UpdateBattleHuds
-	ld hl, DefrostedOpponentText
-	jp StdBattleTextbox
-
-.not_frozen
-
 	ld hl, wEnemySubStatus3
 	bit SUBSTATUS_FLINCHED, [hl]
 	jr z, .not_flinched
@@ -3693,8 +3604,8 @@ CheckForStatusIfAlreadyHasAny:
 	
 	ld a, BATTLE_VARS_STATUS_OPP
 	call GetBattleVar
-	bit FRZ, a
-	ld hl, AlreadyFrozenText
+	bit FRB, a
+	ld hl, HasAFrostbiteText
 	ret nz
 	
 	bit PAR, a
@@ -4095,8 +4006,7 @@ BattleCommand_BurnTarget:
 	call GetBattleVarAddr
 	set BRN, [hl]
 	call UpdateOpponentInParty
-	ld hl, ApplyBrnEffectOnAttack
-	call CallBattleCore
+	farcall _ApplyBrnEffectOnAttack
 	ld de, ANIM_BRN
 	call PlayOpponentBattleAnim
 	call RefreshBattleHuds
@@ -4109,7 +4019,7 @@ BattleCommand_BurnTarget:
 
 Defrost:
 	ld a, [hl]
-	and 1 << FRZ
+	and 1 << FRB
 	ret z
 
 	xor a
@@ -4132,8 +4042,8 @@ Defrost:
 	ld hl, DefrostedOpponentText
 	jp StdBattleTextbox
 
-BattleCommand_FreezeTarget:
-; freezetarget
+BattleCommand_FrostbiteTarget:
+; frostbitetarget
 
 	xor a
 	ld [wNumHits], a
@@ -4149,11 +4059,11 @@ BattleCommand_FreezeTarget:
 	ld a, [wBattleWeather]
 	cp WEATHER_SUN
 	ret z
-	call CheckMoveTypeMatchesTarget ; Don't freeze an Ice-type
+	call CheckMoveTypeMatchesTarget ; Don't Frostbite an Ice-type
 	ret z
 	call GetOpponentItem
 	ld a, b
-	cp HELD_PREVENT_FREEZE
+	cp HELD_PREVENT_FROSTBITE
 	ret z
 	ld a, [wEffectFailed]
 	and a
@@ -4162,27 +4072,17 @@ BattleCommand_FreezeTarget:
 	ret nz
 	ld a, BATTLE_VARS_STATUS_OPP
 	call GetBattleVarAddr
-	set FRZ, [hl]
+	set FRB, [hl]
 	call UpdateOpponentInParty
-	ld de, ANIM_FRZ
+	farcall _ApplyFrbEffectOnSpclAttack
+	ld de, ANIM_FRB
 	call PlayOpponentBattleAnim
 	call RefreshBattleHuds
 
-	ld hl, WasFrozenText
+	ld hl, GotAFrostbiteText
 	call StdBattleTextbox
 
 	farcall UseHeldStatusHealingItem
-	ret nz
-
-	call OpponentCantMove
-	call EndRechargeOpp
-	ld hl, wEnemyJustGotFrozen
-	ldh a, [hBattleTurn]
-	and a
-	jr z, .finish
-	ld hl, wPlayerJustGotFrozen
-.finish
-	ld [hl], $1
 	ret
 
 BattleCommand_ParalyzeTarget:
@@ -4925,7 +4825,7 @@ BattleCommand_TriStatusChance:
 
 .StatusCommands:
 	dw BattleCommand_ParalyzeTarget ; paralyze
-	dw BattleCommand_FreezeTarget ; freeze
+	dw BattleCommand_FrostbiteTarget ; Frostbite
 	dw BattleCommand_BurnTarget ; burn
 
 BattleCommand_Curl:
@@ -4969,11 +4869,9 @@ CalcPlayerStats:
 
 	call BattleCommand_SwitchTurn
 
-	ld hl, ApplyPrzEffectOnSpeed
-	call CallBattleCore
-
-	ld hl, ApplyBrnEffectOnAttack
-	call CallBattleCore
+	farcall _ApplyPrzEffectOnSpeed
+	farcall _ApplyBrnEffectOnAttack
+	farcall _ApplyFrbEffectOnSpclAttack
 
 	jp BattleCommand_SwitchTurn
 
@@ -4987,11 +4885,9 @@ CalcEnemyStats:
 
 	call BattleCommand_SwitchTurn
 
-	ld hl, ApplyPrzEffectOnSpeed
-	call CallBattleCore
-
-	ld hl, ApplyBrnEffectOnAttack
-	call CallBattleCore
+	farcall _ApplyPrzEffectOnSpeed
+	farcall _ApplyBrnEffectOnAttack
+	farcall _ApplyFrbEffectOnSpclAttack
 
 	jp BattleCommand_SwitchTurn
 
@@ -5533,7 +5429,7 @@ BattleCommand_FakeOut:
 
 	ld a, BATTLE_VARS_STATUS_OPP
 	call GetBattleVar
-	and 1 << FRZ | SLP
+	and 1 << FRB | SLP
 	jr nz, .fail
 
 	call CheckOpponentWentFirst
@@ -5550,7 +5446,7 @@ BattleCommand_FlinchTarget:
 
 	ld a, BATTLE_VARS_STATUS_OPP
 	call GetBattleVar
-	and 1 << FRZ | SLP
+	and SLP
 	ret nz
 
 	call CheckOpponentWentFirst
@@ -6513,9 +6409,9 @@ BattleCommand_Defrost:
 
 	ld a, BATTLE_VARS_STATUS
 	call GetBattleVarAddr
-	bit FRZ, [hl]
+	bit FRB, [hl]
 	ret z
-	res FRZ, [hl]
+	res FRB, [hl]
 
 ; Don't update the enemy's party struct in a wild battle.
 
@@ -6530,7 +6426,7 @@ BattleCommand_Defrost:
 .party
 	ld a, MON_STATUS
 	call UserPartyAttr
-	res FRZ, [hl]
+	res FRB, [hl]
 
 .done
 	call RefreshBattleHuds

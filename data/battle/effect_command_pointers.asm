@@ -27,7 +27,7 @@ BattleCommandPointers:
 	dw BattleCommand_DrainTarget
 	dw BattleCommand_EatDream
 	dw BattleCommand_BurnTarget
-	dw BattleCommand_FreezeTarget
+	dw BattleCommand_FrostbiteTarget
 	dw BattleCommand_ParalyzeTarget
 	dw BattleCommand_Selfdestruct
 	dw BattleCommand_MirrorMove

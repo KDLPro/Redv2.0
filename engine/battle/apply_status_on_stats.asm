@@ -88,25 +88,31 @@ _ApplyCrsEffectOnSpclAttack:
 	bit SUBSTATUS_CURSE, [hl]
 	ret z
 	ld hl, wBattleMonSpclAtk + 1
-	ld a, [hld]
-	ld b, a
-	ld a, [hl]
-	srl a
-	rr b
-	ld [hli], a
-	or b
-	jr nz, .player_ok
-	ld b, $1 ; min attack
-
-.player_ok
-	ld [hl], b
-	ret
+	jr HalveSpecialAttack
 
 .enemy
 	ld hl, wEnemySubStatus1
 	bit SUBSTATUS_CURSE, [hl]
 	ret z
 	ld hl, wBattleMonSpclAtk + 1
+	jr HalveSpecialAttack
+
+_ApplyFrbEffectOnSpclAttack:
+	ldh a, [hBattleTurn]
+	and a
+	jr z, .enemy
+	ld a, [wBattleMonStatus]
+	and 1 << FRB
+	ret z
+	ld hl, wBattleMonSpclAtk + 1
+	jr HalveSpecialAttack
+
+.enemy
+	ld a, [wEnemyMonStatus]
+	and 1 << FRB
+	ret z
+	ld hl, wEnemyMonSpclAtk + 1
+HalveSpecialAttack:
 	ld a, [hld]
 	ld b, a
 	ld a, [hl]
@@ -114,10 +120,10 @@ _ApplyCrsEffectOnSpclAttack:
 	rr b
 	ld [hli], a
 	or b
-	jr nz, .enemy_ok
-	ld b, $1 ; min attack
+	jr nz, .ok
+	ld b, $1 ; min special attack
 
-.enemy_ok
+.ok
 	ld [hl], b
-	ret	
+	ret
 	

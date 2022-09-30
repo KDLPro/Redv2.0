@@ -1361,7 +1361,7 @@ AI_Smart_Paralyze:
 	call AICheckPlayerQuarterHP
 	jr nc, .discourage
 	
-; Encourage this move if player has good matchup.
+; Check if player has good matchup.
 	push hl
 	farcall CheckPlayerMoveTypeMatchups
 	pop hl
@@ -1382,7 +1382,7 @@ AI_Smart_Paralyze:
 .encourage
 ; 60% chance to encourage this move if its HP is above 25%
 ; and if enemy is faster or speed ties with player
-; or if enemy has good matchup against player
+; or if enemy has bad matchup against player
 	call AI_60_40
 	ret c
 	jp AI_Encourage
@@ -1665,7 +1665,7 @@ AI_Smart_SkullBash:
 AI_Smart_HealBell:
 ; Dismiss this move if none of the opponent's Pokemon is statused.
 ; Encourage this move if the enemy is statused.
-; 50% chance to greatly encourage this move if the enemy is fast asleep or frozen.
+; 50% chance to greatly encourage this move if the enemy is fast asleep or has a frostbite.
 
 	push hl
 	ld a, [wOTPartyCount]
@@ -1704,7 +1704,7 @@ AI_Smart_HealBell:
 	jr z, .ok
 	dec [hl]
 .ok
-	and 1 << FRZ | SLP
+	and 1 << FRB | SLP
 	ret z
 	call AI_50_50
 	ret c
@@ -1940,10 +1940,10 @@ AI_Smart_Nightmare:
 	jp AI_Encourage
 
 AI_Smart_FlameWheel:
-; Use this move if the enemy is frozen.
+; Use this move if the enemy has a frostbite.
 
 	ld a, [wEnemyMonStatus]
-	bit FRZ, a
+	bit FRB, a
 	ret z
 rept 5
 	dec [hl]
@@ -2664,7 +2664,7 @@ AI_Smart_Flinch:
 ; 60% chance to encourage this move if enemy has low hp.
 ; Greatly discourage this move if enemy is asleep or frozen.
 	ld a, [wBattleMonStatus]
-	bit FRZ, a
+	bit FRB, a
 	jp nz, AI_Discourage_Greatly
 	and SLP
 	jp nz, AI_Discourage_Greatly
@@ -2985,7 +2985,7 @@ INCLUDE "data/battle/ai/stall_moves.asm"
 AI_Aggressive:
 ; Be aggressive when the player has a status condition.
 	ld a, [wBattleMonStatus]
-	bit FRZ, a
+	bit FRB, a
 	jr nz, .start
 	and SLP
 	jr nz, .start

@@ -296,8 +296,8 @@ BurnHealDesc:
 	next "#mon.@"
 
 IceHealDesc:
-	db   "Defrosts frozen"
-	next "#mon.@"
+	db   "Heals a frostbit-"
+	next "ten #mon.@"
 
 AwakeningDesc:
 	db   "Awakens sleeping"
@@ -566,7 +566,7 @@ PrzCureBerryDesc:
 
 BurntBerryDesc:
 	db   "A self-cure for"
-	next "freezing. (HOLD)@"
+	next "frostbite. (HOLD)@"
 
 IceBerryDesc:
 	db   "A self-heal for a"

@@ -526,8 +526,8 @@ PlaceNonFaintStatus:
 	ld de, BrnString
 	bit BRN, a
 	jr nz, .place
-	ld de, FrzString
-	bit FRZ, a
+	ld de, FrbString
+	bit FRB, a
 	jr nz, .place
 	ld de, ParString
 	bit PAR, a
@@ -548,7 +548,7 @@ PlaceNonFaintStatus:
 SlpString: db "<SLP1><SLP2>@"
 PsnString: db "<PSN1><PSN2>@"
 BrnString: db "<BRN1><BRN2>@"
-FrzString: db "<FRZ1><FRZ2>@"
+FrbString: db "<FRB1><FRB2>@"
 ParString: db "<PAR1><PAR2>@"
 
 ListMoves:

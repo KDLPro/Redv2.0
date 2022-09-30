@@ -2,6 +2,10 @@ CheckPlayerMoveTypeMatchups:
 ; Check how well the moves you've already used
 ; fare against the enemy's Pokemon.  Used to
 ; score a potential switch.
+
+; greater than 10: enemy has good matchup vs player
+; 10: decent matchup
+; less than 10: enemy has bad matchup vs. player
 	push hl
 	push de
 	push bc
@@ -459,7 +463,7 @@ CheckAbleToSwitch:
 	 ; Randomize switch if there is status that
 	 ; prevents the enemy from attacking
 	ld a, [wEnemyMonStatus]
-	bit FRZ, a
+	bit FRB, a
 	jr nz, .stall_switch
 	bit PAR, a
 	jr nz, .stall_switch
@@ -527,7 +531,7 @@ CheckAbleToSwitch:
 
 .switch ; Try to switch
 	ld a, [wBattleMonStatus]
-	bit FRZ, a
+	bit FRB, a
 	jp nz, .smartcheck_speed_matchup_check
 	and SLP
 	jp nz, .smartcheck_speed_matchup_check
@@ -1473,7 +1477,7 @@ FindEnemyMonsThatResistPlayer:
 	push hl
 	
 	ld a, [wBattleMonStatus]
-	bit FRZ, a
+	bit FRB, a
 	jp nz, .choose_mon
 	cp 2 ; at least one more turn before waking up
 	jp nc, .choose_mon
@@ -1516,7 +1520,7 @@ FindEnemyMonsThatResistPlayer:
 	jr z, .choose_mon
 	
 	ld a, [wEnemyMonStatus]
-	bit FRZ, a
+	bit FRB, a
 	jr nz, .stall_status
 	bit PAR, a
 	jr nz, .stall_status

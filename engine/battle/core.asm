@@ -179,8 +179,6 @@ endr
 	ld [wPlayerIsSwitching], a
 	ld [wEnemyIsSwitching], a
 	ld [wBattleHasJustStarted], a
-	ld [wPlayerJustGotFrozen], a
-	ld [wEnemyJustGotFrozen], a
 	ld [wCurDamage], a
 	ld [wCurDamage + 1], a
 
@@ -300,7 +298,6 @@ Fainting:
 	jp Faint_PlayerFirst
 
 NoMoreFaintingConditions:
-	call HandleDefrost
 	call HandleSafeguard
 	call HandleScreens
 	call HandleStatBoostingHeldItems
@@ -875,7 +872,7 @@ TryEnemyFlee:
 	jr nz, .Stay
 
 	ld a, [wEnemyMonStatus]
-	and 1 << FRZ | SLP
+	and SLP
 	jr nz, .Stay
 
 	ld a, [wTempEnemyMonSpecies]
@@ -1123,15 +1120,22 @@ ResidualDamage:
 
 	ld a, BATTLE_VARS_STATUS
 	call GetBattleVar
-	and 1 << PSN | 1 << BRN
+	and 1 << PSN | 1 << BRN | 1 << FRB
 	jr z, .did_psn_brn
 
 	ld hl, HurtByPoisonText
 	ld de, ANIM_PSN
-	and 1 << BRN
-	jr z, .got_anim
+	bit PSN, a
+	jr nz, .got_anim
+
 	ld hl, HurtByBurnText
 	ld de, ANIM_BRN
+	bit BRN, a
+	jr nz, .got_anim
+
+
+	ld hl, HurtByFrostbiteText
+	ld de, ANIM_FRB
 .got_anim
 
 	push de
@@ -1666,139 +1670,6 @@ HandleFutureSight:
 
 	call UpdateBattleMonInParty
 	jp UpdateEnemyMonInParty
-
-HandleDefrost:
-	ld a, [wEnemyShouldGoFirst]
-	cp ENEMY_FIRST
-	jr z, .enemy_first
-	call .do_player_turn
-	jp .do_enemy_turn
-
-.enemy_first
-	call .do_enemy_turn
-.do_player_turn
-	call HasUserFainted
-	ret z
-	ld a, [wBattleMonStatus]
-	bit FRZ, a
-	ret z
-
-	ld a, [wPlayerIsSwitching]
-	and a
-	jr nz, .switch_roll
-
-	ld a, [wPlayerJustGotFrozen]
-	and a
-	jr z, .defrosting
-	xor a
-	ld [wPlayerJustGotFrozen], a
-	call BattleRandom
-	cp 21 percent
-	jr c, .one_turn
-	cp 61 percent
-	jr c, .two_turns
-	jr .three_turns
-
-.switch_roll
-	call BattleRandom
-	cp 51 percent
-	jr c, .one_turn
-	jr .two_turns
-
-.one_turn
-	ld a, 1
-	ld [wPlayerFrozenTurns], a
-	jr .go_last_p
-
-.two_turns
-	ld a, 2
-	ld [wPlayerFrozenTurns], a
-	jr .go_last_p
-
-.three_turns
-	ld a, 3
-	ld [wPlayerFrozenTurns], a
-	jr .go_last_p
-
-.go_last_p
-	ld a, [wPlayerIsSwitching]
-	and a
-	ret nz
-	ld a, [wEnemyGoesFirst]
-	and a
-	ret z
-.defrosting
-	ld a, [wPlayerFrozenTurns]
-	and a
-	jr nz, .decr_frozen
-	call .switch_roll
-	ld a, [wPlayerFrozenTurns]
-.decr_frozen
-	dec a
-	ld [wPlayerFrozenTurns], a
-	ret
-
-.do_enemy_turn
-	call HasUserFainted
-	ret z
-	ld a, [wEnemyMonStatus]
-	bit FRZ, a
-	ret z
-
-	ld a, [wEnemyIsSwitching]
-	and a
-	jr nz, .switch_roll_e
-
-	ld a, [wEnemyJustGotFrozen]
-	and a
-	jr z, .defrosting_e
-	xor a
-	ld [wEnemyJustGotFrozen], a
-	call BattleRandom
-	cp 21 percent
-	jr c, .one_turn_e
-	cp 61 percent
-	jr c, .two_turns_e
-	jr .three_turns_e
-
-.switch_roll_e
-	call BattleRandom
-	cp 51 percent
-	jr c, .one_turn_e
-	jr .two_turns_e
-
-.one_turn_e
-	ld a, 1
-	ld [wEnemyFrozenTurns], a
-	jr .go_last_e
-
-.two_turns_e
-	ld a, 2
-	ld [wEnemyFrozenTurns], a
-	jr .go_last_e
-
-.three_turns_e
-	ld a, 3
-	ld [wEnemyFrozenTurns], a
-	jr .go_last_e
-
-.go_last_e
-	ld a, [wEnemyIsSwitching]
-	and a
-	ret nz
-	ld a, [wEnemyGoesFirst]
-	and a
-	ret nz
-.defrosting_e
-	ld a, [wEnemyFrozenTurns]
-	and a
-	jr nz, .decr_frozen_e
-	call .switch_roll_e
-	ld a, [wEnemyFrozenTurns]
-.decr_frozen_e
-	dec a
-	ld [wEnemyFrozenTurns], a
-	ret
 
 HandleSafeguard:
 	ld a, [wEnemyShouldGoFirst]
@@ -3875,7 +3746,7 @@ ShowSetEnemyMonAndSendOutAnimation:
 
 .not_shiny
 	ld bc, wTempMonSpecies
-	farcall CheckFaintedFrzSlp
+	farcall CheckFaintedSlp
 	jr c, .skip_cry
 
 	farcall CheckBattleScene
@@ -4368,7 +4239,7 @@ SendOutPlayerMon:
 	call GetPartyParamLocation
 	ld b, h
 	ld c, l
-	farcall CheckFaintedFrzSlp
+	farcall CheckFaintedSlp
 	jr c, .statused
 	ld a, $f0
 	ld [wCryTracks], a
@@ -5916,23 +5787,6 @@ MoveInfoBox:
 	call Textbox
 	call MobileTextBorder
 
-	ld a, [wPlayerDisableCount]
-	and a
-	jr z, .not_disabled
-
-	swap a
-	and $f
-	ld b, a
-	ld a, [wMenuCursorY]
-	cp b
-	jr nz, .not_disabled
-
-	hlcoord 0, 9
-	ld de, .Disabled
-	call PlaceString
-	jp .done
-
-.not_disabled
 	ld hl, wMenuCursorY
 	dec [hl]
 	call SetPlayerTurn
@@ -5944,6 +5798,23 @@ MoveInfoBox:
 	ld a, [hl]
 	ld [wCurPlayerMove], a
 
+	ld a, [wPlayerDisableCount]
+	and a
+	jr z, .not_disabled
+
+	swap a
+	and $f
+	ld b, a
+	ld a, [wMenuCursorY]
+	cp b
+	jr nz, .not_disabled
+
+	hlcoord 0, 11
+	ld de, .Disabled
+	call PlaceString
+	jp .display_pow
+
+.not_disabled
 	ld a, [wCurBattleMon]
 	ld [wCurPartyMon], a
 	ld a, WILDMON
@@ -5980,7 +5851,8 @@ MoveInfoBox:
 	hlcoord 0, 11
 	ld de, .PP_word
 	call PlaceString
-	
+
+.display_pow
 	hlcoord 0, 9
 	ld de, .Pow
 	call PlaceString
@@ -6975,7 +6847,8 @@ ApplyStatusEffectOnEnemyStats:
 ApplyStatusEffectOnStats:
 	ldh [hBattleTurn], a
 	call ApplyPrzEffectOnSpeed
-	jp ApplyBrnEffectOnAttack
+	call ApplyBrnEffectOnAttack
+	jp ApplyFrbEffectOnSpclAttack
 
 ApplyPrzEffectOnSpeed:
 	farcall _ApplyPrzEffectOnSpeed
@@ -6987,6 +6860,10 @@ ApplyBrnEffectOnAttack:
 
 ApplyCrsEffectOnSpclAttack:
 	farcall _ApplyCrsEffectOnSpclAttack
+	ret
+
+ApplyFrbEffectOnSpclAttack:
+	farcall _ApplyFrbEffectOnSpclAttack
 	ret
 
 ApplyStatLevelMultiplierOnAllStats:

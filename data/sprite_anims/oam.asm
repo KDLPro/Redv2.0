@@ -468,17 +468,15 @@ SpriteAnimOAMData:
 	dbsprite  0,  0,  0,  0, $00, 0 | X_FLIP | Y_FLIP
 
 .OAMData_TextEntryCursorBig:
-	db 10
-	dbsprite  0, -1,  0,  7, $00, 0
-	dbsprite  1, -1,  0,  7, $01, 0
-	dbsprite  2, -1,  0,  7, $01, 0
-	dbsprite  3, -1,  0,  7, $01, 0
-	dbsprite  4, -1,  0,  7, $00, 0 | X_FLIP
+	db 8
+	dbsprite  0, -0,  0,  0, $00, 0
+	dbsprite  1, -0,  0,  0, $01, 0
+	dbsprite  2, -0,  0,  0, $01, 0
+	dbsprite  3, -0,  0,  0, $00, 0 | X_FLIP
 	dbsprite  0,  0,  0,  0, $00, 0 | Y_FLIP
 	dbsprite  1,  0,  0,  0, $01, 0 | Y_FLIP
 	dbsprite  2,  0,  0,  0, $01, 0 | Y_FLIP
-	dbsprite  3,  0,  0,  0, $01, 0 | Y_FLIP
-	dbsprite  4,  0,  0,  0, $00, 0 | X_FLIP | Y_FLIP
+	dbsprite  3,  0,  0,  0, $00, 0 | X_FLIP | Y_FLIP
 
 .OAMData_GSGameFreakLogo:
 	db 15

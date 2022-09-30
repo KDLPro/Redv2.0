@@ -411,9 +411,9 @@ WokeUpText:
 	line "woke up!"
 	autodone
 
-FrozenSolidText:
-	text "<USER>"
-	line "is frozen solid!"
+HurtByFrostbiteText:
+	text "<USER>'s"
+	line "hurt by frostbite!"
 	autodone
 
 FlinchedText:
@@ -793,14 +793,15 @@ DefrostedOpponentText:
 	line "was defrosted!"
 	autodone
 
-WasFrozenText:
+GotAFrostbiteText:
 	text "<TARGET>"
-	line "was frozen solid!"
+	line "got a frostbite!"
 	autodone
 	
-AlreadyFrozenText:
-	text "<TARGET>'s"
-	line "already frozen!"
+HasAFrostbiteText:
+	text "<TARGET>"
+	line "already has"
+	scroll "a frostbite!"
 	autodone
 
 WontRiseAnymoreText:

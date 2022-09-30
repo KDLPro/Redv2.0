@@ -2,7 +2,7 @@
 
 HeldStatusHealingEffects:
 	db HELD_HEAL_POISON,   1 << PSN | 1 << TOX
-	db HELD_HEAL_FREEZE,   1 << FRZ
+	db HELD_HEAL_FROSTBITE,   1 << FRB
 	db HELD_HEAL_BURN,     1 << BRN
 	db HELD_HEAL_SLEEP,    SLP
 	db HELD_HEAL_PARALYZE, 1 << PAR

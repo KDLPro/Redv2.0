@@ -325,7 +325,7 @@ PokeBallEffect:
 .statuscheck
 	ld b, a
 	ld a, [wEnemyMonStatus]
-	and 1 << FRZ | SLP
+	and 1 << FRB | SLP
 	ld c, 10
 	jr nz, .addstatus
 	ld a, [wEnemyMonStatus]

@@ -95,7 +95,7 @@ BurnHit:
 	burntarget
 	endmove
 
-FreezeHit:
+FrostbiteHit:
 	checkobedience
 	usedmovetext
 	doturn
@@ -113,7 +113,7 @@ FreezeHit:
 	supereffectivetext
 	checkfaint
 	buildopponentrage
-	freezetarget
+	frostbitetarget
 	endmove
 
 ParalyzeHit:

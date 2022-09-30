@@ -5,7 +5,7 @@ MoveEffectsPointers:
 	dw PoisonHit
 	dw LeechHit
 	dw BurnHit
-	dw FreezeHit
+	dw FrostbiteHit
 	dw ParalyzeHit
 	dw Selfdestruct
 	dw DreamEater

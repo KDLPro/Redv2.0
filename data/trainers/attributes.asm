@@ -185,7 +185,7 @@ TrainerClassAttributes:
 	db NO_ITEM, NO_ITEM ; items
 	db 10 ; base reward
 	dw AI_BASIC | AI_SETUP | AI_TYPES | AI_OPPORTUNIST | AI_CAUTIOUS | AI_STATUS | AI_RISKY
-	dw CONTEXT_USE | SWITCH_SOMETIMES
+	dw CONTEXT_USE | SWITCH_OFTEN
 
 ; Gentleman
 	db NO_ITEM, NO_ITEM ; items
@@ -214,7 +214,7 @@ TrainerClassAttributes:
 ; Bug Catcher
 	db NO_ITEM, NO_ITEM ; items
 	db 4 ; base reward
-	dw AI_BASIC | AI_SETUP | AI_STATUS
+	dw AI_BASIC | AI_SETUP | AI_STATUS | AI_AGGRESSIVE
 	dw CONTEXT_USE | SWITCH_SOMETIMES
 
 ; Fisher

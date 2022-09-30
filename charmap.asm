@@ -123,8 +123,8 @@
 	charmap "└",         $be
 	charmap "┘",         $bf
 
-	charmap "<FRZ1>",    $c1
-	charmap "<FRZ2>",    $c2
+	charmap "<FRB1>",    $c1
+	charmap "<FRB2>",    $c2
 	charmap "<SLP1>",    $c3
 	charmap "<SLP2>",    $c4
 	charmap "<PAR1>",    $c5
@@ -136,9 +136,9 @@
 	charmap "<FNT1>",    $cb
 	charmap "<FNT2>",    $cc
 	
-	charmap "<PERCENT>", $cd
-	charmap "′",         $ce
-	charmap "″",         $cf
+	charmap "′",         $cd
+	charmap "″",         $ce
+	charmap "<PERCENT>", $cf
 
 	charmap "'d",        $d0
 	charmap "'l",        $d1
@@ -158,26 +158,26 @@
 	charmap "”",         $de ; closing quote
 
 	charmap "←",         $df
-	charmap "'",         $e0
-	charmap "<PK>",      $e1
-	charmap "<MN>",      $e2
-	charmap "-",         $e3
+	charmap "→",         $e0
+	charmap "▷",         $e1
+	charmap "▶",         $e2
+	charmap "▼",         $e3
+	charmap "'",         $e4
+	charmap "<PK>",      $e5
+	charmap "<MN>",      $e6
+	charmap "-",         $e7
 	
-	charmap "<PO>",      $e4
-	charmap "<KE>",      $e5
+	charmap "<PO>",      $e8
+	charmap "<KE>",      $e9
 
 
-	charmap "?",         $e6
-	charmap "!",         $e7
- 	charmap ".",         $e8
-	charmap "<DOT>",     $e8 ; decimal point; same as "."
-	charmap "&",         $e9
+	charmap "?",         $ea
+	charmap "!",         $eb
+ 	charmap ".",         $ec
+	charmap "<DOT>",     $ec ; decimal point; same as "."
+	charmap "&",         $ed
 
-	charmap "é",         $ea
-	charmap "→",         $eb
-	charmap "▷",         $ec
-	charmap "▶",         $ed
-	charmap "▼",         $ee
+	charmap "é",         $ee	
 	charmap "♂",         $ef
 	charmap "¥",         $f0
 	charmap "×",         $f1

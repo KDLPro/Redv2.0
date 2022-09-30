@@ -28,7 +28,7 @@ ENDM
 	command draintarget             ; 15
 	command eatdream                ; 16
 	command burntarget              ; 17
-	command freezetarget            ; 18
+	command frostbitetarget            ; 18
 	command paralyzetarget          ; 19
 	command selfdestruct            ; 1a
 	command mirrormove              ; 1b

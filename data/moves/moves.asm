@@ -19,7 +19,7 @@ Moves:
 	move MEGA_PUNCH,   EFFECT_NORMAL_HIT,         80, NORMAL,       PHYSICAL,		 85, 20,   0
 	move PAY_DAY,      EFFECT_PAY_DAY,            40, NORMAL,       PHYSICAL,		100, 20,   0
 	move FIRE_PUNCH,   EFFECT_BURN_HIT,           85, FIRE,         PHYSICAL,		100, 15,  10
-	move ICE_PUNCH,    EFFECT_FREEZE_HIT,         85, ICE,          PHYSICAL,		100, 15,  10
+	move ICE_PUNCH,    EFFECT_FROSTBITE_HIT,         85, ICE,          PHYSICAL,		100, 15,  10
 	move THUNDERPUNCH, EFFECT_PARALYZE_HIT,       85, ELECTRIC,     PHYSICAL,		100, 15,  10
 	move SCRATCH,      EFFECT_NORMAL_HIT,         40, NORMAL,       PHYSICAL,		100, 35,   0
 	move VICEGRIP,     EFFECT_NORMAL_HIT,         55, NORMAL,       PHYSICAL,		100, 30,   0
@@ -69,8 +69,8 @@ Moves:
 	move WATER_GUN,    EFFECT_NORMAL_HIT,         40, WATER,        SPECIAL,		100, 25,   0
 	move HYDRO_PUMP,   EFFECT_NORMAL_HIT,        120, WATER,        SPECIAL,		 80,  5,   0
 	move SURF,         EFFECT_NORMAL_HIT,         95, WATER,        SPECIAL,		100, 15,   0
-	move ICE_BEAM,     EFFECT_FREEZE_HIT,         95, ICE,          SPECIAL,		100, 10,  10
-	move BLIZZARD,     EFFECT_FREEZE_HIT,        120, ICE,          SPECIAL,		 70,  5,  10
+	move ICE_BEAM,     EFFECT_FROSTBITE_HIT,         95, ICE,          SPECIAL,		100, 10,  10
+	move BLIZZARD,     EFFECT_FROSTBITE_HIT,        120, ICE,          SPECIAL,		 70,  5,  10
 	move PSYBEAM,      EFFECT_CONFUSE_HIT,        65, PSYCHIC_TYPE, SPECIAL,		100, 20,  10
 	move BUBBLEBEAM,   EFFECT_SPEED_DOWN_HIT,     65, WATER,        SPECIAL,		100, 20,  10
 	move AURORA_BEAM,  EFFECT_ATTACK_DOWN_HIT,    65, ICE,          SPECIAL,		100, 20,  10
@@ -192,7 +192,7 @@ Moves:
 	move COTTON_SPORE, EFFECT_SPEED_DOWN_2,        0, GRASS,        STATUS,			 85, 40,   0
 	move REVERSAL,     EFFECT_REVERSAL,            1, FIGHTING,     PHYSICAL,		100, 15,   0
 	move SPITE,        EFFECT_SPITE,               0, GHOST,        STATUS,			100, 10,   0
-	move POWDER_SNOW,  EFFECT_FREEZE_HIT,         40, ICE,          SPECIAL,		100, 25,  10
+	move POWDER_SNOW,  EFFECT_FROSTBITE_HIT,         40, ICE,          SPECIAL,		100, 25,  10
 	move PROTECT,      EFFECT_PROTECT,             0, NORMAL,       STATUS,			100, 10,   0
 	move MACH_PUNCH,   EFFECT_PRIORITY_HIT,       40, FIGHTING,     PHYSICAL,		100, 30,   0
 	move SCARY_FACE,   EFFECT_SPEED_DOWN_2,        0, NORMAL,       STATUS,			 90, 10,   0

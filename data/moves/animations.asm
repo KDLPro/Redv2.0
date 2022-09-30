@@ -265,7 +265,7 @@ BattleAnimations::
 	dw BattleAnim_Brn
 	dw BattleAnim_Psn
 	dw BattleAnim_Sap
-	dw BattleAnim_Frz
+	dw BattleAnim_Frb
 	dw BattleAnim_Par
 	dw BattleAnim_InLove
 	dw BattleAnim_InSandstorm
@@ -546,7 +546,7 @@ BattleAnim_Sap:
 	anim_wait 16
 	anim_ret
 
-BattleAnim_Frz:
+BattleAnim_Frb:
 	anim_1gfx ANIM_GFX_ICE
 	anim_obj ANIM_OBJ_FROZEN, 44, 110, $0
 	anim_sound 0, 0, SFX_SHINE
