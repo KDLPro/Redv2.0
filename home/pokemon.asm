@@ -15,6 +15,22 @@ IsAPokemon::
 	and a
 	ret
 
+
+DrawEnemyHPBar::
+; Draw an HP bar d tiles long at hl
+; Fill it up to e pixels
+
+	push hl
+	push de
+	push bc
+
+; Place 'HP:'
+	ld a, $79
+	ld [hli], a
+	ld a, $61
+	ld [hli], a
+	jr DrawHPBar
+
 DrawBattleHPBar::
 ; Draw an HP bar d tiles long at hl
 ; Fill it up to e pixels
@@ -28,7 +44,8 @@ DrawBattleHPBar::
 	ld [hli], a
 	ld a, $61
 	ld [hli], a
-
+	; fallthrough
+DrawHPBar:
 ; Draw a template
 	push hl
 	ld a, $62 ; empty bar
