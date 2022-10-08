@@ -158,7 +158,7 @@
 	charmap "”",         $de ; closing quote
 
 	charmap "←",         $df
-	charmap "→",         $e0
+	charmap "→",         $e0	
 	charmap "▷",         $e1
 	charmap "▶",         $e2
 	charmap "▼",         $e3
@@ -173,11 +173,11 @@
 
 	charmap "?",         $ea
 	charmap "!",         $eb
- 	charmap ".",         $ec
+	charmap ".",         $ec
 	charmap "<DOT>",     $ec ; decimal point; same as "."
 	charmap "&",         $ed
 
-	charmap "é",         $ee	
+	charmap "é",         $ee
 	charmap "♂",         $ef
 	charmap "¥",         $f0
 	charmap "×",         $f1

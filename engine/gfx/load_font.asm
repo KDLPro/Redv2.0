@@ -17,25 +17,6 @@ Get2bppOptionalHDMA: ; unreferenced
 
 _LoadBattleCoreFont::
 _LoadStandardFont::
-	ld de, English
-	ld hl, vTiles1
-	lb bc, BANK(English), 32 ; "A" to "]"
-	call Get2bppViaHDMA
-	ld de, English + 32 * LEN_2BPP_TILE
-	ld hl, vTiles1 tile $20
-	lb bc, BANK(English), 26 ; "a" to "z" (skip "┌" to "┘")
-	call Get2bppViaHDMA
-	ld de, English + 64 * LEN_2BPP_TILE
-	ld hl, vTiles1 tile $40
-	lb bc, BANK(English), 32 ; "SLP" to "←"
-	call Get2bppViaHDMA
-	ld de, English + 96 * LEN_2BPP_TILE
-	ld hl, vTiles1 tile $60
-	lb bc, BANK(English), 32 ; "'" to "9"
-	jp Get2bppViaHDMA
-
-
-_LoadNamingScreenFont::
 	ld de, Font
 	ld hl, vTiles1
 	lb bc, BANK(Font), 32 ; "A" to "]"
@@ -119,8 +100,8 @@ LoadHPBar:
 	call Get1bppViaHDMA
 	ld de, HPExpBarBorderGFX
 	ld hl, vTiles2 tile $73
-	lb bc, BANK(HPExpBarBorderGFX), 6
-	call Get1bppViaHDMA
+	lb bc, BANK(HPExpBarBorderGFX), 7
+	call Get2bppViaHDMA
 	ld de, ExpBarGFX
 	ld hl, vTiles2 tile $55
 	lb bc, BANK(ExpBarGFX), 11
@@ -135,11 +116,11 @@ StatsScreen_LoadFont:
 	ld de, HPExpBarBorderGFX
 	ld hl, vTiles2 tile $78
 	lb bc, BANK(HPExpBarBorderGFX), 1
-	call Get1bppViaHDMA
-	ld de, HPExpBarBorderGFX + 3 * LEN_1BPP_TILE
+	call Get2bppViaHDMA
+	ld de, HPExpBarBorderGFX + 3 * LEN_2BPP_TILE
 	ld hl, vTiles2 tile $76
 	lb bc, BANK(HPExpBarBorderGFX), 2
-	call Get1bppViaHDMA
+	call Get2bppViaHDMA
 	ld de, ExpBarGFX
 	ld hl, vTiles2 tile $55
 	lb bc, BANK(ExpBarGFX), 10
