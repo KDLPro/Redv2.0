@@ -1,8 +1,9 @@
-	const_def 1
-	const PINK_PAGE  ; 1
-	const GREEN_PAGE ; 2
-	const BLUE_PAGE  ; 3
-NUM_STAT_PAGES EQU const_value - 1
+	const_def
+	const PINK_PAGE   ; 0
+	const GREEN_PAGE  ; 1
+	const BLUE_PAGE   ; 2
+	const ORANGE_PAGE ; 3
+NUM_STAT_PAGES EQU const_value
 
 STAT_PAGE_MASK EQU %00000011
 
@@ -63,12 +64,7 @@ StatsScreenInit_gotaddress:
 StatsScreenMain:
 	xor a
 	ld [wJumptableIndex], a
-; ???
-	ld [wStatsScreenFlags], a
-	ld a, [wStatsScreenFlags]
-	and $ff ^ STAT_PAGE_MASK
-	or PINK_PAGE ; first_page
-	ld [wStatsScreenFlags], a
+	ld [wStatsScreenFlags], a ; PINK_PAGE
 .loop
 	ld a, [wJumptableIndex]
 	and $ff ^ (1 << 7)
@@ -83,12 +79,7 @@ StatsScreenMain:
 StatsScreenMobile:
 	xor a
 	ld [wJumptableIndex], a
-; ???
-	ld [wStatsScreenFlags], a
-	ld a, [wStatsScreenFlags]
-	and $ff ^ STAT_PAGE_MASK
-	or PINK_PAGE ; first_page
-	ld [wStatsScreenFlags], a
+	ld [wStatsScreenFlags], a ; PINK_PAGE
 .loop
 	farcall Mobile_SetOverworldDelay
 	ld a, [wJumptableIndex]
@@ -374,20 +365,22 @@ StatsScreen_JoypadAction:
 
 .a_button
 	ld a, c
-	cp BLUE_PAGE ; last page
+	cp ORANGE_PAGE ; last page
 	jr z, .b_button
 .d_right
 	inc c
-	ld a, BLUE_PAGE ; last page
+	ld a, ORANGE_PAGE ; last page
 	cp c
 	jr nc, .set_page
 	ld c, PINK_PAGE ; first page
 	jr .set_page
 
 .d_left
+	ld a, c
 	dec c
+	and a ; cp PINK_PAGE ; first page
 	jr nz, .set_page
-	ld c, BLUE_PAGE ; last page
+	ld c, ORANGE_PAGE ; last page
 	jr .set_page
 
 .done
@@ -508,7 +501,7 @@ StatsScreen_PlaceHorizontalDivider:
 	ret
 
 StatsScreen_PlacePageSwitchArrows:
-	hlcoord 12, 6
+	hlcoord 10, 6
 	ld [hl], "◀"
 	hlcoord 19, 6
 	ld [hl], "▶"
@@ -564,7 +557,6 @@ StatsScreen_LoadGFX:
 .PageTilemap:
 	ld a, [wStatsScreenFlags]
 	maskbits NUM_STAT_PAGES
-	dec a
 	ld hl, .Jumptable
 	rst JumpTable
 	ret
@@ -574,13 +566,14 @@ StatsScreen_LoadGFX:
 	dw LoadPinkPage
 	dw LoadGreenPage
 	dw LoadBluePage
+	dw LoadOrangePage
 
 LoadPinkPage:
 	hlcoord 0, 8
 	ld b, $0
 	predef DrawPlayerHP
 	ld de, .Status_Type
-	hlcoord 0, 13
+	hlcoord 0, 12
 	call PlaceString
 	ld a, [wTempMonPokerusStatus]
 	ld b, a
@@ -589,13 +582,13 @@ LoadPinkPage:
 	ld a, b
 	and $f0
 	jr z, .NotImmuneToPkrs
-	hlcoord 8, 9
+	hlcoord 8, 12
 	ld [hl], "." ; Pokérus immunity dot
 .NotImmuneToPkrs:
 	ld a, [wMonType]
 	cp BOXMON
 	jr z, .StatusOK
-	hlcoord 6, 14
+	hlcoord 6, 13
 	push hl
 	ld de, wTempMonStatus
 	predef PlaceStatusString
@@ -604,37 +597,14 @@ LoadPinkPage:
 	jr .StatusOK
 .HasPokerus:
 	ld de, .PkrsStr
-	hlcoord 1, 14
+	hlcoord 1, 13
 	call PlaceString
 	jr .done_status
 .StatusOK:
 	ld de, .OK_str
 	call PlaceString
 .done_status
-	ld de, .HP_DVs
-	hlcoord 0, 10
-	call PlaceString
-	ld de, .HP_EVs
-	hlcoord 0, 11
-	call PlaceString
-	hlcoord 6, 11
-	ld de, wTempMonEVs
-	xor a
-	ld [wTempMonPadding], a
-	ld a, [de]
-	ld [wTempMonPadding + 1], a
-	ld de, wTempMonPadding
-	lb bc, 2, 3
-	call PrintNum
-	call .CalcHPDVs
-	hlcoord 6, 10
-	ld de, wTempMonPadding
-	lb bc, 2, 3
-	call PrintNum
-	xor a
-	ld [wTempMonPadding + 1], a
-	
-	hlcoord 1, 16
+	hlcoord 1, 15
 	predef PrintMonTypes
 	hlcoord 9, 8
 	ld de, SCREEN_WIDTH
@@ -722,12 +692,6 @@ LoadPinkPage:
 .Status_Type:
 	db   "STATUS/"
 	next "TYPE/@"
-	
-.HP_DVs:
-	db "HP DV@"
-
-.HP_EVs:
-	db "HP EV@"
 
 .OK_str:
 	db "OK @"
@@ -819,29 +783,109 @@ LoadGreenPage:
 	db "Moves@"
 
 LoadBluePage:
-	call .PlaceOTInfo
-	hlcoord 9, 8
-	ld de, SCREEN_WIDTH
-	ld b, 10
-	ld a, $31 ; vertical divider
-.vertical_divider
-	ld [hl], a
-	add hl, de
-	dec b
-	jr nz, .vertical_divider
 	hlcoord 10, 8
 	ld bc, 6
 	predef PrintTempMonStatsDVs
 	ret
 
-.PlaceOTInfo:
+
+
+LoadOrangePage:
+	; Met at level
+	; Limited to between 1 and 63 since it's a 6-bit quantity.
+	ld a, [wTempMonCaughtLevel]
+	and CAUGHT_LEVEL_MASK
+	jr z, .unknown_level
+	cp CAUGHT_EGG_LEVEL ; egg marker value
+	jr nz, .print
+	ld a, EGG_LEVEL ; egg hatch level
+
+.print
+	push af
+	push af
+	ld de, MetAtLevelString
+	hlcoord 1, 8
+	call PlaceString
+	pop af
+	ld [wTextDecimalByte], a
+	hlcoord 10, 8
+	ld de, wTextDecimalByte
+	lb bc, PRINTNUM_LEFTALIGN | 1, 3
+	call PrintNum
+	pop af
+	cp 100
+	jr nc, .three_digits
+	cp 10
+	jr nc, .two_digits
+	ld de, InString
+	hlcoord 12, 8
+	call PlaceString
+	jr .got_level
+
+.two_digits
+	ld de, InString
+	hlcoord 13, 8
+	call PlaceString
+	jr .got_level
+
+.three_digits
+	ld de, InString
+	hlcoord 14, 8
+	call PlaceString
+	jr .got_level
+
+.unknown_level
+	ld de, MetUnknownLevelString
+	hlcoord 1, 8
+	call PlaceString
+
+.got_level
+	; Met at time
+	ld a, [wTempMonCaughtTime]
+	and CAUGHT_TIME_MASK
+	rlca
+	rlca
+	ld hl, .times
+	call GetNthString
+	ld d, h
+	ld e, l
+	call CopyName1
+	ld de, wStringBuffer2
+	hlcoord 1, 12
+	call PlaceString
+
+	ld a, [wTempMonCaughtLocation]
+	ld de, UnknownText
+	and CAUGHT_LOCATION_MASK
+	jr z, .unknown_location
+
+	ld a, [wTempMonCaughtLocation]
+	cp LANDMARK_EVENT
+	jr z, .unknown_location
+	cp LANDMARK_GIFT
+	jr z, .unknown_location
+	ld e, a
+	farcall GetLandmarkName
+	ld de, wStringBuffer1
+	hlcoord 1, 10
+	call PlaceString
+	jr .got_location	
+
+.unknown_location
+	hlcoord 1, 10
+	call PlaceString
+	ld de, LocationText
+	hlcoord 1, 12
+	call PlaceString
+
+.got_location
 	ld de, IDNoString
-	hlcoord 0, 9
+	hlcoord 1, 15
 	call PlaceString
 	ld de, OTString
-	hlcoord 0, 12
+	hlcoord 1, 16
 	call PlaceString
-	hlcoord 1, 10
+	hlcoord 5, 15
 	lb bc, PRINTNUM_LEADINGZEROS | 2, 5
 	ld de, wTempMonID
 	call PrintNum
@@ -849,33 +893,42 @@ LoadBluePage:
 	call GetNicknamePointer
 	call CopyNickname
 	farcall CorrectNickErrors
-	hlcoord 1, 13
-	call PlaceString
-	ld a, [wTempMonCaughtGender]
-	and a
-	ret z
-	cp $7f
-	ret z
-	and CAUGHT_GENDER_MASK
-	ld a, "♂"
-	jr z, .got_gender
-	ld a, "♀"
-.got_gender
-	hlcoord 8, 13
-	ld [hl], a
-	ret
+	hlcoord 10, 16
+	jp PlaceString
 
 .OTNamePointers:
 	dw wPartyMonOT
 	dw wOTPartyMonOT
 	dw sBoxMonOT
 	dw wBufferMonOT
+	
+
+.times
+	db "@"
+	db "in the morning.@"
+	db "during the day.@"
+	db "at night.@"
+
+UnknownText:
+	db "an unknown@"
+LocationText:
+	db "location.@"
+
+MetAtLevelString:
+	db "Met at <LV> @"
+MetUnknownLevelString:
+	db "Met at <LV> ??? in@"
+
+InString:
+	db "in@"
 
 IDNoString:
 	db "<ID>№.@"
 
 OTString:
-	db "OT/@"
+	db "OT Name:@"
+
+
 
 StatsScreen_PlaceFrontpic:
 	ld hl, wTempMonDVs
@@ -1160,8 +1213,11 @@ StatsScreen_AnimateEgg:
 	ret
 
 StatsScreen_LoadPageIndicators:
-	hlcoord 13, 5
+	hlcoord 11, 5
 	ld a, $36 ; first of 4 small square tiles
+	call .load_square
+	hlcoord 13, 5
+	ld a, $36 ; " " " "
 	call .load_square
 	hlcoord 15, 5
 	ld a, $36 ; " " " "
@@ -1170,13 +1226,19 @@ StatsScreen_LoadPageIndicators:
 	ld a, $36 ; " " " "
 	call .load_square
 	ld a, c
+	cp PINK_PAGE
+	hlcoord 11, 5
+	jr z, .load_highlighted_square
 	cp GREEN_PAGE
+	hlcoord 13, 5
+	jr z, .load_highlighted_square
+	cp BLUE_PAGE
+	hlcoord 15, 5
+	jr z, .load_highlighted_square
+	; must be ORANGE_PAGE
+	hlcoord 17, 5
+.load_highlighted_square
 	ld a, $3a ; first of 4 large square tiles
-	hlcoord 13, 5 ; PINK_PAGE (< GREEN_PAGE)
-	jr c, .load_square
-	hlcoord 15, 5 ; GREEN_PAGE (= GREEN_PAGE)
-	jr z, .load_square
-	hlcoord 17, 5 ; BLUE_PAGE (> GREEN_PAGE)
 .load_square
 	push bc
 	ld [hli], a

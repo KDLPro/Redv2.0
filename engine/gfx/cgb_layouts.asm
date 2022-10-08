@@ -61,6 +61,7 @@ LoadSGBLayoutCGB:
 	dw _CGB_MysteryGift
 	dw _CGB_MonNamingScreen
 	dw _CGB_BoxNamingScreen
+	dw _CGB_MailNamingScreen
 	dw _CGB_RegularNamingScreen
 	dw _CGB_BackToPC
 	dw _CGB_DoneNaming
@@ -287,12 +288,10 @@ _CGB_StatsScreenHPPals:
 	ld hl, ExpBarPalette
 	call LoadPalette_White_Col1_Col2_Black ; exp palette
 	ld hl, GenderPalette
-	call LoadPalette_White_Col1_Col2_Black ; gender palette 1
-	ld hl, GenderPalette
-	call LoadPalette_White_Col1_Col2_Black ; gender palette 2
+	call LoadPalette_White_Col1_Col2_Black ; gender palette
 	ld hl, StatsScreenPagePals
-	ld de, wBGPals1 palette 5
-	ld bc, 3 palettes ; pink, green, and blue page palettes
+	ld de, wBGPals1 palette 4
+	ld bc, 4 palettes ; pink, green, blue and orange page palettes
 	ld a, BANK(wBGPals1)
 	call FarCopyWRAM
 	call WipeAttrmap
@@ -309,22 +308,22 @@ _CGB_StatsScreenHPPals:
 
 	hlcoord 18, 0, wAttrmap
 	lb bc, 1, 1
-	ld a, $3 ; gender palette 1
+	ld a, $3 ; gender palette
 	call FillBoxCGB
 
-	hlcoord 8, 13, wAttrmap
-	lb bc, 1, 1
-	ld a, $4 ; gender palette 2
+	hlcoord 11, 5, wAttrmap
+	lb bc, 2, 2
+	ld a, $4 ; pink page palette
 	call FillBoxCGB
 
 	hlcoord 13, 5, wAttrmap
 	lb bc, 2, 2
-	ld a, $5 ; pink page palette
+	ld a, $5 ; green page palette
 	call FillBoxCGB
 
 	hlcoord 15, 5, wAttrmap
 	lb bc, 2, 2
-	ld a, $6 ; green page palette
+	ld a, $6 ; blue page palette
 	call FillBoxCGB
 
 	hlcoord 17, 5, wAttrmap
@@ -1084,6 +1083,37 @@ _CGB_RegularNamingScreen:
 	call WipeAttrmap
 	jr SetupAttrmap_NamingScreen
 
+_CGB_MailNamingScreen:
+	ld hl, PalPacket_MailNamingScreen + 1
+	call CopyFourPalettes
+	call WipeAttrmap
+
+	hlcoord 1, 1, wAttrmap
+	lb bc, 4, 18
+	ld a, $3 
+	call FillBoxCGB
+
+	hlcoord 0, 7, wAttrmap
+	lb bc, 9, SCREEN_WIDTH
+	ld a, $2 
+	call FillBoxCGB
+
+	hlcoord 2, 17, wAttrmap
+	lb bc, 1, 4
+	ld a, $1 
+	call FillBoxCGB
+
+	hlcoord 8, 17, wAttrmap
+	lb bc, 1, 4
+	ld a, $1 
+	call FillBoxCGB
+	
+	hlcoord 14, 17, wAttrmap
+	lb bc, 1, 4
+	ld a, $1 
+	call FillBoxCGB
+	jp ApplyPals
+
 _CGB_MonNamingScreen:
 	ld hl, PalPacket_MonNamingScreen + 1
 	call CopyFourPalettes
@@ -1099,11 +1129,23 @@ SetupAttrmap_NamingScreen:
 	lb bc, 7, 18
 	ld a, $2 
 	call FillBoxCGB
-
-	hlcoord 1, 16, wAttrmap
-	lb bc, 1, 18
+	; fallthrough
+FinishSetupAttrmap_NotMailNamingScreen:
+	hlcoord 2, 16, wAttrmap
+	lb bc, 1, 4
 	ld a, $1 
 	call FillBoxCGB
+
+	hlcoord 8, 16, wAttrmap
+	lb bc, 1, 4
+	ld a, $1 
+	call FillBoxCGB
+	
+	hlcoord 14, 16, wAttrmap
+	lb bc, 1, 4
+	ld a, $1 
+	call FillBoxCGB
+
 	call ApplyAttrmap
 	jp ApplyPals
 
@@ -1117,7 +1159,6 @@ _CGB_BoxNamingScreen:
 	ld hl, PalPacket_MonNamingScreen + 1
 	call CopyFourPalettes
 	call WipeAttrmap
-
 	
 	hlcoord 1, 1, wAttrmap
 	lb bc, 4, 18
@@ -1128,14 +1169,8 @@ _CGB_BoxNamingScreen:
 	lb bc, 9, 18
 	ld a, $2 
 	call FillBoxCGB
-
-	hlcoord 1, 16, wAttrmap
-	lb bc, 1, 18
-	ld a, $1 
-	call FillBoxCGB
-	call ApplyAttrmap
-	jp ApplyPals
-
+	jr FinishSetupAttrmap_NotMailNamingScreen
+	
 _CGB_TradeTube:
 	ld hl, PalPacket_TradeTube + 1
 	call CopyFourPalettes

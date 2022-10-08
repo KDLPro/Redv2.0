@@ -379,7 +379,6 @@ LoadStatsScreenPals:
 	ret z
 	ld hl, StatsScreenPals
 	ld b, 0
-	dec c
 	add hl, bc
 	add hl, bc
 	ldh a, [rSVBK]
@@ -389,11 +388,9 @@ LoadStatsScreenPals:
 	ld a, [hli]
 	ld [wBGPals1 palette 0], a
 	ld [wBGPals1 palette 2], a
-	ld [wBGPals1 palette 4], a
 	ld a, [hl]
 	ld [wBGPals1 palette 0 + 1], a
 	ld [wBGPals1 palette 2 + 1], a
-	ld [wBGPals1 palette 4 + 1], a
 	pop af
 	ldh [rSVBK], a
 	call ApplyPals
@@ -816,80 +813,18 @@ rept 4
 endr
 	ret
 
-LoadMonIconPalette:
-	ld a, d
-	push bc
-	call _GetMonPalettePointer
-	pop bc
-	push hl
-	call CheckShininess
-	pop hl
-	jr nc, .done
-rept 4
-	inc hl
-endr
-.done
-	ldh a, [hObjectStructIndex]
-
-	ldh a, [rSVBK]
-	push af
-	ld a, BANK(wBGPals1)
-	ldh [rSVBK], a
-
-	push hl
-	ld hl, wOBPals1
-	ldh a, [hObjectStructIndex]
-.get_address_loop
-	cp $FF
-	jr z, .start_loadpalette
-	ld bc, 8
-	add hl, bc
-	and a
-	jr z, .start_loadpalette
-	dec a
-	jr .get_address_loop
-
-.start_loadpalette
-	ld d, h
-	ld e, l
-	pop hl
-	ld a, LOW(PALRGB_WHITE)
-	ld [de], a
-	inc de
-	ld a, HIGH(PALRGB_WHITE)
-	ld [de], a
-	inc de
-
-	ld c, 2 * PAL_COLOR_SIZE
-.loop
-	ld a, [hli]
-	ld [de], a
-	inc de
-	dec c
-	jr nz, .loop
-
-	xor a
-	ld [de], a
-	inc de
-	ld [de], a
-	inc de
-
-	pop af
-	ldh [rSVBK], a
-	ret
-
 ; Input: E must contain the offset of the selected palette from PartyMenuOBPals.
 SetFirstOBJPalette::
 	ld hl, PartyMenuOBPals
 	ld d, 0
 	add hl, de
- 	ld de, wOBPals1
+	ld de, wOBPals1
 	ld bc, 1 palettes
 	ld a, BANK(wOBPals1)
 	call FarCopyWRAM
 	ld a, TRUE
 	ldh [hCGBPalUpdate], a
- 	jp ApplyPals
+	jp ApplyPals
 
 PushSGBPals:
 	ld a, [wJoypadDisable]
@@ -1384,7 +1319,7 @@ LoadMapPals:
 	
 	ldh a, [hObjectStructIndex]
 	push af
-	ld a, 2
+	ld a, 3
 	ldh [hObjectStructIndex], a
 	ld hl, wBreedMon1DVs
 	ld b, h
@@ -1403,7 +1338,7 @@ LoadMapPals:
 
 	ldh a, [hObjectStructIndex]
 	push af
-	ld a, 3
+	ld a, 6
 	ldh [hObjectStructIndex], a
 	ld hl, wBreedMon2DVs
 	ld b, h
