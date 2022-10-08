@@ -4809,11 +4809,11 @@ PrintPlayerHUD:
 	ld a, "♀"
 
 .got_gender_char
-	hlcoord 16, 8
+	hlcoord 17, 8
 	ld [hl], a
 	push af ; back up gender
 	push hl
-	hlcoord 11, 8
+	hlcoord 10, 8
 	ld de, wBattleMonStatus
 	predef PlaceNonFaintStatus
 	pop hl
@@ -4822,12 +4822,12 @@ PrintPlayerHUD:
 	hlcoord 13, 8
 	ld a, [wBattleMonLevel]
 	ld [wTempMonLevel], a
-	call PrintLevel
+	call PrintLevel_Force3Digits
 	
     call BattleCheckPlayerShininess
     ret nc
     ld a, "<SHINY>"
-    hlcoord 17, 8
+    hlcoord 18, 8
     ld [hl], a
 	ret
 	
@@ -4880,7 +4880,7 @@ DrawEnemyHUD:
 	call BattleCheckEnemyShininess
     jr nc, .regular_mon
     ld a, "<SHINY>"
-    hlcoord 9, 1
+    hlcoord 10, 1
     ld [hl], a
 
 .regular_mon
@@ -4894,12 +4894,12 @@ DrawEnemyHUD:
 	ld a, "♀"
 
 .got_gender
-	hlcoord 8, 1
+	hlcoord 9, 1
 	ld [hl], a
 
 	push af
 	push hl
-	hlcoord 3, 1
+	hlcoord 2, 1
 	ld de, wEnemyMonStatus
 	predef PlaceNonFaintStatus
 	pop hl
@@ -4908,7 +4908,7 @@ DrawEnemyHUD:
 	ld a, b
 	ld a, [wEnemyMonLevel]
 	ld [wTempMonLevel], a
-	call PrintLevel
+	call PrintLevel_Force3Digits
 
 	ld hl, wEnemyMonHP
 	ld a, [hli]
@@ -4973,7 +4973,7 @@ DrawEnemyHUD:
 	ld [wWhichHPBar], a
 	hlcoord 2, 2
 	ld b, 0
-	call DrawBattleHPBar
+	call DrawEnemyHPBar
 	ret
 
 UpdateEnemyHPPal:
@@ -6969,20 +6969,6 @@ _LoadBattleFontsHPBar:
 _LoadHPBar:
 	farcall LoadHPBar
 	ret
-
-LoadHPExpBarGFX: ; unreferenced
-	ld de, EnemyHPBarBorderGFX
-	ld hl, vTiles2 tile $6c
-	lb bc, BANK(EnemyHPBarBorderGFX), 4
-	call Get1bpp
-	ld de, HPExpBarBorderGFX
-	ld hl, vTiles2 tile $73
-	lb bc, BANK(HPExpBarBorderGFX), 6
-	call Get1bpp
-	ld de, ExpBarGFX
-	ld hl, vTiles2 tile $55
-	lb bc, BANK(ExpBarGFX), 8
-	jp Get2bpp
 
 EmptyBattleTextbox:
 	ld hl, .empty
