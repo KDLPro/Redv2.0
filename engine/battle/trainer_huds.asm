@@ -30,7 +30,7 @@ ShowPlayerMonsRemaining:
 	jp LoadTrainerHudOAM
 
 ShowOTTrainerMonsRemaining:
-	call DrawEnemyHUDBorder
+	call DrawEnemyTrainerHUDBorder
 	ld hl, wOTPartyMon1HP
 	ld de, wOTPartyCount
 	call StageBallTilesData
@@ -152,6 +152,32 @@ DrawEnemyHUDBorder:
 
 .tiles
 	db $6d ; left side
+	db $74 ; bottom left
+	db $78 ; bottom right
+	db $76 ; bottom side
+.tiles_end
+
+DrawEnemyTrainerHUDBorder:
+	ld hl, .tiles
+	ld de, wTrainerHUDTiles
+	ld bc, .tiles_end - .tiles
+	call CopyBytes
+	hlcoord 1, 2
+	ld de, 1 ; start on left
+	call PlaceHUDBorderTiles
+	ld a, [wBattleMode]
+	dec a
+	ret nz
+	ld a, [wTempEnemyMonSpecies]
+	dec a
+	call CheckCaughtMon
+	ret z
+	hlcoord 1, 1
+	ld [hl], $5f
+	ret
+
+.tiles
+	db $7a ; left side
 	db $74 ; bottom left
 	db $78 ; bottom right
 	db $76 ; bottom side
