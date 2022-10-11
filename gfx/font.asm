@@ -25,10 +25,13 @@ EnemyHPBarBorderGFX:
 INCBIN "gfx/battle/enemy_hp_bar_border.1bpp"
 
 HPExpBarBorderGFX:
-INCBIN "gfx/battle/hp_exp_bar_border.1bpp"
+INCBIN "gfx/battle/hp_exp_bar_border.2bpp"
 
 ExpBarGFX:
 INCBIN "gfx/battle/expbar.2bpp"
+
+GenderGFX:
+INCBIN "gfx/battle/gender_font.1bpp"
 
 TownMapGFX:
 INCBIN "gfx/pokegear/town_map.2bpp.lz"

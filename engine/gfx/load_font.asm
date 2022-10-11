@@ -100,7 +100,7 @@ LoadHPBar:
 	call Get1bppViaHDMA
 	ld de, HPExpBarBorderGFX
 	ld hl, vTiles2 tile $73
-	lb bc, BANK(HPExpBarBorderGFX), 7
+	lb bc, BANK(HPExpBarBorderGFX), 8
 	call Get2bppViaHDMA
 	ld de, ExpBarGFX
 	ld hl, vTiles2 tile $55
@@ -108,7 +108,11 @@ LoadHPBar:
 	jp Get2bppViaHDMA
 
 StatsScreen_LoadFont:
-	call _LoadFontsBattleExtra
+	call _LoadBattleCoreFont
+	ld de, GenderGFX
+	ld hl, vTiles2 tile $7b
+	lb bc, BANK(GenderGFX), 2 
+	call Get1bppViaHDMA
 	ld de, EnemyHPBarBorderGFX
 	ld hl, vTiles2 tile $6c
 	lb bc, BANK(EnemyHPBarBorderGFX), 4
