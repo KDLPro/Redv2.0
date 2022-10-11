@@ -42,17 +42,17 @@ RGBLINK ?= $(RGBDS)rgblink
 ### Build targets
 
 .SUFFIXES:
-.PHONY: all redv2 redv21 redv2_au redv2_debug redv21_debug clean tidy compare tools
+.PHONY: all redv2 redv2-1 redv2_au redv2_debug redv2-1_debug clean tidy compare tools
 .SECONDEXPANSION:
 .PRECIOUS:
 .SECONDARY:
 
 all: redv2
 redv2:         redv2.gbc
-redv21:       redv2-11.gbc
+redv2-1:       redv2-11.gbc
 redv2_au:      redv2_au.gbc
 redv2_debug:   redv2_debug.gbc
-redv21_debug: redv2-11_debug.gbc
+redv2-1_debug:  redv2-11_debug.gbc
 
 clean: tidy
 	find gfx \( -name "*.[12]bpp" -o -name "*.lz" -o -name "*.gbcpal" -o -name "*.sgb.tilemap" \) -delete
