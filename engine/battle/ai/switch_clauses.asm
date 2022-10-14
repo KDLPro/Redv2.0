@@ -2,59 +2,72 @@ INCLUDE "engine/battle/ai/switch.asm"
 
 CheckSwitchOftenOrSometimes:
 	ld hl, TrainerClassAttributes + TRNATTR_AI_ITEM_SWITCH
-    
-    ld a, [wTrainerClass]
-    dec a
-    ld bc, NUM_TRAINER_ATTRIBUTES
-    call AddNTimes
-    
-    ld a, BANK(TrainerClassAttributes)
-    call GetFarByte
-    bit SWITCH_COMPETITIVE_F, a
-    ret nz
-    bit SWITCH_OFTEN_F, a
-    ret nz
-    bit SWITCH_SOMETIMES_F, a
-    ret
+	
+	ld a, [wTrainerClass]
+	dec a
+	ld bc, NUM_TRAINER_ATTRIBUTES
+	call AddNTimes
+	
+	ld a, BANK(TrainerClassAttributes)
+	call GetFarByte
+	bit SWITCH_COMPETITIVE_F, a
+	ret nz
+	bit SWITCH_OFTEN_F, a
+	ret nz
+	bit SWITCH_SOMETIMES_F, a
+	ret
 	
 CheckSwitchOften:
 	ld hl, TrainerClassAttributes + TRNATTR_AI_ITEM_SWITCH
     
-    ld a, [wTrainerClass]
-    dec a
-    ld bc, NUM_TRAINER_ATTRIBUTES
-    call AddNTimes
+	ld a, [wTrainerClass]
+	dec a
+	ld bc, NUM_TRAINER_ATTRIBUTES
+	call AddNTimes
+	
+	ld a, BANK(TrainerClassAttributes)
+	call GetFarByte
+	bit SWITCH_COMPETITIVE_F, a
+	ret nz
+	bit SWITCH_OFTEN_F, a
+	ret 
+
+CheckSwitchCompetitive:
+	ld hl, TrainerClassAttributes + TRNATTR_AI_ITEM_SWITCH
     
-    ld a, BANK(TrainerClassAttributes)
-    call GetFarByte
-    bit SWITCH_COMPETITIVE_F, a
-    ret nz
-    bit SWITCH_OFTEN_F, a
-    ret 
+	ld a, [wTrainerClass]
+	dec a
+	ld bc, NUM_TRAINER_ATTRIBUTES
+	call AddNTimes
+	
+	ld a, BANK(TrainerClassAttributes)
+	call GetFarByte
+	bit SWITCH_COMPETITIVE_F, a
+	ret
 	
 	
 CheckLoweredStatsExceptSpd:
-	 ; Checks if non-spd stat (because of Curse) is below -2
-    ld a, [wEnemyAtkLevel]
-    cp BASE_STAT_LEVEL - 2
-    ret c
-    ld a, [wEnemyDefLevel]
-    cp BASE_STAT_LEVEL - 2
-    ret c
-    ld a, [wEnemySAtkLevel]
-    cp BASE_STAT_LEVEL - 2
-    ret c
-    ld a, [wEnemySDefLevel]
-    cp BASE_STAT_LEVEL - 2
+	; Checks if non-spd stat (because of Curse) is below -2
+	ld a, [wEnemyAtkLevel]
+	cp BASE_STAT_LEVEL - 2
+	ret c
+	ld a, [wEnemyDefLevel]
+	cp BASE_STAT_LEVEL - 2
+	ret c
+	ld a, [wEnemySAtkLevel]
+	cp BASE_STAT_LEVEL - 2
+	ret c
+	ld a, [wEnemySDefLevel]
+	cp BASE_STAT_LEVEL - 2
 	ret
 	
 	
 CheckToxicEncoreCount:
-	 ; Checks if Toxic Count is at least 3
+	; Checks if Toxic Count is at least 3
 	ld a, [wEnemyToxicCount]
 	cp 3
 	ret nc
-	 ; Checks if Encore Count is at least 2
+	; Checks if Encore Count is at least 2
 	ld a, [wEnemyToxicCount]
 	cp 3
 	ret
@@ -67,9 +80,9 @@ CheckStatBoosts:
 	ret
 	
 CheckPlayerStatBoosts:
-    ld hl, wPlayerStatLevels
-    ld c, NUM_LEVEL_STATS - 1
-    ld b, 0
+	ld hl, wPlayerStatLevels
+	ld c, NUM_LEVEL_STATS - 1
+	ld b, 0
 	ld e, 0
 .checkplayerbuff  ; Check player's stat buffs
 	dec c
@@ -319,7 +332,7 @@ DidEnemySwitch:
 	
 	
 CheckEnemyMonsLessThanThree:
-	 ; returns c if enemy mons alive is less than 3
+	; returns c if enemy mons alive is less than 3
 	ld a, [wEnemyMonsLeft]
 	cp 3
 	ret

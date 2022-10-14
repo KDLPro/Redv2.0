@@ -565,9 +565,9 @@ CheckAbleToSwitch:
 	cp $FF
 	jr nz, .do_switch	
 	
-	; Don't switch if AI is SWITCH_SOMETIMES or SWITCH_RARELY
-	call CheckSwitchOften
-	jp z, .no_switch
+	; Don't switch if AI is SWITCH_COMPETITIVE
+	call CheckSwitchCompetitive
+	jp nz, .no_switch
 	
 	call FindEnemyMonsImmuneToOrResistsLastCounterMoveBadDamage	
 	ld a, [wEnemyAISwitchScore]
