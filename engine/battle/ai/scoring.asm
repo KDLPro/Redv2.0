@@ -353,7 +353,6 @@ AI_Smart_EffectHandlers:
 	dbw EFFECT_DESTINY_BOND,     AI_Smart_DestinyBond
 	dbw EFFECT_REVERSAL,         AI_Smart_Reversal
 	dbw EFFECT_HEAL_BELL,        AI_Smart_HealBell
-	dbw EFFECT_PRIORITY_HIT,     AI_Smart_PriorityHit
 	dbw EFFECT_THIEF,            AI_Smart_Thief
 	dbw EFFECT_MEAN_LOOK,        AI_Smart_MeanLook
 	dbw EFFECT_NIGHTMARE,        AI_Smart_Nightmare
@@ -1741,6 +1740,10 @@ AI_Smart_PriorityHit:
 	ld a, [wPlayerSubStatus3]
 	and 1 << SUBSTATUS_FLYING | 1 << SUBSTATUS_UNDERGROUND
 	jp nz, AIDiscourageMove
+
+; Greatly encourage this move when enemy has very low HP.
+	call AICheckEnemyQuarterHP
+	jr nc, AI_Encourage_Greatly
 	
 	call AICompareSpeed
 	jr nc, .check_ko
@@ -2368,16 +2371,16 @@ AI_Smart_BatonPass:
 	push hl
 	farcall FindAliveEnemyMons
 	pop hl
-    jr c, .discourage
+  jr c, .discourage
 	
 	push hl
 	farcall CheckEnemyStatBoosts
 	pop hl
-	 ; Checks if AI has no boosts
+	; Checks if AI has no boosts
 	ld a, e
 	and a
-    jp nz, AI_Encourage
-    ; fallthrough
+  jp nz, AI_Encourage
+  ; fallthrough
 	
 .discourage
 	jp AI_Discourage_Greatly
