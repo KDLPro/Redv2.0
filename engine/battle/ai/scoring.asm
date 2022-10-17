@@ -1743,7 +1743,7 @@ AI_Smart_PriorityHit:
 
 ; Greatly encourage this move when enemy has very low HP.
 	call AICheckEnemyQuarterHP
-	jr nc, AI_Encourage_Greatly
+	jp nc, AI_Encourage_Greatly
 	
 	call AICompareSpeed
 	jr nc, .check_ko
