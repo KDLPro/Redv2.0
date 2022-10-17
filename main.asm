@@ -128,6 +128,11 @@ INCLUDE "engine/battle/consume_held_item.asm"
 INCLUDE "data/moves/effects.asm"
 INCLUDE "engine/events/kurt_selectquantity_interpretjoypad.asm"
 
+SECTION "Mon Icon Colors", ROMX 
+
+INCLUDE "data/pokemon/icon_palettes.asm"
+INCLUDE "engine/gfx/load_monicon_palette.asm"
+
 
 SECTION "bankA", ROMX
 
