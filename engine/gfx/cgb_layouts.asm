@@ -1084,7 +1084,7 @@ _CGB_RegularNamingScreen:
 	jr SetupAttrmap_NamingScreen
 
 _CGB_MailNamingScreen:
-	ld hl, PalPacket_MailNamingScreen + 1
+	ld hl, PalPacket_Diploma + 1
 	call CopyFourPalettes
 	call WipeAttrmap
 
