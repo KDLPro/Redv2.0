@@ -68,3 +68,4 @@ INCBIN "gfx/battle/special.2bpp"
 
 StatusIconGFX:
 INCBIN "gfx/battle/status.2bpp"
+
