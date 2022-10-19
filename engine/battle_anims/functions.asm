@@ -294,7 +294,7 @@ BattleAnimFunction_PokeBall_BG:
 
 .seven
 	call GetBallAnimBGPal
-	ld a, BATTLEANIMFRAMESET_0A
+	ld a, BATTLEANIMFRAMESET_BC
 	call ReinitBattleAnimFrameset
 	call BattleAnim_IncAnonJumptableIndex
 	ld hl, BATTLEANIMSTRUCT_VAR2
@@ -315,14 +315,15 @@ BattleAnimFunction_PokeBall_BG:
 	dec a
 	ld [hl], a
 	and $1f
-	jp z, .eleven
+	jr z, .eleven
 	and $f
 	ret nz
 	call BattleAnim_IncAnonJumptableIndex
 	ret
 
 .eleven
-	call DeinitBattleAnimation
+	ld a, BATTLEANIMFRAMESET_0C
+	call ReinitBattleAnimFrameset
 	ret
 
 BattleAnimFunction_PokeBall:
@@ -355,7 +356,7 @@ BattleAnimFunction_PokeBall:
 	add hl, bc
 	add [hl]
 	ld [hl], a
-	ld a, BATTLEANIMFRAMESET_0B
+	ld a, BATTLEANIMFRAMESET_BD
 	call ReinitBattleAnimFrameset
 	call BattleAnim_IncAnonJumptableIndex
 	ret
@@ -410,7 +411,7 @@ BattleAnimFunction_PokeBall:
 
 .seven
 	call GetBallAnimPal
-	ld a, BATTLEANIMFRAMESET_0A
+	ld a, BATTLEANIMFRAMESET_BC
 	call ReinitBattleAnimFrameset
 	call BattleAnim_IncAnonJumptableIndex
 	ld hl, BATTLEANIMSTRUCT_VAR2
@@ -438,7 +439,8 @@ BattleAnimFunction_PokeBall:
 	ret
 
 .eleven
-	call DeinitBattleAnimation
+	ld a, BATTLEANIMFRAMESET_0C
+	call ReinitBattleAnimFrameset
 	ret
 
 BattleAnimFunction_PokeBallBlocked:

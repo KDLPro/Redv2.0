@@ -312,9 +312,9 @@ BattleAnim_ThrowPokeBall:
 	anim_obj ANIM_OBJ_POKE_BALL, 64, 92, $20
 	anim_obj ANIM_OBJ_POKE_BALL_BG, 64, 92, $20
 	anim_wait 36
-	anim_obj ANIM_OBJ_POKE_BALL, 136, 65, $0
+	anim_obj ANIM_OBJ_POKE_BALL, 136, 65, $20
 	anim_setobj $3, $7
-	anim_obj ANIM_OBJ_POKE_BALL_BG, 136, 65, $0
+	anim_obj ANIM_OBJ_POKE_BALL_BG, 136, 65, $20
 	anim_setobj $4, $7
 	anim_wait 16
 	anim_sound 0, 1, SFX_BALL_POOF
@@ -337,35 +337,32 @@ BattleAnim_ThrowPokeBall:
 	anim_obj ANIM_OBJ_POKE_BALL, 64, 92, $20
 	anim_obj ANIM_OBJ_POKE_BALL_BG, 64, 92, $20
 	anim_wait 36
-	anim_obj ANIM_OBJ_POKE_BALL, 136, 65, $0
+	anim_obj ANIM_OBJ_POKE_BALL, 136, 65, $20
 	anim_setobj $3, $7
-	anim_obj ANIM_OBJ_POKE_BALL_BG, 136, 65, $0
+	anim_obj ANIM_OBJ_POKE_BALL_BG, 136, 65, $20
 	anim_setobj $4, $7
 	anim_wait 16
 	anim_sound 0, 1, SFX_BALL_POOF
 	anim_obj ANIM_OBJ_BALL_POOF, 136, 64, $10
 	anim_wait 24
 	anim_sound 0, 1, SFX_MASTER_BALL
-	anim_obj ANIM_OBJ_MASTER_BALL_SPARKLE, 136, 65, $31
-	anim_obj ANIM_OBJ_MASTER_BALL_SPARKLE, 136, 65, $33
-	anim_obj ANIM_OBJ_MASTER_BALL_SPARKLE, 136, 65, $35
-	anim_obj ANIM_OBJ_MASTER_BALL_SPARKLE, 136, 65, $37
+	anim_obj ANIM_OBJ_MASTER_BALL_SPARKLE, 136, 71, $31
+	anim_obj ANIM_OBJ_MASTER_BALL_SPARKLE, 136, 71, $33
+	anim_obj ANIM_OBJ_MASTER_BALL_SPARKLE, 136, 71, $35
+	anim_obj ANIM_OBJ_MASTER_BALL_SPARKLE, 136, 71, $37
 	anim_wait 64
 .Shake:
 	anim_bgeffect ANIM_BG_RETURN_MON, $0, BG_EFFECT_TARGET, $0
 	anim_wait 8
 	anim_incobj 3
 	anim_incobj 4
-	anim_wait 16
+	anim_wait 32
 	anim_sound 0, 1, SFX_CHANGE_DEX_MODE
 	anim_incobj 1
 	anim_incobj 2
 	anim_wait 32
 	anim_sound 0, 1, SFX_BALL_BOUNCE
-	anim_wait 32
-	anim_wait 32
-	anim_wait 32
-	anim_wait 8
+	anim_wait 112
 	anim_setvar $0
 .Loop:
 	anim_wait 48
