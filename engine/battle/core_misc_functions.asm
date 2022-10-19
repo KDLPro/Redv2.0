@@ -31,7 +31,7 @@ SpeedCheckWhoGoesFirst:
 	ld [wEnemyShouldGoFirst], a
 	ret
 
-    GetWeatherImage:
+GetWeatherImage:
 	ld a, [wBattleWeather]
 	dec a
 	jr z, .rain
@@ -99,6 +99,7 @@ SpeedCheckWhoGoesFirst:
 	dec c
 	ld a, c
 	ld [hli], a
+	cp 2
 	ld a, b
 	ld [hli], a
 	jr nz, .loop

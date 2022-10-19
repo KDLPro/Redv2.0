@@ -5832,11 +5832,13 @@ MoveInfoBox:
 	ld [wStringBuffer1], a
 	call .PrintPP
 
-	farcall GetWeatherImage
-	farcall UpdateMoveData
 	ld a, [wPlayerMoveStruct + MOVE_ANIM]
 	ld b, a
 	farcall GetMoveCategoryIcon
+
+	farcall GetWeatherImage
+	farcall UpdateMoveData
+	
 	hlcoord 0, 7
 	ld de, .Type
 	call PlaceString
