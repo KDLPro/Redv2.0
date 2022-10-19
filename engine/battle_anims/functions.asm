@@ -283,14 +283,47 @@ BattleAnimFunction_PokeBall_BG:
 	dw BattleAnimFunction_PokeBall.four
 	dw BattleAnimFunction_PokeBall.five
 	dw BattleAnimFunction_PokeBall.six
-	dw BattleAnimFunction_PokeBall.seven
-	dw BattleAnimFunction_PokeBall.eight
+	dw .seven
+	dw .eight
 	dw BattleAnimFunction_PokeBall.nine
-	dw BattleAnimFunction_PokeBall.ten
+	dw .ten
 	dw DeinitBattleAnimation
 .zero
 	call GetBallAnimBGPal
 	jp BattleAnim_IncAnonJumptableIndex
+
+.seven
+	call GetBallAnimBGPal
+	ld a, BATTLEANIMFRAMESET_0A
+	call ReinitBattleAnimFrameset
+	call BattleAnim_IncAnonJumptableIndex
+	ld hl, BATTLEANIMSTRUCT_VAR2
+	add hl, bc
+	ld [hl], $20
+.eight
+.ten
+	ld hl, BATTLEANIMSTRUCT_VAR1
+	add hl, bc
+	inc hl
+	ld d, [hl]
+	ld hl, BATTLEANIMSTRUCT_YOFFSET
+	add hl, bc
+	ld [hl], $02
+	ld hl, BATTLEANIMSTRUCT_VAR1
+	add hl, bc
+	ld a, [hl]
+	dec a
+	ld [hl], a
+	and $1f
+	jp z, .eleven
+	and $f
+	ret nz
+	call BattleAnim_IncAnonJumptableIndex
+	ret
+
+.eleven
+	call DeinitBattleAnimation
+	ret
 
 BattleAnimFunction_PokeBall:
 	call BattleAnim_AnonJumptable
@@ -306,7 +339,7 @@ BattleAnimFunction_PokeBall:
 	dw .eight
 	dw .nine
 	dw .ten
-	dw .eleven
+	dw DeinitBattleAnimation
 .zero ; init
 	call GetBallAnimPal
 	call BattleAnim_IncAnonJumptableIndex
@@ -387,12 +420,11 @@ BattleAnimFunction_PokeBall:
 .ten
 	ld hl, BATTLEANIMSTRUCT_VAR1
 	add hl, bc
-	ld a, [hli]
+	inc hl
 	ld d, [hl]
-	call BattleAnim_Sine
 	ld hl, BATTLEANIMSTRUCT_YOFFSET
 	add hl, bc
-	ld [hl], a
+	ld [hl], $02
 	ld hl, BATTLEANIMSTRUCT_VAR1
 	add hl, bc
 	ld a, [hl]

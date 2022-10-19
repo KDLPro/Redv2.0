@@ -159,8 +159,31 @@ endr
 	; load white background in PAL_BATTLE_OB_GREEN
 	ld hl, WhitePalette
 	ld de, wOBPals2 palette PAL_BATTLE_OB_GREEN color 1
-	ld bc, PAL_COLOR_SIZE
+	ld bc, PAL_COLOR_SIZE * 2
 	call CopyBytes
+	; load darker top background in PAL_BATTLE_OB_GREEN
+	ld hl, wOBPals2 palette PAL_BATTLE_OB_RED color 1
+	ld a, [hli]
+	ld b, a
+	ld a, [hl]
+	ld l, a
+	ld a, b
+	sub a, $a5
+	ld c, a
+	jr nc, .skip_add
+	dec l
+.skip_add
+	ld a, l
+	sub a, $14
+	jr nc, .no_overflow
+	ld a, 0
+.no_overflow
+	ld d, a
+	ld a, c
+	ld hl, wOBPals2 palette PAL_BATTLE_OB_GREEN color 3
+	ld [hli], a
+	ld a, d
+	ld [hl], a
 	; apply the updated colors to the palette RAM
 	ld a, $1
 	ldh [hCGBPalUpdate], a
