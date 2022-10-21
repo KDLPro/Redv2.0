@@ -1288,8 +1288,13 @@ BattleAnimFrameData:
 	delanim
 
 .Frameset_bc:
+	frame BATTLEANIMOAMSET_0A,  8
 	frame BATTLEANIMOAMSET_29,  64
-	dorestart
+	frame BATTLEANIMOAMSET_29,  64
+	frame BATTLEANIMOAMSET_29,  64
+	frame BATTLEANIMOAMSET_29,  64
+	frame BATTLEANIMOAMSET_29,  64
+	endanim
 
 .Frameset_bd:
 	frame BATTLEANIMOAMSET_28,  8

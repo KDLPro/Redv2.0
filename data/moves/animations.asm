@@ -365,13 +365,15 @@ BattleAnim_ThrowPokeBall:
 	anim_wait 112
 	anim_setvar $0
 .Loop:
-	anim_wait 48
+	anim_wait 38
 	anim_checkpokeball
 	anim_if_var_equal $1, .Click
 	anim_if_var_equal $2, .BreakFree
+	anim_wait 12
 	anim_incobj 1
 	anim_incobj 2
 	anim_sound 0, 1, SFX_BALL_WOBBLE
+	anim_wait 12
 	anim_jump .Loop
 
 .Click:
