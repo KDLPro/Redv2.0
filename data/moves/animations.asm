@@ -2493,11 +2493,17 @@ BattleAnim_Bonemerang:
 BattleAnim_Swift:
 	anim_1gfx ANIM_GFX_OBJECTS
 	anim_sound 6, 2, SFX_METRONOME
-	anim_obj ANIM_OBJ_SWIFT, 64, 88, $4
+	anim_obj ANIM_OBJ_SWIFT, 72, 96, $4
 	anim_wait 4
-	anim_obj ANIM_OBJ_SWIFT, 64, 72, $4
+	anim_obj ANIM_OBJ_SWIFT, 56, 80, $4
 	anim_wait 4
-	anim_obj ANIM_OBJ_SWIFT, 64, 76, $4
+	anim_obj ANIM_OBJ_SWIFT, 48, 96, $4
+	anim_wait 4
+	anim_obj ANIM_OBJ_SWIFT, 72, 72, $4
+	anim_wait 4
+	anim_obj ANIM_OBJ_SWIFT, 48, 72, $4
+	anim_wait 4
+	anim_obj ANIM_OBJ_SWIFT, 56, 80, $4
 	anim_wait 64
 	anim_ret
 

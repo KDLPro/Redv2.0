@@ -95,6 +95,7 @@ DoBattleAnimFrame:
 	dw BattleAnimFunction_AncientPower
 	dw BattleAnimFunction_RockSmash
 	dw BattleAnimFunction_Cotton
+	dw BattleAnimFunction_MoveFromUserToTargetNoStop
 
 BattleAnimFunction_Null:
 	call BattleAnim_AnonJumptable
@@ -250,6 +251,26 @@ BattleAnimFunction_MoveFromUserToTarget:
 	ld a, [hl]
 	cp $84
 	ret nc
+	ld hl, BATTLEANIMSTRUCT_PARAM
+	add hl, bc
+	ld a, [hl]
+	call BattleAnim_StepToTarget
+	ret
+
+BattleAnimFunction_MoveFromUserToTargetNoStop:
+; Moves object diagonally at a ~30° angle towards opponent but doesn't stop. Obj Param changes the speed
+	call BattleAnim_AnonJumptable
+.anon_dw
+	dw .zero
+	dw .one
+.one
+	call DeinitBattleAnimation
+	ret
+
+.zero
+	ld hl, BATTLEANIMSTRUCT_XCOORD
+	add hl, bc
+	ld a, [hl]
 	ld hl, BATTLEANIMSTRUCT_PARAM
 	add hl, bc
 	ld a, [hl]
