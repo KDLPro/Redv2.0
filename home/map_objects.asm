@@ -300,12 +300,6 @@ CheckObjectTime::
 	scf
 	ret
 
-CopyMapObjectStruct:: ; unreferenced
-	ldh [hMapObjectIndex], a
-	call GetMapObject
-	call CopyObjectStruct
-	ret
-
 UnmaskCopyMapObjectStruct::
 	ldh [hMapObjectIndex], a
 	call UnmaskObject
