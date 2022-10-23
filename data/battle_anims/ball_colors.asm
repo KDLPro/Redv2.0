@@ -14,7 +14,7 @@ BallColors:
 	RGB 30, 10, 06
 
 	db POKE_BALL
-	RGB 31, 31, 31
+	RGB 30, 10, 06
 	RGB 30, 10, 06
 
 	db HEAVY_BALL
