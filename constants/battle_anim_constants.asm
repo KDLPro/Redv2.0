@@ -511,6 +511,10 @@ BATTLEANIM_BASE_TILE EQU 7 * 7  ; Maximum size of a pokemon picture
 	const BATTLEANIMFRAMESET_BB
 	const BATTLEANIMFRAMESET_BC
 	const BATTLEANIMFRAMESET_BD
+	const BATTLEANIMFRAMESET_BE
+	const BATTLEANIMFRAMESET_BF
+	const BATTLEANIMFRAMESET_C0
+	const BATTLEANIMFRAMESET_C1
 
 ; BattleAnimOAMData indexes (see data/battle_anims/oam.asm)
 	const_def

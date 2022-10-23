@@ -664,8 +664,8 @@ BattleBGEffect_EnterMon:
 	db  0, $31, 0
 	db -1
 .EnemyData:
-	db  5, $00, 5
-	db  4, $00, 4
+	db  5, $00, 7
+	db  4, $00, 6
 	db  3, $00, 3
 	db -1
 
@@ -701,7 +701,7 @@ BattleBGEffect_ReturnMon:
 	db -2, $55, 4
 	db  5, $00, 5
 	db -2, $33, 5
-	db -3, $00, 0
+	db -3, $00, 3
 	db -1
 
 BattleBGEffect_RunPicResizeScript:
@@ -848,6 +848,8 @@ BattleBGEffect_RunPicResizeScript:
 	dwcoord  3,  8
 	dwcoord  4, 10
 	dwcoord 12,  0
+	dwcoord 13,  1
+	dwcoord 14,  2
 	dwcoord 13,  2
 	dwcoord 14,  4
 
@@ -862,6 +864,7 @@ ENDM
 	bgsquare 2, 2, .TwoByTwo
 	bgsquare 7, 7, .SevenBySeven
 	bgsquare 5, 5, .FiveByFive
+	bgsquare 3, 3, .ThreeByThree
 	bgsquare 3, 3, .ThreeByThree
 
 .SixBySix:

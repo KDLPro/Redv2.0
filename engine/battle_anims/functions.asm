@@ -136,6 +136,10 @@ BattleAnimFunction_ThrowFromUserToTarget:
 	ld hl, BATTLEANIMSTRUCT_PARAM
 	add hl, bc
 	ld d, [hl]
+	cp $f0
+	call z, .change_param
+	cp $ef
+	call z, .change_offset
 	call BattleAnim_Sine
 	; Store the sine result in the Y offset
 	ld hl, BATTLEANIMSTRUCT_YOFFSET
@@ -143,6 +147,23 @@ BattleAnimFunction_ThrowFromUserToTarget:
 	ld [hl], a
 	; Carry flag denotes success
 	scf
+	ret
+
+.change_param
+	push af
+	ld a, $20
+	ld [hl], a
+	pop af
+	ret
+
+.change_offset
+	push af
+	ld hl, BATTLEANIMSTRUCT_YCOORD
+	add hl, bc
+	ld a, [hl]
+	sub $21
+	ld [hl], a
+	pop af
 	ret
 
 BattleAnimFunction_MoveWaveToTarget:
@@ -242,8 +263,7 @@ BattleAnimFunction_MoveFromUserToTarget:
 	dw .zero
 	dw .one
 .one
-	call DeinitBattleAnimation
-	ret
+	jp DeinitBattleAnimation
 
 .zero
 	ld hl, BATTLEANIMSTRUCT_XCOORD
@@ -254,8 +274,7 @@ BattleAnimFunction_MoveFromUserToTarget:
 	ld hl, BATTLEANIMSTRUCT_PARAM
 	add hl, bc
 	ld a, [hl]
-	call BattleAnim_StepToTarget
-	ret
+	jp BattleAnim_StepToTarget
 
 BattleAnimFunction_MoveFromUserToTargetNoStop:
 ; Moves object diagonally at a ~30° angle towards opponent but doesn't stop. Obj Param changes the speed
@@ -274,8 +293,7 @@ BattleAnimFunction_MoveFromUserToTargetNoStop:
 	ld hl, BATTLEANIMSTRUCT_PARAM
 	add hl, bc
 	ld a, [hl]
-	call BattleAnim_StepToTarget
-	ret
+	jp BattleAnim_StepToTarget
 
 BattleAnimFunction_MoveFromUserToTargetAndDisappear:
 ; Same as BattleAnimFunction_01 but objs are cleared when they reach x coord $84
@@ -287,12 +305,10 @@ BattleAnimFunction_MoveFromUserToTargetAndDisappear:
 	ld hl, BATTLEANIMSTRUCT_PARAM
 	add hl, bc
 	ld a, [hl]
-	call BattleAnim_StepToTarget
-	ret
+	jp BattleAnim_StepToTarget
 
 .done
-	call DeinitBattleAnimation
-	ret
+	jp DeinitBattleAnimation
 
 BattleAnimFunction_PokeBall_BG:
 	call BattleAnim_AnonJumptable
@@ -315,7 +331,7 @@ BattleAnimFunction_PokeBall_BG:
 
 .seven
 	call GetBallAnimBGPal
-	ld a, BATTLEANIMFRAMESET_BC
+	ld a, BATTLEANIMFRAMESET_BF
 	call ReinitBattleAnimFrameset
 	call BattleAnim_IncAnonJumptableIndex
 	ld hl, BATTLEANIMSTRUCT_VAR2
@@ -339,13 +355,11 @@ BattleAnimFunction_PokeBall_BG:
 	jr z, .eleven
 	and $f
 	ret nz
-	call BattleAnim_IncAnonJumptableIndex
-	ret
+	jp BattleAnim_IncAnonJumptableIndex
 
 .eleven
-	ld a, BATTLEANIMFRAMESET_0C
-	call ReinitBattleAnimFrameset
-	ret
+	ld a, BATTLEANIMFRAMESET_C0
+	jp ReinitBattleAnimFrameset
 
 BattleAnimFunction_PokeBall:
 	call BattleAnim_AnonJumptable
@@ -364,8 +378,7 @@ BattleAnimFunction_PokeBall:
 	dw DeinitBattleAnimation
 .zero ; init
 	call GetBallAnimPal
-	call BattleAnim_IncAnonJumptableIndex
-	ret
+	jp BattleAnim_IncAnonJumptableIndex
 
 .one
 	call BattleAnimFunction_ThrowFromUserToTarget
@@ -379,16 +392,24 @@ BattleAnimFunction_PokeBall:
 	ld [hl], a
 	ld a, BATTLEANIMFRAMESET_BD
 	call ReinitBattleAnimFrameset
-	call BattleAnim_IncAnonJumptableIndex
-	ret
+	jp BattleAnim_IncAnonJumptableIndex
 
 .three
 	call BattleAnim_IncAnonJumptableIndex
-	ld a, BATTLEANIMFRAMESET_09
+	ld a, BATTLEANIMFRAMESET_C1
 	call ReinitBattleAnimFrameset
+	ld hl, BATTLEANIMSTRUCT_YOFFSET
+	add hl, bc
+	ld a, $20
+	ld [hl], a
+	ld hl, BATTLEANIMSTRUCT_YCOORD
+	add hl, bc
+	ld a, [hl]
+	add $10
+	ld [hl], a
 	ld hl, BATTLEANIMSTRUCT_VAR1
 	add hl, bc
-	ld [hl], $0
+	ld [hl], $F0
 	inc hl
 	ld [hl], $10
 .four
@@ -416,8 +437,7 @@ BattleAnimFunction_PokeBall:
 	ret nz
 	ld a, BATTLEANIMFRAMESET_0C
 	call ReinitBattleAnimFrameset
-	call BattleAnim_IncAnonJumptableIndex
-	ret
+	jp BattleAnim_IncAnonJumptableIndex
 
 .six
 	ld a, BATTLEANIMFRAMESET_0D
@@ -456,13 +476,11 @@ BattleAnimFunction_PokeBall:
 	jr z, .eleven
 	and $f
 	ret nz
-	call BattleAnim_IncAnonJumptableIndex
-	ret
+	jp BattleAnim_IncAnonJumptableIndex
 
 .eleven
-	ld a, BATTLEANIMFRAMESET_0C
-	call ReinitBattleAnimFrameset
-	ret
+	ld a, BATTLEANIMFRAMESET_BE
+	jp ReinitBattleAnimFrameset
 
 BattleAnimFunction_PokeBallBlocked:
 	call BattleAnim_AnonJumptable
@@ -481,8 +499,7 @@ BattleAnimFunction_PokeBallBlocked:
 	ld a, [hl]
 	cp $70
 	jr nc, .next
-	call BattleAnimFunction_ThrowFromUserToTarget
-	ret
+	jp BattleAnimFunction_ThrowFromUserToTarget
 
 .next
 	call BattleAnim_IncAnonJumptableIndex
@@ -501,8 +518,7 @@ BattleAnimFunction_PokeBallBlocked:
 	ret
 
 .done
-	call DeinitBattleAnimation
-	ret
+	jp DeinitBattleAnimation
 
 GetBallAnimBGPal:
 	ld hl, BATTLEANIMSTRUCT_PALETTE
