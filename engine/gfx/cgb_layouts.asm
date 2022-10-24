@@ -108,6 +108,8 @@ _CGB_BattleColors:
 	call LoadPalette_White_Col1_Col2_Black ; PAL_BATTLE_BG_PLAYER_HP
 	ld hl, ExpBarPalette
 	call LoadPalette_White_Col1_Col2_Black ; PAL_BATTLE_BG_EXP
+	ld hl, GenderPalette
+	call LoadPalette_White_Col1_Col2_Black ; PAL_BATTLE_BG_HUD
 	ld de, wOBPals1
 	pop hl
 	call LoadPalette_White_Col1_Col2_Black ; PAL_BATTLE_OB_ENEMY
@@ -145,6 +147,7 @@ _CGB_FinishBattleScreenLayout:
 	call ByteFill
 	hlcoord 0, 0, wAttrmap
 	lb bc, 2, 10
+	ld a, PAL_BATTLE_BG_HUD
 	call FillBoxCGB
 	hlcoord 10, 7, wAttrmap
 	lb bc, 2, 10
