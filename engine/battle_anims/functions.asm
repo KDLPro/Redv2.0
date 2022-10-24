@@ -215,6 +215,7 @@ BattleAnimFunction_MoveInCircle:
 .anon_dw
 	dw .zero
 	dw .one
+	dw DeinitBattleAnimation
 .zero
 	call BattleAnim_IncAnonJumptableIndex
 	ld hl, BATTLEANIMSTRUCT_PARAM
@@ -261,9 +262,7 @@ BattleAnimFunction_MoveFromUserToTarget:
 	call BattleAnim_AnonJumptable
 .anon_dw
 	dw .zero
-	dw .one
-.one
-	jp DeinitBattleAnimation
+	dw DeinitBattleAnimation
 
 .zero
 	ld hl, BATTLEANIMSTRUCT_XCOORD
