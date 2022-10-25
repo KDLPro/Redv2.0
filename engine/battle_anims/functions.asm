@@ -107,12 +107,44 @@ BattleAnimFunction_Null:
 .zero
 	ret
 
+BattleAnimFunction_ThrowFromUserToTarget:
+	; If x coord at $88 or beyond, abort.
+	ld hl, BATTLEANIMSTRUCT_XCOORD
+	add hl, bc
+	ld a, [hl]
+	cp $88
+	ret nc
+	; Move right 2 pixels
+	add $2
+	ld [hl], a
+	; Move down 1 pixel
+	ld hl, BATTLEANIMSTRUCT_YCOORD
+	add hl, bc
+	dec [hl]
+	; Decrease var1 and hold onto its previous value (argument of the sine function)
+	ld hl, BATTLEANIMSTRUCT_VAR1
+	add hl, bc
+	ld a, [hl]
+	dec [hl]
+	; Get param (amplitude of the sine function)
+	ld hl, BATTLEANIMSTRUCT_PARAM
+	add hl, bc
+	ld d, [hl]
+	call BattleAnim_Sine
+	; Store the sine result in the Y offset
+	ld hl, BATTLEANIMSTRUCT_YOFFSET
+	add hl, bc
+	ld [hl], a
+	; Carry flag denotes success
+	scf
+	ret
+
 BattleAnimFunction_ThrowFromUserToTargetAndDisappear:
 	call BattleAnimFunction_ThrowFromUserToTarget
 	ret c
 	jp DeinitBattleAnimation
 
-BattleAnimFunction_ThrowFromUserToTarget:
+BattleAnimFunction_ThrowPokeball:
 	; If x coord at $88 or beyond, abort.
 	ld hl, BATTLEANIMSTRUCT_XCOORD
 	add hl, bc
@@ -4084,7 +4116,7 @@ BattleAnimFunction_BetaPursuit:
 	dw .zero
 	dw .one
 	dw .two
-	dw .three
+	dw DeinitBattleAnimation
 
 .zero
 	ld hl, BATTLEANIMSTRUCT_PARAM
@@ -4134,7 +4166,7 @@ BattleAnimFunction_RainSandstorm:
 	dw .zero
 	dw .one
 	dw .two
-	dw DeinitBattleAnimation
+	dw .three
 
 .zero
 	ld hl, BATTLEANIMSTRUCT_PARAM
