@@ -110,8 +110,7 @@ BattleAnimFunction_Null:
 BattleAnimFunction_ThrowFromUserToTargetAndDisappear:
 	call BattleAnimFunction_ThrowFromUserToTarget
 	ret c
-	call DeinitBattleAnimation
-	ret
+	jp DeinitBattleAnimation
 
 BattleAnimFunction_ThrowFromUserToTarget:
 	; If x coord at $88 or beyond, abort.
@@ -173,8 +172,7 @@ BattleAnimFunction_MoveWaveToTarget:
 	ld a, [hl]
 	cp $88
 	jr c, .move
-	call DeinitBattleAnimation
-	ret
+	jp DeinitBattleAnimation
 
 .move
 	add $2
@@ -282,8 +280,7 @@ BattleAnimFunction_MoveFromUserToTargetNoStop:
 	dw .zero
 	dw .one
 .one
-	call DeinitBattleAnimation
-	ret
+	jp DeinitBattleAnimation
 
 .zero
 	ld hl, BATTLEANIMSTRUCT_XCOORD
@@ -380,7 +377,7 @@ BattleAnimFunction_PokeBall:
 	jp BattleAnim_IncAnonJumptableIndex
 
 .one
-	call BattleAnimFunction_ThrowFromUserToTarget
+	call BattleAnimFunction_ThrowPokeball
 	ret c
 	ld hl, BATTLEANIMSTRUCT_YOFFSET
 	add hl, bc
@@ -536,7 +533,7 @@ BattleAnimFunction_Ember:
 .anon_dw
 	dw .zero
 	dw .one
-	dw .two
+	dw DeinitBattleAnimation
 	dw .three
 	dw .four
 .zero
@@ -560,10 +557,6 @@ BattleAnimFunction_Ember:
 	add hl, bc
 	ld a, [hl]
 	call BattleAnim_StepToTarget
-	ret
-
-.two
-	call DeinitBattleAnimation
 	ret
 
 .three
@@ -618,8 +611,7 @@ BattleAnimFunction_Drop:
 	ret
 
 .done
-	call DeinitBattleAnimation
-	ret
+	jp DeinitBattleAnimation
 	
 BattleAnimFunction_DropNoBounce:
 ; Drops obj on the ground
@@ -750,8 +742,7 @@ BattleAnimFunction_MoveFromUserToTargetSpinAround:
 	ld a, [hl]
 	cp $b0
 	jr c, .retain
-	call DeinitBattleAnimation
-	ret
+	jp DeinitBattleAnimation
 
 .retain
 	call .SetCoords
@@ -787,7 +778,7 @@ BattleAnimFunction_Shake:
 .anon_dw
 	dw .zero
 	dw .one
-	dw .two
+	dw DeinitBattleAnimation
 .zero
 	call BattleAnim_IncAnonJumptableIndex
 	ld hl, BATTLEANIMSTRUCT_VAR1
@@ -826,10 +817,6 @@ BattleAnimFunction_Shake:
 	ld [hl], a
 	ret
 
-.two
-	call DeinitBattleAnimation
-	ret
-
 BattleAnimFunction_FireBlast:
 	call BattleAnim_AnonJumptable
 .anon_dw
@@ -842,7 +829,7 @@ BattleAnimFunction_FireBlast:
 	dw .six
 	dw .seven
 	dw .eight
-	dw .nine
+	dw DeinitBattleAnimation
 .zero
 	ld hl, BATTLEANIMSTRUCT_PARAM
 	add hl, bc
@@ -893,10 +880,6 @@ BattleAnimFunction_FireBlast:
 	ld hl, BATTLEANIMSTRUCT_VAR1
 	add hl, bc
 	inc [hl]
-	ret
-
-.nine
-	call DeinitBattleAnimation
 	ret
 
 .one
@@ -1010,8 +993,7 @@ BattleAnimFunction_RazorLeaf:
 	ld a, [hl]
 	cp $20
 	jr nz, .sine_cosine_2
-	call DeinitBattleAnimation
-	ret
+	jp DeinitBattleAnimation
 
 .sine_cosine_2
 	ld hl, BATTLEANIMSTRUCT_VAR1
@@ -1147,8 +1129,7 @@ BattleAnimFunction_RockSmash:
 	ld a, [hl]
 	cp $30
 	jr nc, .sine_cosine
-	call DeinitBattleAnimation
-	ret
+	jp DeinitBattleAnimation
 
 .sine_cosine
 	ld hl, BATTLEANIMSTRUCT_PARAM
@@ -1340,8 +1321,7 @@ BattleAnimFunction_Surf:
 	ldh [hLYOverrideStart], a
 	ldh [hLYOverrideEnd], a
 .four
-	call DeinitBattleAnimation
-	ret
+	jp DeinitBattleAnimation
 
 .move_down
 	inc a
@@ -1372,8 +1352,7 @@ BattleAnimFunction_Sing:
 	ld a, [hl]
 	cp $b8
 	jr c, .move
-	call DeinitBattleAnimation
-	ret
+	jp DeinitBattleAnimation
 
 .move
 	ld a, $2
@@ -1456,8 +1435,7 @@ BattleAnimFunction_Powder:
 	ld a, [hl]
 	cp $38
 	jr c, .move
-	call DeinitBattleAnimation
-	ret
+	jp DeinitBattleAnimation
 
 .move
 	ld a, [hl]
@@ -1518,8 +1496,7 @@ BattleAnimFunction_Recover:
 	ld a, [hl]
 	and a
 	jr nz, .move
-	call DeinitBattleAnimation
-	ret
+	jp DeinitBattleAnimation
 
 .move
 	ld hl, BATTLEANIMSTRUCT_VAR1
@@ -1569,8 +1546,7 @@ BattleAnimFunction_ThunderWave:
 	ret
 
 .three
-	call DeinitBattleAnimation
-	ret
+	jp DeinitBattleAnimation
 
 BattleAnimFunction_Clamp_Encore:
 ; Claps two objects together, twice. Also used by Encore
@@ -1791,8 +1767,7 @@ BattleAnimFunction_SolarBeam:
 	ret
 
 .zero_radius
-	call DeinitBattleAnimation
-	ret
+	jp DeinitBattleAnimation
 
 BattleAnimFunction_Gust:
 	call BattleAnim_AnonJumptable
@@ -1828,8 +1803,7 @@ BattleAnimFunction_Gust:
 	ld a, [hl]
 	cp $b8
 	jr c, .move
-	call DeinitBattleAnimation
-	ret
+	jp DeinitBattleAnimation
 
 .move
 	call .GustWobble
@@ -1928,8 +1902,7 @@ BattleAnimFunction_Absorb:
 	ld a, [hl]
 	cp $30
 	jr nc, .move
-	call DeinitBattleAnimation
-	ret
+	jp DeinitBattleAnimation
 
 .move
 	ld hl, BATTLEANIMSTRUCT_PARAM
@@ -2202,7 +2175,7 @@ BattleAnimFunction_Egg:
 	dw .two
 	dw .three
 	dw .four ; ret
-	dw .five
+	dw DeinitBattleAnimation
 	dw .six ; Softboiled obj 1 start
 	dw .seven
 	dw .eight
@@ -2307,11 +2280,6 @@ BattleAnimFunction_Egg:
 	ld hl, BATTLEANIMSTRUCT_VAR1
 	add hl, bc
 	ld [hl], e
-	ret
-
-.five
-	; Clears Egg Bomb object via anim_incobj
-	call DeinitBattleAnimation
 	ret
 
 .seven
@@ -2422,8 +2390,7 @@ BattleAnimFunction_MoveUp:
 	jr z, .move
 	cp $d8
 	jr nc, .move
-	call DeinitBattleAnimation
-	ret
+	jp DeinitBattleAnimation
 
 .move
 	ld hl, BATTLEANIMSTRUCT_PARAM
@@ -2478,8 +2445,7 @@ BattleAnimFunction_Sound:
 	ret
 
 .done_anim
-	call DeinitBattleAnimation
-	ret
+	jp DeinitBattleAnimation
 
 .SoundWaveMotion:
 	ld hl, BATTLEANIMSTRUCT_VAR2
@@ -2668,7 +2634,7 @@ BattleAnimFunction_Amnesia:
 .anon_dw
 	dw .zero
 	dw .one
-	dw .two
+	dw DeinitBattleAnimation
 
 .zero
 	call BattleAnim_IncAnonJumptableIndex
@@ -2688,11 +2654,6 @@ BattleAnimFunction_Amnesia:
 	add hl, bc
 	ld [hl], a
 .one
-	ret
-
-.two
-	; anim_incobj forces obj to deinit
-	call DeinitBattleAnimation
 	ret
 
 .AmnesiaOffsets: ; Hardcoded Y Offsets for each Obj Param
@@ -2870,8 +2831,7 @@ BattleAnimFunction_SpiralDescent:
 	ret
 
 .delete
-	call DeinitBattleAnimation
-	ret
+	jp DeinitBattleAnimation
 
 BattleAnimFunction_PetalDance:
 ; Object moves downwards in a spiral around the user. Object disappears at y coord $28
@@ -2912,8 +2872,7 @@ BattleAnimFunction_PetalDance:
 	ret
 
 .end
-	call DeinitBattleAnimation
-	ret
+	jp DeinitBattleAnimation
 
 BattleAnimFunction_PoisonGas:
 	call BattleAnim_AnonJumptable
@@ -2992,8 +2951,7 @@ BattleAnimFunction_SmokeFlameWheel:
 	ret
 
 .done
-	call DeinitBattleAnimation
-	ret
+	jp DeinitBattleAnimation
 
 BattleAnimFunction_SacredFire:
 ; Moves object in a circle where the height is 1/8 the width, while also moving upward 2 pixels per frame for 24 frames after which it disappears
@@ -3037,8 +2995,7 @@ BattleAnimFunction_SacredFire:
 	ret
 
 .done
-	call DeinitBattleAnimation
-	ret
+	jp DeinitBattleAnimation
 
 BattleAnimFunction_PresentSmokescreen:
 ; Object bounces from user to target and stops at x coord $6c. Uses anim_incobj to clear object
@@ -3047,7 +3004,7 @@ BattleAnimFunction_PresentSmokescreen:
 .anon_dw
 	dw .zero
 	dw .one
-	dw .two
+	dw DeinitBattleAnimation
 
 .zero
 	call BattleAnim_IncAnonJumptableIndex
@@ -3096,10 +3053,6 @@ BattleAnimFunction_PresentSmokescreen:
 	srl [hl]
 	ret
 
-.two
-	call DeinitBattleAnimation
-	ret
-
 BattleAnimFunction_Horn:
 	call BattleAnim_AnonJumptable
 .anon_dw
@@ -3139,8 +3092,7 @@ BattleAnimFunction_Horn:
 	ld a, [hl]
 	cp $20
 	jr c, .three
-	call DeinitBattleAnimation
-	ret
+	jp DeinitBattleAnimation
 
 .three
 	ld hl, BATTLEANIMSTRUCT_VAR2
@@ -3212,8 +3164,7 @@ BattleAnimFunction_Needle:
 	ld a, [hl]
 	cp $84
 	jr c, .move_to_target
-	call DeinitBattleAnimation
-	ret
+	jp DeinitBattleAnimation
 
 .move_to_target
 	ld hl, BATTLEANIMSTRUCT_PARAM
@@ -3333,8 +3284,7 @@ BattleAnimFunction_AbsorbCircle:
 	ret
 
 .end
-	call DeinitBattleAnimation
-	ret
+	jp DeinitBattleAnimation
 
 BattleAnimFunction_Conversion:
 ; A rotating circle of objects centered at a position. It expands for $40 frames and then shrinks. Once radius reaches 0, the object disappears.
@@ -3374,8 +3324,7 @@ BattleAnimFunction_Conversion:
 	dec [hl]
 	and a
 	ret nz
-	call DeinitBattleAnimation
-	ret
+	jp DeinitBattleAnimation
 
 BattleAnimFunction_Bonemerang:
 ; Boomerang-like movement from user to target
@@ -3505,8 +3454,7 @@ BattleAnimFunction_SkyAttack:
 	ret
 
 .done
-	call DeinitBattleAnimation
-	ret
+	jp DeinitBattleAnimation
 
 .SkyAttack_CyclePalette:
 ; Cycles wOBP0 pallete
@@ -3644,8 +3592,7 @@ BattleAnimFunction_StrengthSeismicToss:
 	ret
 
 .done
-	call DeinitBattleAnimation
-	ret
+	jp DeinitBattleAnimation
 
 BattleAnimFunction_SpeedLine:
 ; Used in moves where the user disappears for a speed-based attack such as Quick Attack, Mach Punch and Extremespeed
@@ -3741,8 +3688,7 @@ BattleAnimFunction_MetronomeSparkleSketch:
 	ld a, [hl]
 	cp $20
 	jr c, .do_move
-	call DeinitBattleAnimation
-	ret
+	jp DeinitBattleAnimation
 
 .do_move
 	ld hl, BATTLEANIMSTRUCT_PARAM
@@ -3770,7 +3716,7 @@ BattleAnimFunction_Agility:
 	call BattleAnim_AnonJumptable
 .anon_dw
 	dw .zero
-	dw .one
+	dw DeinitBattleAnimation
 
 .zero
 	ld hl, BATTLEANIMSTRUCT_PARAM
@@ -3780,10 +3726,6 @@ BattleAnimFunction_Agility:
 	add hl, bc
 	add [hl]
 	ld [hl], a
-	ret
-
-.one
-	call DeinitBattleAnimation
 	ret
 
 BattleAnimFunction_SafeguardProtect:
@@ -3877,8 +3819,7 @@ BattleAnimFunction_LockOnMindReader:
 	dec [hl]
 	and a
 	ret nz
-	call DeinitBattleAnimation
-	ret
+	jp DeinitBattleAnimation
 
 BattleAnimFunction_HealBellNotes:
 ; Object moves horizontally in a sine wave, while also moving left every other frame and downwards for $38 frames after which it disappears
@@ -3922,8 +3863,7 @@ BattleAnimFunction_HealBellNotes:
 	ret
 
 .done
-	call DeinitBattleAnimation
-	ret
+	jp DeinitBattleAnimation
 
 BattleAnimFunction_BatonPass:
 ; Object falls vertially and bounces on the ground
@@ -3986,8 +3926,7 @@ BattleAnimFunction_EncoreBellyDrum:
 	ret
 
 .done
-	call DeinitBattleAnimation
-	ret
+	jp DeinitBattleAnimation
 
 BattleAnimFunction_SwaggerMorningSun:
 ; Moves object at an angle
@@ -4057,8 +3996,7 @@ BattleAnimFunction_HiddenPower:
 	jr .step_circle
 
 .done
-	call DeinitBattleAnimation
-	ret
+	jp DeinitBattleAnimation
 
 .step_circle
 	call BattleAnim_StepCircle
@@ -4135,8 +4073,7 @@ BattleAnimFunction_RapidSpin:
 	ret
 
 .done
-	call DeinitBattleAnimation
-	ret
+	jp DeinitBattleAnimation
 
 BattleAnimFunction_BetaPursuit:
 ; Working but unused animation
@@ -4164,15 +4101,11 @@ BattleAnimFunction_BetaPursuit:
 	add hl, bc
 	ld a, [hl]
 	cp $4
-	jr z, .three
+	jp z, DeinitBattleAnimation
 	inc [hl]
 	inc [hl]
 	inc [hl]
 	inc [hl]
-	ret
-
-.three
-	call DeinitBattleAnimation
 	ret
 
 .move_up
@@ -4201,7 +4134,7 @@ BattleAnimFunction_RainSandstorm:
 	dw .zero
 	dw .one
 	dw .two
-	dw .three
+	dw DeinitBattleAnimation
 
 .zero
 	ld hl, BATTLEANIMSTRUCT_PARAM
@@ -4315,8 +4248,7 @@ BattleAnimFunction_Rollout:
 	ret
 
 .done
-	call DeinitBattleAnimation
-	ret
+	jp DeinitBattleAnimation
 
 BattleAnimFunction_PsychUp:
 ; Object moves in a circle
@@ -4365,8 +4297,7 @@ BattleAnimFunction_AncientPower:
 	ret
 
 .done
-	call DeinitBattleAnimation
-	ret
+	jp DeinitBattleAnimation
 
 BattleAnim_StepCircle:
 ; Inches object in a circular movement where its height is 1/4 the width
