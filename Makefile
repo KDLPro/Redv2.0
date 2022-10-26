@@ -202,6 +202,7 @@ gfx/battle_anims/reflect.2bpp: tools/gfx += --remove-whitespace
 gfx/battle_anims/rocks.2bpp: tools/gfx += --remove-whitespace
 gfx/battle_anims/skyattack.2bpp: tools/gfx += --remove-whitespace
 gfx/battle_anims/status.2bpp: tools/gfx += --remove-whitespace
+gfx/battle_anims/stars.2bpp: tools/gfx += --remove-whitespace
 
 gfx/poke_balls/ball_background.2bpp: tools/gfx += --remove-xflip --keep-whitespace
 gfx/poke_balls/poke_ball.2bpp: tools/gfx += --remove-xflip --keep-whitespace

@@ -2491,20 +2491,20 @@ BattleAnim_Bonemerang:
 	anim_ret
 
 BattleAnim_Swift:
-	anim_1gfx ANIM_GFX_OBJECTS
+	anim_1gfx ANIM_GFX_STARS
 	anim_sound 6, 2, SFX_METRONOME
-	anim_obj ANIM_OBJ_SWIFT, 72, 96, $4
+	anim_obj ANIM_OBJ_SWIFT, 39, 95, $3
 	anim_wait 4
-	anim_obj ANIM_OBJ_SWIFT, 56, 80, $4
+	anim_obj ANIM_OBJ_SWIFT, 54, 65, $3
 	anim_wait 4
-	anim_obj ANIM_OBJ_SWIFT, 48, 96, $4
+	anim_obj ANIM_OBJ_SWIFT, 39, 95, $3
 	anim_wait 4
-	anim_obj ANIM_OBJ_SWIFT, 72, 72, $4
+	anim_obj ANIM_OBJ_SWIFT, 69, 65, $3
 	anim_wait 4
-	anim_obj ANIM_OBJ_SWIFT, 48, 72, $4
-	anim_wait 4
-	anim_obj ANIM_OBJ_SWIFT, 56, 80, $4
-	anim_wait 64
+	anim_obj ANIM_OBJ_SWIFT, 54, 80, $3
+	anim_wait 8
+	anim_obj ANIM_OBJ_SWIFT, 69, 80, $3
+	anim_wait 32
 	anim_ret
 
 BattleAnim_Crabhammer:
