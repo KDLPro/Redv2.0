@@ -1181,18 +1181,19 @@ VitaminEffect:
 	pop bc 
 	pop de
 
-    ld a, e
-    and a
-    jr z, NoEffectMessage
+	ld a, e
+	and a
+	jr z, NoEffectMessage
 
-    add hl, bc
-    ld a, [hl]
-    cp 100
-    jr nc, NoEffectMessage
+	; Vitamins have no effect if EV value is equal to 240.
+	add hl, bc
+	ld a, [hl]
+	cp 240
+	jr nc, NoEffectMessage
 
-    add e
-    ld [hl], a
-    call UpdateStatsAfterItem
+	add e
+	ld [hl], a
+	call UpdateStatsAfterItem
 
 	call GetEVRelativePointer
 
