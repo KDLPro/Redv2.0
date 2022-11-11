@@ -1184,6 +1184,7 @@ VitaminEffect:
 	ld a, e
 	and a
 	jr z, NoEffectMessage
+	ld e, a
 
 	; Vitamins have no effect if EV value is equal to 240.
 	add hl, bc
