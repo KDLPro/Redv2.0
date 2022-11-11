@@ -2,19 +2,10 @@ NAMINGSCREEN_CURSOR     			EQU $7e
 
 NAMINGSCREEN_MIDDLELINE 			EQU "→" ; $eb
 NAMINGSCREEN_UNDERLINE  			EQU "☎" ; $d9
-NAMINGSCREEN_SPACE				EQU $C0
-NAMINGSCREEN_BORDER_TOPBOTTOM			EQU $C1
-NAMINGSCREEN_BORDER_TOP  			EQU $C2
-NAMINGSCREEN_BORDER_TOPLEFT  			EQU $C3
-NAMINGSCREEN_BORDER_TOPRIGHT  			EQU $C4
-NAMINGSCREEN_BORDER_RIGHT  			EQU $C5
-NAMINGSCREEN_BORDER_LEFT  			EQU $C6
-NAMINGSCREEN_BORDER_BOTTOM  			EQU $C7
-NAMINGSCREEN_BORDER_BOTTOMLEFT			EQU $C8
-NAMINGSCREEN_BORDER_BOTTOMRIGHT			EQU $C9
-NAMINGSCREEN_BORDER     			EQU $CA
-NAMINGSCREEN_BORDER_TOPBOTTOMLEFT		EQU $CB
-NAMINGSCREEN_BORDER_TOPBOTTOMRIGHT		EQU $CC
+NAMINGSCREEN_BORDER					EQU $00  ; vTiles2
+NAMINGSCREEN_LOWER					EQU $10  ; vTiles2
+NAMINGSCREEN_UPPER					EQU $14	 ; vTiles2
+NAMINGSCREEN_OTHER					EQU $1E	 ; vTiles2
 
 _NamingScreen:
 	call DisableSpriteUpdates
@@ -82,7 +73,9 @@ SetUpNamingScreen:
 
 .SetUpNamingScreen:
 	call ClearBGPalettes
+	call ClearTilemap
 
+	; Check naming screen type
 	ld a, [wNamingScreenType]
 	maskbits NUM_NAME_TYPES
 	cp 4
@@ -106,7 +99,7 @@ SetUpNamingScreen:
 .init_name_entry
 	call DisableLCD
 	call LoadNamingScreenGFX
-	call NamingScreen_InitText
+	call NamingScreen_InitTilemapText
 	ld a, LCDC_DEFAULT
 	ldh [rLCDC], a
 	call .GetNamingScreenSetup
@@ -332,118 +325,16 @@ NamingScreen_IsTargetBox:
 	pop bc
 	ret
 
-NamingScreen_InitText:
+NamingScreen_InitTilemapText:
 	call WaitTop
-	hlcoord 0, 0
-	ld bc, SCREEN_WIDTH * SCREEN_HEIGHT
-	ld a, NAMINGSCREEN_BORDER
-	call ByteFill
-
-	hlcoord 1, 0
-	ld bc, SCREEN_WIDTH - 2 * 1
-	ld a, NAMINGSCREEN_BORDER_TOP
-	call ByteFill
-	hlcoord 1, 7
-	ld bc, SCREEN_WIDTH - 2 * 1
-	ld a, NAMINGSCREEN_BORDER_TOPBOTTOM
-	call ByteFill
-	hlcoord 1, 15
-	ld bc, SCREEN_WIDTH - 2 * 1
-	call ByteFill
-	hlcoord 1, 17
-	ld bc, SCREEN_WIDTH - 2 * 1
-	ld a, NAMINGSCREEN_BORDER_BOTTOM
-	call ByteFill
-	hlcoord 0, 0
-	ld bc, 1
-	ld a, NAMINGSCREEN_BORDER_TOPLEFT
-	call ByteFill
-	hlcoord 19, 0
-	ld bc, 1
-	ld a, NAMINGSCREEN_BORDER_TOPRIGHT
-	call ByteFill
-	hlcoord 0, 17
-	ld bc, 1
-	ld a, NAMINGSCREEN_BORDER_BOTTOMLEFT
-	call ByteFill
-	hlcoord 19, 17
-	ld bc, 1
-	ld a, NAMINGSCREEN_BORDER_BOTTOMRIGHT
-	call ByteFill
-	hlcoord 0, 7
-	ld bc, 1
-	ld a, NAMINGSCREEN_BORDER_TOPBOTTOMLEFT
-	call ByteFill
-	hlcoord 0, 15
-	ld bc, 1
-	call ByteFill
-	hlcoord 19, 7
-	ld bc, 1
-	ld a, NAMINGSCREEN_BORDER_TOPBOTTOMRIGHT
-	call ByteFill
-	hlcoord 19, 15
-	ld bc, 1
-	call ByteFill
-	hlcoord 0, 16
-	ld bc, 1
-	ld a, NAMINGSCREEN_BORDER_LEFT
-	call ByteFill
-	hlcoord 19, 16
-	ld bc, 1
-	ld a, NAMINGSCREEN_BORDER_RIGHT
-	call ByteFill
-	hlcoord 0, 1
-	lb bc, 6, 1
-	ld a, NAMINGSCREEN_BORDER_LEFT
-	call FillBoxWithByte
-	hlcoord 0, 8
-	lb bc, 7, 1
-	ld a, NAMINGSCREEN_BORDER_LEFT
-	call FillBoxWithByte
-	hlcoord 19, 1
-	lb bc, 6, 1
-	ld a, NAMINGSCREEN_BORDER_RIGHT
-	call FillBoxWithByte
-	hlcoord 19, 8
-	lb bc, 7, 1
-	ld a, NAMINGSCREEN_BORDER_RIGHT
-	call FillBoxWithByte
-
-	ld a, [wNamingScreenType]
-	maskbits NUM_NAME_TYPES
-	cp 4
-	jr nz, .done_border_setup
-
-	hlcoord 19, 7
-	ld bc, 1
-	ld a, NAMINGSCREEN_BORDER_RIGHT
-	call ByteFill
-	hlcoord 0, 7
-	ld bc, 1
-	ld a, NAMINGSCREEN_BORDER_LEFT
-	call ByteFill
-	hlcoord 19, 5
-	ld bc, 1
-	ld a, NAMINGSCREEN_BORDER_TOPBOTTOMRIGHT
-	call ByteFill
-	hlcoord 0, 5
-	ld bc, 1
-	ld a, NAMINGSCREEN_BORDER_TOPBOTTOMLEFT
-	call ByteFill
-	hlcoord 1, 5
-	ld bc, SCREEN_WIDTH - 2 * 1
-	ld a, NAMINGSCREEN_BORDER_TOPBOTTOM
-	call ByteFill
-
-.done_border_setup
-	hlcoord 1, 1
-	lb bc, 6, 18
+	ld hl, NameInput_Tilemap
 	call NamingScreen_IsTargetBox
 	jr nz, .not_box
-	lb bc, 4, 18
-
+	ld hl, BoxInput_Tilemap
 .not_box
-	call ClearBox
+	decoord 0, 0
+	ld bc, SCREEN_WIDTH * SCREEN_HEIGHT
+	call CopyBytes
 	ld de, NameInputUpper
 NamingScreen_ApplyTextInputMode:
 	call NamingScreen_IsTargetBox
@@ -453,31 +344,16 @@ NamingScreen_ApplyTextInputMode:
 	add hl, de
 	ld d, h
 	ld e, l
-
 .not_box
-	push de
-	hlcoord 1, 8
-	lb bc, 7, 18
-	call NamingScreen_IsTargetBox
-	jr nz, .not_box_2
-	hlcoord 1, 6
-	lb bc, 9, 18
-
-.not_box_2
-	call ClearBox
-	hlcoord 1, 16
-	lb bc, 1, 18
-	call ClearBox
-	pop de
 	hlcoord 2, 8
-	ld b, $5
+	ld b, 4
 	call NamingScreen_IsTargetBox
 	jr nz, .row
 	hlcoord 2, 6
-	ld b, $6
+	ld b, 5
 
 .row
-	ld c, $11
+	ld c, 17
 .col
 	ld a, [de]
 	ld [hli], a
@@ -485,11 +361,45 @@ NamingScreen_ApplyTextInputMode:
 	dec c
 	jr nz, .col
 	push de
-	ld de, 2 * SCREEN_WIDTH - $11
+	ld de, 2 * SCREEN_WIDTH - 17
 	add hl, de
 	pop de
 	dec b
 	jr nz, .row
+
+	ld a, [wNamingScreenType]
+	maskbits NUM_NAME_TYPES
+	cp 4
+	jr nz, .notBox
+	
+	; Upper/Lower text
+	ld a, [wNamingScreenLetterCase]
+	and a
+	ld a, NAMINGSCREEN_UPPER
+	jr nz, .GotCoord
+	ld a, NAMINGSCREEN_LOWER
+	jr .GotCoord
+
+.notBox
+	; Upper/Lower/Other text
+	ld a, [wNamingScreenLetterCase]
+	cp 2
+	ld a, NAMINGSCREEN_UPPER
+	jr z, .GotCoord
+	
+	ld a, [wNamingScreenLetterCase]
+	and a
+	ld a, NAMINGSCREEN_OTHER
+	jr nz, .GotCoord
+	ld a, NAMINGSCREEN_LOWER
+.GotCoord
+	hlcoord 2, 16
+	ld c, 4
+.copy_letter_option
+	ld [hli], a
+	inc a
+	dec c
+	jr nz, .copy_letter_option
 	ret
 
 NamingScreenJoypadLoop:
@@ -637,12 +547,21 @@ NamingScreenJoypadLoop:
 	call NamingScreen_ApplyTextInputMode
 	ret
 
+.back_to_upper
+	xor a
+	ld [wNamingScreenLetterCase], a
 .upper
 	ld de, NameInputUpper
 	call NamingScreen_ApplyTextInputMode
 	ret
-	
+
 .other
+	; Check if it is Box naming screen
+	ld a, [wNamingScreenType]
+	maskbits NUM_NAME_TYPES
+	cp 4
+	jr z, .back_to_upper
+
 	ld de, NameInputOther
 	call NamingScreen_ApplyTextInputMode
 	ret
@@ -1029,84 +948,21 @@ LoadNamingScreenGFX:
 	lb bc, BANK(NamingScreenGFX_UnderLine), 1
 	call Get1bpp
 
-	ld de, vTiles0 tile NAMINGSCREEN_BORDER
-	ld hl, NamingScreenGFX_Border
-	ld bc, 1 tiles
-	ld a, BANK(NamingScreenGFX_Border)
-	call FarCopyBytes
-
-	ld de, vTiles0 tile NAMINGSCREEN_BORDER_TOPLEFT
-	ld hl, NamingScreenGFX_BorderTopLeft
-	ld bc, 1 tiles
-	ld a, BANK(NamingScreenGFX_BorderTopLeft)
-	call FarCopyBytes
-
-	ld de, vTiles0 tile NAMINGSCREEN_BORDER_TOPRIGHT
-	ld hl, NamingScreenGFX_BorderTopRight
-	ld bc, 1 tiles
-	ld a, BANK(NamingScreenGFX_BorderTopRight)
-	call FarCopyBytes
-
-	ld de, vTiles0 tile NAMINGSCREEN_BORDER_TOP
-	ld hl, NamingScreenGFX_BorderTop
-	ld bc, 1 tiles
-	ld a, BANK(NamingScreenGFX_BorderTop)
-	call FarCopyBytes
-
-	ld de, vTiles0 tile NAMINGSCREEN_BORDER_TOPBOTTOM
-	ld hl, NamingScreenGFX_BorderTopBottom
-	ld bc, 1 tiles
-	ld a, BANK(NamingScreenGFX_BorderTopBottom)
-	call FarCopyBytes
-
-	ld de, vTiles0 tile NAMINGSCREEN_BORDER_LEFT
-	ld hl, NamingScreenGFX_BorderLeft
-	ld bc, 1 tiles
-	ld a, BANK(NamingScreenGFX_BorderLeft)
-	call FarCopyBytes
-
-	ld de, vTiles0 tile NAMINGSCREEN_BORDER_RIGHT
-	ld hl, NamingScreenGFX_BorderRight
-	ld bc, 1 tiles
-	ld a, BANK(NamingScreenGFX_BorderRight)
-	call FarCopyBytes
-
-	ld de, vTiles0 tile NAMINGSCREEN_BORDER_BOTTOM
-	ld hl, NamingScreenGFX_BorderBottom
-	ld bc, 1 tiles
-	ld a, BANK(NamingScreenGFX_BorderBottom)
-	call FarCopyBytes
-
-	ld de, vTiles0 tile NAMINGSCREEN_BORDER_BOTTOMLEFT
-	ld hl, NamingScreenGFX_BorderBottomLeft
-	ld bc, 1 tiles
-	ld a, BANK(NamingScreenGFX_BorderBottomLeft)
-	call FarCopyBytes
-
-	ld de, vTiles0 tile NAMINGSCREEN_BORDER_BOTTOMRIGHT
-	ld hl, NamingScreenGFX_BorderBottomRight
-	ld bc, 1 tiles
-	ld a, BANK(NamingScreenGFX_BorderBottomRight)
-	call FarCopyBytes
-	call FarCopyBytes
-
-	ld de, vTiles0 tile NAMINGSCREEN_BORDER_TOPBOTTOMLEFT
-	ld hl, NamingScreenGFX_BorderTopBottomLeft
-	ld bc, 1 tiles
-	ld a, BANK(NamingScreenGFX_BorderTopBottomLeft)
-	call FarCopyBytes
-
-	ld de, vTiles0 tile NAMINGSCREEN_BORDER_TOPBOTTOMRIGHT
-	ld hl, NamingScreenGFX_BorderTopBottomRight
-	ld bc, 1 tiles
-	ld a, BANK(NamingScreenGFX_BorderTopBottomRight)
-	call FarCopyBytes
+	ld de, NamingScreenGFX_Options
+	ld hl, vTiles2 tile NAMINGSCREEN_LOWER
+	lb bc, BANK(NamingScreenGFX_Options), 18
+	call Get1bpp
+	call CopyBytes
 
 	ld de, vTiles0 tile NAMINGSCREEN_CURSOR
 	ld hl, NamingScreenGFX_Cursor
 	ld bc, 2 tiles
-	ld a, BANK(NamingScreenGFX_Cursor)
-	call FarCopyBytes
+	call CopyBytes
+
+	ld de, vTiles2 tile NAMINGSCREEN_BORDER
+	ld hl, NamingScreenGFX_Border
+	ld bc, 15 tiles
+	call CopyBytes
 
 	ld a, SPRITE_ANIM_DICT_TEXT_CURSOR
 	ld hl, wSpriteAnimDict + (NUM_SPRITEANIMDICT_ENTRIES - 1) * 2
@@ -1125,49 +981,10 @@ LoadNamingScreenGFX:
 	ldh [hWX], a
 	ret
 
-NamingScreenGFX_Border:
-INCBIN "gfx/naming_screen/border.2bpp"
-
-NamingScreenGFX_BorderTopBottom:
-INCBIN "gfx/naming_screen/border_topbottom.2bpp"
-
-NamingScreenGFX_BorderTop:
-INCBIN "gfx/naming_screen/border_top.2bpp"
-
-NamingScreenGFX_BorderTopLeft:
-INCBIN "gfx/naming_screen/border_topleft.2bpp"
-
-NamingScreenGFX_BorderTopRight:
-INCBIN "gfx/naming_screen/border_topright.2bpp"
-
-NamingScreenGFX_BorderBottom:
-INCBIN "gfx/naming_screen/border_bottom.2bpp"
-
-NamingScreenGFX_BorderBottomLeft:
-INCBIN "gfx/naming_screen/border_bottomleft.2bpp"
-
-NamingScreenGFX_BorderBottomRight:
-INCBIN "gfx/naming_screen/border_bottomright.2bpp"
-
-NamingScreenGFX_BorderLeft:
-INCBIN "gfx/naming_screen/border_left.2bpp"
-
-NamingScreenGFX_BorderRight:
-INCBIN "gfx/naming_screen/border_right.2bpp"
-
-NamingScreenGFX_BorderTopBottomLeft:
-INCBIN "gfx/naming_screen/border_topbottomleft.2bpp"
-
-NamingScreenGFX_BorderTopBottomRight:
-INCBIN "gfx/naming_screen/border_topbottomright.2bpp"
-
 NamingScreenGFX_Cursor:
 INCBIN "gfx/naming_screen/cursor.2bpp"
 
 INCLUDE "data/text/name_input_chars.asm"
-
-NamingScreenGFX_End: ; unreferenced
-INCBIN "gfx/naming_screen/end.1bpp"
 
 NamingScreenGFX_MiddleLine:
 INCBIN "gfx/naming_screen/middle_line.1bpp"
@@ -1175,11 +992,28 @@ INCBIN "gfx/naming_screen/middle_line.1bpp"
 NamingScreenGFX_UnderLine:
 INCBIN "gfx/naming_screen/underline.1bpp"
 
+NamingScreenGFX_Options:
+INCBIN "gfx/naming_screen/naming_tilemap.1bpp"
+
+NamingScreenGFX_Border:
+INCBIN "gfx/naming_screen/naming_borders.2bpp"
+
+NameInput_Tilemap:
+INCBIN "gfx/naming_screen/human_mon_naming_screen.tilemap"
+
+BoxInput_Tilemap:
+INCBIN "gfx/naming_screen/box_naming_screen.tilemap"
+
+MailInput_Tilemap:
+INCBIN "gfx/naming_screen/mail_naming_screen.tilemap"
+
 _ComposeMailMessage:
 	ld hl, wNamingScreenDestinationPointer
 	ld [hl], e
 	inc hl
 	ld [hl], d
+	ld hl, wNamingScreenType
+	ld [hl], b
 	ldh a, [hMapAnims]
 	push af
 	xor a
@@ -1208,8 +1042,7 @@ _ComposeMailMessage:
 	ld de, vTiles0 tile $00
 	ld hl, .MailIcon
 	ld bc, 8 tiles
-	ld a, BANK(.MailIcon)
-	call FarCopyBytes
+	call CopyBytes
 	xor a ; SPRITE_ANIM_DICT_DEFAULT and tile offset $00
 	ld hl, wSpriteAnimDict
 	ld [hli], a
@@ -1227,14 +1060,11 @@ _ComposeMailMessage:
 	ld a, LCDC_DEFAULT
 	ldh [rLCDC], a
 	call .initwNamingScreenMaxNameLength
-	ld b, SCGB_DIPLOMA
+	ld b, SCGB_MAIL_NAMING_SCREEN
 	call GetSGBLayout
 	call WaitBGMap
 	call WaitTop
-	ld a, %11100100
-	call DmgToCgbBGPals
-	ld a, %11100100
-	call DmgToCgbObjPal0
+	call SetPalettes
 	call NamingScreen_InitNameEntry
 	ld hl, wNamingScreenDestinationPointer
 	ld e, [hl]
@@ -1258,22 +1088,15 @@ INCBIN "gfx/icons/mail_big.2bpp"
 
 .InitCharset:
 	call WaitTop
-	hlcoord 0, 0
-	ld bc, 6 * SCREEN_WIDTH
-	ld a, NAMINGSCREEN_BORDER
-	call ByteFill
-	hlcoord 0, 6
-	ld bc, 12 * SCREEN_WIDTH
-	ld a, " "
-	call ByteFill
-	hlcoord 1, 1
-	lb bc, 4, SCREEN_WIDTH - 2
-	call ClearBox
+	ld hl, MailInput_Tilemap
+	decoord 0, 0
+	ld bc, SCREEN_WIDTH * SCREEN_HEIGHT
+	call CopyBytes
 	ld de, MailEntry_Uppercase
 
 .PlaceMailCharset:
 	hlcoord 1, 7
-	ld b, 6
+	ld b, 5
 .next
 	ld c, SCREEN_WIDTH - 1
 .loop_
@@ -1288,6 +1111,21 @@ INCBIN "gfx/icons/mail_big.2bpp"
 	pop de
 	dec b
 	jr nz, .next
+
+	; Upper/Lower text
+	ld a, [wNamingScreenLetterCase]
+	and a
+	ld a, NAMINGSCREEN_UPPER
+	jr nz, .uppercase
+	ld a, NAMINGSCREEN_LOWER
+.uppercase
+	hlcoord 2, 17
+	ld c, 4
+.copy_letter_option
+	ld [hli], a
+	inc a
+	dec c
+	jr nz, .copy_letter_option
 	ret
 
 .DoMailEntry:
@@ -1477,7 +1315,7 @@ ComposeMail_AnimateCursor:
 	db $00, $10, $20, $30, $40, $50, $60, $70, $80, $90
 
 .CaseDelEnd:
-	db $00, $00, $00, $30, $30, $30, $60, $60, $60, $60
+	db $08, $08, $08, $38, $38, $38, $68, $68, $68, $68
 
 .GetDPad:
 	ld hl, hJoyLast
@@ -1541,7 +1379,7 @@ ComposeMail_AnimateCursor:
 	ret
 
 .caps_del_done_left
-	cp $1
+	dec a
 	jr nz, .wrap_around_command_left
 	ld a, $4
 .wrap_around_command_left
