@@ -53,7 +53,7 @@ PalPacket_BetaPikachuMinigame:
 	sgb_pal_set GS_INTRO_JIGGLYPUFF_PIKACHU_OB, ROUTES, ROUTES, ROUTES
 
 PalPacket_PartyMenu:
-	sgb_pal_set PARTY_ICON, HP_GREEN, HP_YELLOW, HP_RED
+	sgb_pal_set TEXT, HP_GREEN, HP_YELLOW, HP_RED
 
 PalPacket_BattleGrayscale:
 	sgb_pal_set BLACKOUT, BLACKOUT, BLACKOUT, BLACKOUT
