@@ -325,9 +325,8 @@ MainMenu_PrintCurrentTimeAndDay:
 	call PlaceString
 	ret
 
-.MainMenuTimeUnknownText: ; unreferenced
-	text_far _MainMenuTimeUnknownText
-	text_end
+.MainMenuTimeUnknownText: 
+	db "Time unknown@"
 
 .PrintDayOfWeek:
 	push de
