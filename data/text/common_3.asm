@@ -33,6 +33,22 @@ _ClockTimeMayBeWrongText::
 	line "time."
 	prompt
 
+_SetAlarmText::
+	text "When do you want"
+	line "to wake up?"
+	prompt
+
+_AlarmDoneSetText::
+	text "Alarm has been"
+	line "set!"
+
+	para "zzz..."
+	line ""
+
+	para "Time to"
+	line "wake up!"
+	done
+
 _ClockSetWithControlPadText::
 	text "Set with the"
 	line "Control Pad."
@@ -1061,8 +1077,8 @@ _PokegearAskWhoCallText::
 	done
 
 _PokegearPressButtonText::
-	text "Press any button"
-	line "to exit."
+	text "START for alarm,"
+	line "B to exit."
 	done
 
 _PokegearAskDeleteText::

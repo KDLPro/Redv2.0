@@ -30,7 +30,7 @@ PrintDayOfWeek:
 .Days:
 	db "SUN@"
 	db "MON@"
-	db "TUE@"
+	db "TUES@"
 	db "WEDNES@"
 	db "THURS@"
 	db "FRI@"

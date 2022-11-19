@@ -35,16 +35,40 @@ ENDM
 	wraparound_time wRestartClockHour, 24, 12
 	wraparound_time wRestartClockMin,  60, 15
 
+SetAlarm:
+	call ClearSprites
+	ld b, SCGB_PARTY_MENU
+	call GetSGBLayout
+	ld hl, .SetAlarmText
+	call PrintText
+	jr SetNewTime
+
+.SetAlarmText:
+	text_far _SetAlarmText
+	text_end
+
 RestartClock:
 ; If we're here, we had an RTC overflow.
+	xor a
+	ld [wPokegearInUse], a
 	ld hl, .ClockTimeMayBeWrongText
 	call PrintText
+	jr SetNewTime
+
+.ClockTimeMayBeWrongText:
+	text_far _ClockTimeMayBeWrongText
+	text_end
+
+SetNewTime:
 	ld hl, wOptions
 	ld a, [hl]
 	push af
 	set NO_TEXT_SCROLL, [hl]
 	call LoadStandardMenuHeader
 	call ClearTilemap
+	ld b, SCGB_DIPLOMA
+	call GetSGBLayout
+	call SetPalettes
 	ld hl, .ClockSetWithControlPadText
 	call PrintText
 	call .SetClock
@@ -54,10 +78,6 @@ RestartClock:
 	ld [hl], b
 	ld c, a
 	ret
-
-.ClockTimeMayBeWrongText:
-	text_far _ClockTimeMayBeWrongText
-	text_end
 
 .ClockSetWithControlPadText:
 	text_far _ClockSetWithControlPadText
@@ -97,8 +117,17 @@ RestartClock:
 	ld [wStringBuffer2 + 3], a
 	call InitTime
 	call .PrintTime
+	ld a, [wPokegearInUse]
+	and a
+	jr z, .start_game_clock_reset
+	ld hl, .AlarmDoneSetText
+	call PrintText
+	jr .finish_set_time
+
+.start_game_clock_reset
 	ld hl, .ClockHasResetText
 	call PrintText
+.finish_set_time
 	call WaitPressAorB_BlinkCursor
 	xor a ; FALSE
 	ret
@@ -113,6 +142,10 @@ RestartClock:
 
 .ClockHasResetText:
 	text_far _ClockHasResetText
+	text_end
+
+.AlarmDoneSetText:
+	text_far _AlarmDoneSetText
 	text_end
 
 .joy_loop

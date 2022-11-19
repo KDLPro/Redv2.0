@@ -42,10 +42,10 @@ PokeGear:
 .loop
 	call UpdateTime
 	call JoyTextDelay
+	call PokegearJumptable
 	ld a, [wJumptableIndex]
 	bit 7, a
 	jr nz, .done
-	call PokegearJumptable
 	farcall PlaySpriteAnimations
 	call DelayFrame
 	jr .loop
@@ -63,6 +63,7 @@ PokeGear:
 	call ClearBGPalettes
 	xor a ; LOW(vBGMap0)
 	ldh [hBGMapAddress], a
+	ld [wPokegearInUse], a
 	ld a, HIGH(vBGMap0)
 	ldh [hBGMapAddress + 1], a
 	ld a, SCREEN_HEIGHT_PX
@@ -92,13 +93,14 @@ PokeGear:
 	ld [wJumptableIndex], a ; POKEGEARSTATE_CLOCKINIT
 	ld [wPokegearCard], a ; POKEGEARCARD_CLOCK
 	ld [wPokegearMapRegion], a ; JOHTO_REGION
-	ld [wUnusedPokegearByte], a
 	ld [wPokegearPhoneScrollPosition], a
 	ld [wPokegearPhoneCursorPosition], a
 	ld [wPokegearPhoneSelectedPerson], a
 	ld [wPokegearRadioChannelBank], a
 	ld [wPokegearRadioChannelAddr], a
 	ld [wPokegearRadioChannelAddr + 1], a
+	inc a
+	ld [wPokegearInUse], a
 	call Pokegear_InitJumptableIndices
 	call InitPokegearTilemap
 	ld b, SCGB_POKEGEAR_PALS
@@ -463,8 +465,11 @@ PokegearClock_Joypad:
 	call .UpdateClock
 	ld hl, hJoyLast
 	ld a, [hl]
-	and A_BUTTON | B_BUTTON | START | SELECT
+	and A_BUTTON | B_BUTTON | SELECT
 	jr nz, .quit
+	ld a, [hl]
+	and START
+	jr nz, .alarm
 	ld a, [hl]
 	and D_RIGHT
 	ret z
@@ -505,6 +510,10 @@ PokegearClock_Joypad:
 	ld a, $1
 	ldh [hBGMapMode], a
 	ret
+
+.alarm
+	farcall SetAlarm
+	jr .quit
 
 Pokegear_UpdateClock:
 	hlcoord 3, 5
