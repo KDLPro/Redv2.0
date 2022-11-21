@@ -1413,6 +1413,9 @@ INCLUDE "gfx/pokegear/pokegear.pal"
 FemalePokegearPals:
 INCLUDE "gfx/pokegear/pokegear_f.pal"
 
+PokegearTextPals:
+INCLUDE "gfx/pokegear/pokegear_textbox.pal"
+
 BetaPokerPals:
 INCLUDE "gfx/beta_poker/beta_poker.pal"
 

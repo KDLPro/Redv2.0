@@ -269,7 +269,17 @@ _CGB_PokegearPals:
 	ld bc, 6 palettes
 	ld a, BANK(wBGPals1)
 	call FarCopyWRAM
+	ld hl, PokegearTextPals
+	ld de, wBGPals1 palette 7
+	ld bc, 1 palettes
+	ld a, BANK(wBGPals1)
+	call FarCopyWRAM
+	hlcoord 0, 12, wAttrmap
+	ld bc, 6 * SCREEN_WIDTH
+	ld a, 7
+	call ByteFill
 	call ApplyPals
+	call ApplyAttrmap
 	ld a, TRUE
 	ldh [hCGBPalUpdate], a
 	ret

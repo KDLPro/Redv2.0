@@ -76,7 +76,7 @@ BuenaPrize:
 
 .loop
 	ld hl, .BuenaAskWhichPrizeText
-	call BuenaPrintText
+	call BuenaOrGearPrintText
 
 .okay
 	call DelayFrame
@@ -90,7 +90,7 @@ BuenaPrize:
 	ld [wNamedObjectIndex], a
 	call GetItemName
 	ld hl, .BuenaIsThatRightText
-	call BuenaPrintText
+	call BuenaOrGearPrintText
 	call YesNoBox
 	jr c, .loop
 
@@ -134,7 +134,7 @@ BuenaPrize:
 	ld hl, .BuenaHereYouGoText
 
 .print
-	call BuenaPrintText
+	call BuenaOrGearPrintText
 	jr .loop
 
 .done
