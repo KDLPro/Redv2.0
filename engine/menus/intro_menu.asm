@@ -1184,10 +1184,10 @@ TitleScreenMain:
 
 ; To bring up the clock reset dialog:
 
-; Hold Down + B.
+; Hold Down + B + SELECT.
 	ld a, [hl]
-	and D_DOWN + B_BUTTON
-	cp  D_DOWN + B_BUTTON
+	and D_DOWN + B_BUTTON + SELECT
+	cp  D_DOWN + B_BUTTON + SELECT
 	jr nz, .check_start
 
 	xor a
