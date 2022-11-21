@@ -63,7 +63,6 @@ PokeGear:
 	call ClearBGPalettes
 	xor a ; LOW(vBGMap0)
 	ldh [hBGMapAddress], a
-	ld [wPokegearInUse], a
 	ld a, HIGH(vBGMap0)
 	ldh [hBGMapAddress + 1], a
 	ld a, SCREEN_HEIGHT_PX
@@ -99,8 +98,6 @@ PokeGear:
 	ld [wPokegearRadioChannelBank], a
 	ld [wPokegearRadioChannelAddr], a
 	ld [wPokegearRadioChannelAddr + 1], a
-	inc a
-	ld [wPokegearInUse], a
 	call Pokegear_InitJumptableIndices
 	call InitPokegearTilemap
 	ld b, SCGB_POKEGEAR_PALS

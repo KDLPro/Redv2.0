@@ -1414,7 +1414,7 @@ NEXTU
 ; pokegear
 wPokegearCard:: db
 wPokegearMapRegion:: db
-wPokegearInUse:: db
+wPokegearInUse:: db			; unused
 
 NEXTU
 ; pack

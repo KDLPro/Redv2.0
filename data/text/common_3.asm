@@ -34,20 +34,22 @@ _ClockTimeMayBeWrongText::
 	prompt
 
 _SetAlarmText::
-	text "When do you want"
-	line "to wake up?"
+	text "How long will"
+	line "you sleep?"
 	prompt
 
 _AlarmDoneSetText::
 	text "Alarm has been"
 	line "set!"
+	prompt
 
-	para "zzz..."
+_SleepWakeUpText::
+	text "zzz..."
 	line ""
 
 	para "Time to"
 	line "wake up!"
-	done
+	prompt
 
 _ClockSetWithControlPadText::
 	text "Set with the"

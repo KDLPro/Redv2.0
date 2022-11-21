@@ -37,29 +37,163 @@ ENDM
 
 SetAlarm:
 	call ClearSprites
-	ld b, SCGB_PARTY_MENU
-	call GetSGBLayout
+	ld a, 12
+	ld [wItemQuantity], a
 	ld hl, .SetAlarmText
 	call PrintText
-	jr SetNewTime
+	ld hl, SleepHours_MenuHeader
+	call LoadMenuHeader
+	call SleepHours_Loop
+	jr c, .finish_2
+	ld hl, .ClockIsThisOKText
+	call PrintText
+	call YesNoBox
+	push af
+	call ExitMenu
+	pop af
+	jr c, .finish
+
+	ld hl, .AlarmDoneSetText
+	call PrintText
+	ld a, [wItemQuantityChange]
+	ld b, a
+	ldh a, [hHours]
+	add b
+	cp 24
+	jr c, .continue_reset
+	sub 24
+	push af
+	call GetWeekday
+	inc a
+	ld [wStringBuffer2], a
+	pop af
+.continue_reset
+	ld [wStringBuffer2 + 1], a
+	call InitTime
+	ld hl, .SleepWakeUpText
+	call PrintText
+.finish
+	ret
+
+.finish_2
+	push af
+	call ExitMenu
+	pop af
+	ret
 
 .SetAlarmText:
 	text_far _SetAlarmText
 	text_end
 
-RestartClock:
-; If we're here, we had an RTC overflow.
-	xor a
-	ld [wPokegearInUse], a
-	ld hl, .ClockTimeMayBeWrongText
-	call PrintText
-	jr SetNewTime
-
-.ClockTimeMayBeWrongText:
-	text_far _ClockTimeMayBeWrongText
+.SleepWakeUpText:
+	text_far _SleepWakeUpText
 	text_end
 
-SetNewTime:
+.AlarmDoneSetText:
+	text_far _AlarmDoneSetText
+	text_end
+
+.ClockIsThisOKText:
+	text_far _ClockIsThisOKText
+	text_end
+
+SleepHours_Loop:
+	ld a, 1
+	ld [wItemQuantityChange], a
+.loop
+	call SleepHours_UpdateTime 						; update display
+	call SleepHours_InterpretJoypad       ; joy action
+	jr nc, .loop
+	cp -1
+	jr nz, .nope ; pressed B
+	scf
+	ret
+
+.nope
+	and a
+	ret
+
+SleepHours_UpdateTime:
+	call MenuBox
+	call MenuBoxCoord2Tile
+	ld de, SCREEN_WIDTH + 1
+	add hl, de
+	ld de, wItemQuantityChange
+	lb bc, 1, 2
+	call PrintNum
+	ld a, [wMenuDataPointer]
+	ld e, a
+	ld a, [wMenuDataPointer + 1]
+	ld d, a
+	ld a, [wMenuDataBank]
+	call FarCall_de
+	ret
+
+SleepHours_InterpretJoypad:
+	call JoyTextDelay_ForcehJoyDown ; get joypad
+	bit B_BUTTON_F, c
+	jr nz, .b
+	bit A_BUTTON_F, c
+	jr nz, .a
+	bit D_DOWN_F, c
+	jr nz, .down
+	bit D_UP_F, c
+	jr nz, .up
+	and a
+	ret
+
+.b
+	ld a, -1
+	scf
+	ret
+
+.a
+	ld a, 0
+	scf
+	ret
+
+.down
+	ld hl, wItemQuantityChange
+	dec [hl]
+	jr nz, .finish_down
+	ld a, [wItemQuantity]
+	ld [hl], a
+
+.finish_down
+	and a
+	ret
+
+.up
+	ld hl, wItemQuantityChange
+	inc [hl]
+	ld a, [wItemQuantity]
+	cp [hl]
+	jr nc, .finish_up
+	ld [hl], 1
+
+.finish_up
+	and a
+	ret
+
+SleepHours_MenuHeader:
+	db MENU_BACKUP_TILES ; flags
+	menu_coords 10, 9, SCREEN_WIDTH - 1, TEXTBOX_Y - 1
+	dw PrintHours
+	db 1 ; default option
+
+PrintHours:
+	hlcoord 14, 10
+	ld de, .hours
+	jp PlaceString
+
+.hours:
+	db "hours@"
+
+RestartClock:
+; If we're here, we had an RTC overflow.
+	ld hl, .ClockTimeMayBeWrongText
+	call PrintText
+
 	ld hl, wOptions
 	ld a, [hl]
 	push af
@@ -78,6 +212,10 @@ SetNewTime:
 	ld [hl], b
 	ld c, a
 	ret
+
+.ClockTimeMayBeWrongText:
+	text_far _ClockTimeMayBeWrongText
+	text_end
 
 .ClockSetWithControlPadText:
 	text_far _ClockSetWithControlPadText
@@ -117,17 +255,8 @@ SetNewTime:
 	ld [wStringBuffer2 + 3], a
 	call InitTime
 	call .PrintTime
-	ld a, [wPokegearInUse]
-	and a
-	jr z, .start_game_clock_reset
-	ld hl, .AlarmDoneSetText
-	call PrintText
-	jr .finish_set_time
-
-.start_game_clock_reset
 	ld hl, .ClockHasResetText
 	call PrintText
-.finish_set_time
 	call WaitPressAorB_BlinkCursor
 	xor a ; FALSE
 	ret
@@ -142,10 +271,6 @@ SetNewTime:
 
 .ClockHasResetText:
 	text_far _ClockHasResetText
-	text_end
-
-.AlarmDoneSetText:
-	text_far _AlarmDoneSetText
 	text_end
 
 .joy_loop
@@ -247,11 +372,6 @@ SetNewTime:
 	ld [wRestartClockPrevDivision], a
 	ret
 
-.UnusedPlaceCharsFragment: ; unreferenced
-	ld a, [wRestartClockUpArrowYCoord]
-	ld b, a
-	call Coord2Tile
-	ret
 
 .PlaceChars:
 	push de
