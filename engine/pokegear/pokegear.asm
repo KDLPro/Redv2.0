@@ -315,8 +315,7 @@ InitPokegearTilemap:
 	hlcoord 0, 12
 	lb bc, 4, 18
 	call TextboxBorder
-	call Pokegear_UpdateClock
-	ret
+	jp Pokegear_UpdateClock
 
 .switch
 	db " SWITCH▶@"
@@ -344,16 +343,13 @@ InitPokegearTilemap:
 	hlcoord 19, 2
 	ld [hl], $17
 	ld a, [wPokegearMapCursorLandmark]
-	call PokegearMap_UpdateLandmarkName
-	ret
+	jp PokegearMap_UpdateLandmarkName
 
 .Radio:
 	ld de, RadioTilemapRLE
 	call Pokegear_LoadTilemapRLE
 	hlcoord 0, 12
 	lb bc, 4, 18
-	call TextboxBorder
-	ret
 
 .Phone:
 	ld de, PhoneTilemapRLE
@@ -362,8 +358,7 @@ InitPokegearTilemap:
 	lb bc, 4, 18
 	call TextboxBorder
 	call .PlacePhoneBars
-	call PokegearPhone_UpdateDisplayList
-	ret
+	jp PokegearPhone_UpdateDisplayList
 
 .PlacePhoneBars:
 	hlcoord 17, 1
@@ -402,8 +397,7 @@ Pokegear_FinishTilemap:
 	call nz, .PlaceRadioIcon
 	hlcoord 0, 0
 	ld a, $46
-	call .PlacePokegearCardIcon
-	ret
+	jp .PlacePokegearCardIcon
 
 .PlaceMapIcon:
 	hlcoord 2, 0
@@ -606,8 +600,6 @@ PokegearMap_ContinueMap:
 	ld c, POKEGEARSTATE_CLOCKINIT
 	ld b, POKEGEARCARD_CLOCK
 .done
-	call Pokegear_SwitchPage
-	ret
 
 .cancel
 	ld hl, wJumptableIndex
@@ -654,8 +646,6 @@ PokegearMap_ContinueMap:
 	ld a, [wPokegearMapCursorObjectPointer + 1]
 	ld b, a
 	ld a, [wPokegearMapCursorLandmark]
-	call PokegearMap_UpdateCursorPosition
-	ret
 
 PokegearMap_InitPlayerIcon:
 	push af
@@ -796,8 +786,6 @@ PokegearRadio_Joypad:
 	ld c, POKEGEARSTATE_CLOCKINIT
 	ld b, POKEGEARCARD_CLOCK
 .switch_page
-	call Pokegear_SwitchPage
-	ret
 
 .cancel
 	ld hl, wJumptableIndex
@@ -1979,8 +1967,6 @@ PlayRadio:
 	ld h, b
 	ld l, c
 	ld [hl], "”"
-	call WaitBGMap
-	ret
 
 .StationPointers:
 ; entries correspond to MAPRADIO_* constants
