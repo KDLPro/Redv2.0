@@ -94,7 +94,7 @@ SetUpNamingScreen:
 	jr .init_name_entry
 
 .others
-	ld b, SCGB_REGULAR_NAMING_SCREEN
+	ld b, SCGB_HUMAN_NAMING_SCREEN
 	call GetSGBLayout
 .init_name_entry
 	call DisableLCD

@@ -62,7 +62,7 @@ LoadSGBLayoutCGB:
 	dw _CGB_MonNamingScreen
 	dw _CGB_BoxNamingScreen
 	dw _CGB_MailNamingScreen
-	dw _CGB_RegularNamingScreen
+	dw _CGB_HumanNamingScreen
 	dw _CGB_BackToPC
 	dw _CGB_DoneNaming
 	dw _CGB_DoneNamingMon_JustCaught
@@ -1090,7 +1090,7 @@ _CGB_PlayerOrMonFrontpicPals:
 	call ApplyAttrmap
 	jp ApplyPals
 
-_CGB_RegularNamingScreen:
+_CGB_HumanNamingScreen:
 	ld hl, PalPacket_HumanNamingScreen + 1
 	call CopyFourPalettes
 	call WipeAttrmap
@@ -1171,7 +1171,7 @@ _CGB_BoxNamingScreen:
 	ld a, BANK(wBGPals1)
 	call FarCopyWRAM
 
-	ld hl, PalPacket_MonNamingScreen + 1
+	ld hl, PalPacket_BoxNamingScreen + 1
 	call CopyFourPalettes
 	call WipeAttrmap
 	

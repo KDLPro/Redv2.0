@@ -79,6 +79,9 @@ PalPacket_HumanNamingScreen:
 PalPacket_MailNamingScreen:
 	sgb_pal_set BORDER_3, BOTTOM_BACKGROUND_3, TOP_BACKGROUND_3, TEXT
 
+PalPacket_BoxNamingScreen:
+	sgb_pal_set BORDER_4, BOTTOM_BACKGROUND_4, TOP_BACKGROUND_4, TEXT
+
 PalPacket_TradeTube:
 	sgb_pal_set TRADE_TUBE, ROUTES, ROUTES, ROUTES
 
