@@ -200,7 +200,6 @@ INCLUDE "data/battle/effect_command_pointers.asm"
 
 SECTION "bank13", ROMX
 
-INCLUDE "engine/pokedex/pokedex.asm"
 INCLUDE "data/moves/moves.asm"
 INCLUDE "engine/pokemon/evolve.asm"
 
@@ -209,9 +208,13 @@ SECTION "bank14", ROMX
 
 INCLUDE "engine/events/fruit_trees.asm"
 INCLUDE "engine/battle/ai/move.asm"
-INCLUDE "engine/pokedex/pokedex_2.asm"
 INCLUDE "engine/pokemon/mail.asm"
 
+SECTION "Pokedex", ROMX
+
+INCLUDE "engine/pokedex/pokedex.asm"
+INCLUDE "engine/pokedex/pokedex_2.asm"
+INCLUDE "engine/pokedex/pokedex_3.asm"
 
 SECTION "Crystal Features 1", ROMX
 
@@ -721,7 +724,6 @@ SECTION "bank78_2", ROMX
 
 INCLUDE "engine/rtc/print_hours_mins.asm"
 INCLUDE "engine/events/diploma.asm"
-INCLUDE "engine/pokedex/pokedex_3.asm"
 INCLUDE "engine/events/catch_tutorial_input.asm"
 INCLUDE "engine/pokegear/townmap_convertlinebreakcharacters.asm"
 
