@@ -3065,7 +3065,7 @@ AI_Aggressive:
 	ld [wMovesThatOHKOPlayer], a
 	
 	ld a, [wEnemyMoveStruct + MOVE_ACC]
-	cp 74 percent
+	cp 89 percent
 	jr c, .check_turns_to_ko
 	
 	call AI_Encourage
